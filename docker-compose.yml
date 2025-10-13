@@ -9,6 +9,9 @@ services:
       - type: bind
         source: ./db/mongo
         target: /etc/mongo
+      - type: bind
+        source: ./db/setup
+        target: /docker-entrypoint-initdb.d
 
 volumes:
   db-data:
