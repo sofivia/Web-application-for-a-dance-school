@@ -1,0 +1,14 @@
+services:
+  db:
+    build: ./db
+    env_file: "db/db.env"
+    ports:
+      - "27017:27017"
+    volumes:
+      - db-data:/data/db
+      - type: bind
+        source: ./db/mongo
+        target: /etc/mongo
+
+volumes:
+  db-data:
