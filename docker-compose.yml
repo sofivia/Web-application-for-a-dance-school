@@ -15,6 +15,12 @@ services:
         source: ./db/setup
         target: /docker-entrypoint-initdb.d
   
+  backend:
+    build: ./backend
+    networks:
+      - back-tier
+      - front-tier
+
   frontend:
     build: ./frontend
     ports:
