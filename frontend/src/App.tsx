@@ -1,16 +1,21 @@
-import { useState } from 'react'
 import PingPanel from './components/PingPanel.tsx'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
+import { useContext, useState } from 'react';
 import { Link } from "react-router";
+import Toggle from "./components/Toggle.tsx";
 import Button from "./components/Button.tsx";
+import './index.css';
 import styles from './App.module.css';
+import { ThemeContext } from './utils/theme.tsx';
 
 export default function App() {
   const [count, setCount] = useState(0)
+  const { theme, setTheme } = useContext(ThemeContext);
+  const setActive = () => { setTheme(theme == 'dark' ? 'light' : 'dark') }
 
   return (
-    <div className={`root_container ${styles.app_container} dark`}>
+    <div className={styles.app_container}>
       <div className={styles.app_panel}>
         <div className="mb-3">
           <a className={styles.logolink} href="https://vite.dev" target="_blank">
@@ -22,7 +27,9 @@ export default function App() {
         </div>
 
         <h1 className="mb-1">Vite + React</h1>
-        <Link to="/other/">test</Link>
+        <div className="mb-1"> <Link to="/other/">test</Link> </div>
+
+        <Toggle callback={setActive} isOn={theme == 'dark'} />
 
         <div className="mt-5">
 
