@@ -1,28 +1,64 @@
 \documentclass{article}
+\author{A.\,N.~Other}
+\title{Some things I did}
 
 \usepackage[T1]{fontenc}
 \usepackage[polish]{babel}
 \usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{xcolor}
 
 \begin{document}
+\noindent\makebox[\textwidth]{\includegraphics[width=\paperwidth]{resources/titlepage.png}}
+
+\raggedleft{\sffamily
+    {\Huge\bf\textcolor[HTML]{6495ED}{Szkoła Tańca}}\\\vspace{2em}
+    {\Large
+        Dokumentacja projektowa PZSP2\\\vspace{1em}
+        Wersja 1\\\vspace{1em}
+        \today\\\vspace{1em}
+        Semestr 25Z%
+    }
+    
+    \vspace{5em}
+    {\large
+        Zespół nr 2 w składzie:\\\vspace{0.5em}
+        {\rmfamily
+        Gavrylenko Ihor\\
+        Kukiełka Wojciech\\
+        Rybachok Andrii\\
+        Yedzeika Sofiya%
+        }%
+    }%
+}
+
+\vspace{3em}
+\raggedright{\large
+    Mentor zespołu: dr inż. Marcin Szlenk\\
+    Właściciel tematu: dr inż. Żółtowska Izabela
+}
+
+\newpage
 
 \tableofcontents
 
 \section{Wprowadzenie}
 \subsection{Cel projektu}
-
 Celem jest stworzenie aplikacji wspomagającej właścicielkę Szkoły Tip~Tap
 w~zarządzaniu ofertą oraz w realizacji bieżących zadań organizacyjnych.
 Konkretnie, system ma za zadanie wspomóc właścicielkę i instruktorów
 przy realizacji lekcji stepowania, a uczniom ma uprościć formalności
-związane z uczęszczaniem na te zajęcia.
+związane z~uczęszczaniem na te zajęcia.
 
 Załączony został dokument \textsc{szkoła tańca.docx,}
 zawierający wymagania właścicielki.
 
 \subsection{Wstępna wizja projektu}
-
-
+Sercem systemu będzie aplikacja webowa, która będzie komunikować się z~serwerem aplikacyjnym.
+Będzie stworzona baza danych.
+W aplikacji będą trzy rodzaje użytkowników: uczniowie, instruktorzy i administrator.
+Podczas projektowania będzie kładziony nacisk na łatwość obsługi, automatyzację czynności
+i bezpieczeństwo danych osobowych.
 
 \section{Metodologia wytwarzania}
 
@@ -33,7 +69,7 @@ zarządzanie, lecz wsparcie merytoryczne.
 Sami w swojej strukturze też nie mamy przewodniczącego, który przydziela zadania,
 aczkolwiek mamy lidera -- Ihora, który jest z nas najbardziej doświadczony.
 Każdy członek zespołu jest zmotywowany powodzeniem projektu i sam podejmuje się
-zadań, biorąc pod uwagę swoje siły i kompetencje.
+zadań, biorąc pod uwagę swoje siły i~kompetencje.
 
 \subsubsection*{Schemat pracy}
 Głównym spoiwem zespołu są cotygodniowe spotkania, na których przedstawiamy
@@ -51,9 +87,9 @@ Każdym komponentem zajmują się co najmniej dwie osoby.
 Podstawą jest narzędzie kontroli wersji -- \textit{git}. Oprócz tego potrzebne jest
 miejsce do określania zadań. Obie te funkcje ma platforma \textit{gitlab}.
 
-Mówiąc bardziej technicznie, jednostka pracy (zadanie, issue) będzie odnotowywanq
+Mówiąc bardziej technicznie, jednostka pracy (zadanie, issue) będzie odnotowywane
 w \textit{gitlabie}, wolontariusz przypisze to zadania do siebie do wykonania,
-utworzy niezależną gałąź z kodem, zaimplementuje, co trzeba, a następnie oznaczy
+utworzy niezależną gałąź z kodem, zaimplementuje, co trzeba, a~następnie oznaczy
 gałąź, jako gotową do wdrożenia do oficjalnej wersji kodu. Przed wdrożeniem,
 gałąź będzie musiała przejść, w pierwszej kolejności -- testy automatyczne,
 a następnie recenzję innego członka zespołu.
@@ -62,11 +98,175 @@ a następnie recenzję innego członka zespołu.
 \section{Analiza wymagań}
 
 \subsection{Wymagania użytkownika i biznesowe}
+\newcommand{\wymaganie}[2]{
+    \textbf{\textsc{#1}}\hspace{1em}#2\\\vspace{0.5em}
+}
+\subsubsection*{Wymagania biznesowe}
+\wymaganie{B1}{System \textbf{musi} odciążyć właścicielkę w rejestracji uczniów, ich rozliczaniu oraz w kontakcie z nimi.}
+\wymaganie{B2}{Aplikacja \textbf{musi} pozwolić rejestrować obecności uczniów.}
+\wymaganie{B3}{Aplikacja \textbf{musi} pozwolić uczniom zarejestrować się na zajęcia.}
+\wymaganie{B4}{Aplikacja \textbf{musi} wyposażyć uczniów w informacje dotyczące ich uczestnictwa w zajęciach,
+    aby, w szczególności, dotrzymywanie terminów płatności było dla nich łatwiejsze.}
+\wymaganie{B5}{Aplikacja \textbf{musi} pozwolić właścicielce zmieniać ceny karnetów
+    oraz wprowadzać inne zmiany istotne z punktu widzenia systemu.}
+\wymaganie{B6}{Aplikacja \textbf{powinna} pozwalać na tworzenie raportów dotyczących sprzedaży karnetów.}
+
+\vspace{-0.5em}
+\subsubsection*{Wymagania użytkownika}
+Powyższe wymagania pociągają za sobą poniższe wymagania użytkownika.
+
+\vspace{1em}
+\wymaganie{U1}{Uczeń \textbf{musi} móc się zarejestrować i zalogować adresem e-mail.}
+\wymaganie{U2}{Rejestracja \textbf{powinna} wymagać zatwierdzenia automatycznego e-maila.}
+\wymaganie{U3}{Pomyślne zarejestrowanie się \textbf{musi} być jasno zakomunikowane,
+    w~szczególności komunikat o tym zdarzeniu powinien być trudny do przeoczenia.}
+\wymaganie{U4}{Uczeń \textbf{musi} móc zapisać się na zajęcia.}
+\wymaganie{U5}{Uczeń \textbf{powinien} móc wpisać się na listę rezerwową.}
+\wymaganie{U6}{Uczeń \textbf{musi} widzieć status swoich płatności}
+\wymaganie{U7}{Uczeń \textbf{musi} widzieć ile przysługuje mu odrobień.}
+\wymaganie{U8}{Dwaj uczniowie \textbf{muszą} móc mieć ten sam e-mail.}
+\wymaganie{U9}{Uczeń \textbf{musi} może usunąć swoje konto, prosząc o usunięcie jego danych z~systemu.}
+
+\vspace{1em}
+\wymaganie{I1}{Instruktor \textbf{musi} móc odnotować obecność ucznia na zajęciach.}
+\wymaganie{I2}{Instruktor \textbf{musi} móc odnotować obecność ucznia odrabiającego zajęcia.}
+\wymaganie{I3}{Instruktor \textbf{musi} móc skorygować obecność ucznia do 7 dni po zajęciach.}
+\wymaganie{I4}{Instruktor \textbf{musi} mieć dostęp \textbf{tylko} do niezbędnych danych,
+    w~szczególności \textbf{nie może} mieć dostępu do e-maili.}
+
+\vspace{1em}
+\textit{Uwaga: właścicielka jest administratorem.}\\\vspace{0.5em}
+\wymaganie{A1}{Administrator \textbf{musi} móc modyfikować grafik zajęć.}
+\wymaganie{A2}{Administrator \textbf{musi} móc dodawać konta instruktorów.}
+\wymaganie{A3}{Administrator \textbf{powinien} móc modyfikować dane uczniów.}
+\wymaganie{A4}{Administrator \textbf{powinien} móc wygenerować podsumowanie płatności z~karnetów za dany okres.}
+\wymaganie{A5}{Administrator \textbf{musi} móc odnotować płatność ucznia.}
+\wymaganie{A6}{Administrator \textbf{powinien} móc zapisać płatność \textit{w przód,} np. uczeń opłaca za dwa miesiące.}
+\wymaganie{A7}{Administrator \textbf{musi} mieć dostęp do danych ucznia, który ma nieuregulowane płatności,
+    nawet jeśli usunął konto.}
+\wymaganie{A8}{Administrator \textbf{powinien} móc wysłać maila do całej grupy zajęciowej.}
 
 \subsection{Wymagania funkcjonalne i niefunkcjonalne}
+Wszystkie powyższe wymagania oprócz \textbf{\textsc{U3}} są przeważnie funkcjonalne,
+lecz oczywiste jest, że aby je zrealizować, trzeba spełnić kilka wymagań niefunkcjonalnych.
+
+\vspace{1em}
+\wymaganie{N1}{Interfejs \textbf{musi} być prosty, czytelny oraz mieć komunikaty o~sukcesach/błędach.}
+\wymaganie{N2}{Systemu \textbf{musi} być dostępny całodobowo z poziomu przeglądarki.}
+\wymaganie{N3}{Interfejs \textbf{musi} być równie dobry na urządzeniach mobilnych.}
+\wymaganie{N4}{Dane osobowe \textbf{muszą} być przechowywane bezpiecznie z poszanowaniem RODO.}
+\wymaganie{N5}{System \textbf{musi} być utrzymywalny.}
+
+\subsubsection*{Mapowania wymagań}
+\newcommand{\x}{\rule[-0.25em]{1em}{1em}}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{*{22}{c|}}
+    \cline{2-22}
+    {}                       & U1 & U2 & U3 & U4 & U5 & U6 & U7 & U8 & U9 & I1 & I2 & I3 & I4 & A1 & A2 & A3 & A4 & A5 & A6 & A7 & A8 \\\hline
+    \multicolumn{1}{|c|}{B1} &    &    &    &    &    &    &    &    &    &    &    &    &    &    &    &    &    & \x & \x & \x & \x \\\hline
+    \multicolumn{1}{|c|}{B2} &    &    &    &    &    &    &    &    &    & \x & \x & \x & \x &    &    &    &    &    &    &    &    \\\hline
+    \multicolumn{1}{|c|}{B3} &    &    &    & \x & \x &    &    &    & \x &    &    &    &    &    &    &    &    &    &    &    &    \\\hline
+    \multicolumn{1}{|c|}{B4} & \x & \x & \x &    &    & \x & \x & \x &    &    &    &    &    &    &    &    &    &    &    &    &    \\\hline
+    \multicolumn{1}{|c|}{B5} &    &    &    &    &    &    &    &    &    &    &    &    &    & \x & \x & \x &    &    &    &    &    \\\hline
+    \multicolumn{1}{|c|}{B6} &    &    &    &    &    &    &    &    &    &    &    &    &    &    &    &    & \x &    &    &    &    \\\hline
+\end{tabular}}
 
 \subsection{Przypadki użycia}
+\newcommand{\przypadek}[2]{\subsubsection*{#1\hspace{1em}#2}}
+\przypadek{PB1}{Rejestracja ucznia}
+\begin{enumerate}
+    \item Uczeń wypełnia formularz rejestracyjny.
+    \item System wysyła e-mail weryfikacyjny. 
+    \item Uczeń potwierdza adres e-mail. 
+    \item System aktywuje konto i potwierdza rejestrację. 
+\end{enumerate}
 
-\subsection{Potwierdzenie zgodności wymagań}
+\przypadek{PB2}{Zapisanie się na zajęcia}
+\begin{enumerate}
+    \item Uczeń przegląda dostępne terminy zajęć.
+    \item Uczeń wybiera termin. 
+    \item Uczeń potwierdza zapis.
+    \item System sprawdza, czy miejsce jest wolne.
+    \begin{enumerate}
+        \item Jeśli tak, zapis jest rejestrowany w systemie.
+        \item Jeśli nie, uczeń jest powiadamiany o błędzie.
+    \end{enumerate}
+\end{enumerate}
+
+\przypadek{PB3}{Przegląd informacji o koncie ucznia}
+\begin{enumerate}
+    \item Uczeń klika na przycisk „Moje Konto”.
+    \item Wyświetla się ogólna informacja o koncie: imię, nazwisko itp.
+    \item Menu zawiera następujące zakładki:
+    \begin{enumerate}
+        \item Lista zajęć, na które uczeń jest zapisany 
+        \item Dziennik obecności, gdzie uczeń może widzieć historię zajęć.
+        \item Zakładka „Płatności” z informacjami o płatnościach 
+    \end{enumerate}
+    \item Uczeń klika na jeden z przycisków, aby obejrzeć interesującą go informację. 
+\end{enumerate}
+
+\przypadek{PB4}{Odrabianie nieobecności}
+\begin{enumerate}
+    \item Uczeń widzi w Dzienniku obecności \textsc{(PB3),} że ma do odrobienia nieobecność.
+    \item Następnie przychodzi na zajęcia innej grupy.
+    \item Instruktor odnotowuje jego obecność w systemie.
+\end{enumerate}
+
+\przypadek{PB5}{Ewidencja obecności na zajęciach}
+\begin{enumerate}
+    \item Instruktor widzi listę zajęć prowadzonych w tym oraz poprzednim tygodniu.
+    \item Instruktor wybiera zajęcia i widzi listę uczestników tej grupy.
+    \item Instruktor oznacza obecności i dopisuje osoby odrabiające.
+\end{enumerate}
+
+\przypadek{PB6}{Korekta list obecności}
+\begin{enumerate}
+    \item Instruktor wybiera odpowiednie zajęcia.
+    \item Instruktor potwierdza, że chce \textbf{edytować} obecności.
+    \item Instruktor wprowadza korekty i opcjonalnie dopisuje odrabiających.
+\end{enumerate}
+
+
+\przypadek{PB6}{Usuwanie kont użytkowników}
+\begin{enumerate}
+    \item Użytkownik zgłasza chęć usunięcia konta.
+    \begin{enumerate}
+        \item Jeśli wszystka ma opłacone, konto wraz z danymi jest usuwane~/~anonimizowane.
+        \item Jeśli nie, do administratora wysyłana jest prośba o usunięcie konta.
+    \end{enumerate}
+\end{enumerate}
+
+\begin{enumerate}
+    \item Administrator wybiera w menu opcję „Zarządzanie kontami”.
+    \item Wyświetla się lista użytkowników oraz wyszukiwarka do znalezienia konkretnej osoby.
+    \item Administrator wybiera użytkownika do usunięcia (lub potwierdza zgłoszone usunięcie konta przez ucznia).
+    \item System deaktywuje konto.
+\end{enumerate}
+
+\przypadek{PB7}{Dodanie zajęć}
+\begin{enumerate}
+    \item Administrator wchodzi na panel zarządzania zajęciami.
+    \item Naciska przycisk „Dodaj zajęcia”.
+    \item Wyświetla się okienko do wypełnienia informacji o zajęciu.
+    \item Administrator potwierdza i tworzy zajęcie.
+    \item Od teraz uczniowie mogą zapisywać się na te zajęcia, a instruktor widzi je w terminarzu.
+\end{enumerate}
+
+
+\przypadek{PB8}{Modyfikacja zajęć}
+\begin{enumerate}
+    \item Na stronie zarządzania zajęciami jest wyświetlana lista wszystkich zajęć. 
+    \item Administrator modyfikuje wybrany termin zajęć lub usuwa go.
+    \item Jeśli zajęcia są usuwane, system wypisuje uczniów i instruktora z tych zajęć.
+\end{enumerate}
+
+\przypadek{PB9}{Modyfikacja danych ucznia}
+\begin{enumerate}
+    \item Administrator wchodzi na stronę zarządzania użytkownikami.
+    \item Administrator wyszukuje konto użytkownika.
+    \item Naciska przycisk „Edytuj”.
+    \item Administrator koryguje dane.
+\end{enumerate}
 
 \end{document}
