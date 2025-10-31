@@ -41,8 +41,9 @@ export default function App() {
             Edit <code>src/App.tsx</code> and save to test HMR
           </p>
         </div>
+
+        <PingPanel />
       </div>
-      <PingPanel />
 
       <p className={styles.read_the_docs}>
         Click on the Vite and React logos to learn more

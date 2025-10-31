@@ -5,14 +5,13 @@
 import React from 'react';
 import { expect, test, vi } from 'vitest';
 import { fireEvent, render } from '@testing-library/react';
-import Button from "@/components/Button.tsx";
+import Toggle from "@/components/Toggle.tsx";
 
-
-test('test callback', () => {
+test('test toggle callback', () => {
     const cb = vi.fn();
-    const { getByText } = render(<Button onClick={cb}> hello </Button>);
-    const button = getByText(/hello/);
+    const { getByRole } = render(<Toggle callback={cb} isOn={true} />);
+    const toggle = getByRole("button");
     expect(cb).not.toHaveBeenCalled();
-    fireEvent.click(button);
+    fireEvent.click(toggle);
     expect(cb).toHaveBeenCalled();
 })
