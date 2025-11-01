@@ -6,14 +6,11 @@ services:
       - "27017:27017"
     networks:
       - back-tier
-    volumes:
-      - db-data:/data/db
-      - type: bind
-        source: ./db/mongo
-        target: /etc/mongo
-      - type: bind
-        source: ./db/setup
-        target: /docker-entrypoint-initdb.d
+    command:
+      - "--config"
+      - "/etc/mongo/mongod.conf"
+    secrets:
+      - db_passwd
   
   backend:
     build: ./backend
@@ -44,3 +41,7 @@ volumes:
 networks:
   back-tier:
   front-tier:
+
+secrets:
+  db_passwd:
+    file: db/db_passwd.txt
