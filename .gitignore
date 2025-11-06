@@ -1,0 +1,84 @@
+# ===============================
+# OS
+# ===============================
+.DS_Store
+Thumbs.db
+
+# ===============================
+# IDE / Editors
+# ===============================
+.vscode/
+.idea/
+*.code-workspace
+
+# ===============================
+# Env
+# ===============================
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# ===============================
+# Node / Vite / React
+# ===============================
+**/node_modules/
+**/dist/
+**/.vite/
+**/.eslintcache
+**/.stylelintcache
+**/.cache/
+**/.parcel-cache/
+**/coverage/
+**/*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ===============================
+# Python
+# ===============================
+**/__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+.pyenv/
+.python-version
+pip-wheel-metadata/
+__pypackages__/
+
+# ===============================
+# Django
+# ===============================
+*.log
+db.sqlite3
+db.sqlite3-journal
+**/media/
+**/staticfiles/
+**/static_root/
+**/collected_static/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pytype/
+.hypothesis/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+
+# ===============================
+# MongoDB
+# ===============================
+dump/
+backups/
+*.archive
+*.bson
+tmp/
+temp/
+*.pid
