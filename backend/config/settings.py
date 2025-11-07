@@ -47,4 +47,5 @@ USE_TZ = True
 STATIC_URL = "static/"
 
 _default_cors = "http://localhost:5173,http://127.0.0.1:5173"
-CORS_ALLOWED_ORIGINS = [o for o in os.getenv("CORS_ALLOWED_ORIGINS", _default_cors).split(",") if o]
+_origins = os.getenv("CORS_ALLOWED_ORIGINS", _default_cors).split(",")
+CORS_ALLOWED_ORIGINS = [o for o in _origins if o]
