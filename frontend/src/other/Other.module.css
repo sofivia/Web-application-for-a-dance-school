@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@reference 'tailwindcss';
+
+.title {
+  font-size: 3rem;
+}
