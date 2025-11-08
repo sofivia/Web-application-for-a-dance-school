@@ -12,8 +12,16 @@ build-frontend:
   script:
     - cd frontend
     - npm install
-    - npm run lint
     - npm run build
+
+test-frontend:
+  stage: test
+  image: node:22-alpine3.21
+  script:
+    - cd frontend
+    - npm install
+    - npm run lint
+    - npx vitest run --no-watch
 
 test-backend:
   stage: test

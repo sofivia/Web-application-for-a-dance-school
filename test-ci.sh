@@ -7,7 +7,6 @@ gen_script() {
     SCRIPT=`echo "$AFTERSCRIPT" | awk '!/[[:space:]]-/ {exit} 1'`
     ONELINE=`echo "$SCRIPT" | tr '\n' ' '`
     DASHSPLIT=`echo $ONELINE | sed -E 's/-[[:space:]]/\n/g' | sed '1d'`
-    echo "$DASHSPLIT"
     echo "$DASHSPLIT" | while read line; do
         echo -n "$line;"
     done
