@@ -3,7 +3,8 @@ import PingPanel from './components/PingPanel.tsx'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import { Link } from "react-router";
-import styles from './App.module.css'
+import Button from "./components/Button.tsx";
+import styles from './App.module.css';
 
 export default function App() {
   const [count, setCount] = useState(0)
@@ -24,9 +25,10 @@ export default function App() {
         <Link to="/other/">test</Link>
 
         <div className="mt-5">
-          <button className="mb-2" onClick={() => setCount((count) => count + 1)}>
+
+          <Button className="mb-2" onClick={() => setCount((count) => count + 1)}>
             count is {count}
-          </button>
+          </Button>
 
           <p>
             Edit <code>src/App.tsx</code> and save to test HMR
