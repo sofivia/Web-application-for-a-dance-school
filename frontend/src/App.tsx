@@ -10,7 +10,7 @@ export default function App() {
   const [count, setCount] = useState(0)
 
   return (
-    <div className={styles.app_container}>
+    <div className={`root_container ${styles.app_container} dark`}>
       <div className={styles.app_panel}>
         <div className="mb-3">
           <a className={styles.logolink} href="https://vite.dev" target="_blank">
