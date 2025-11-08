@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import PingPanel from './components/PingPanel.tsx'
 import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import viteLogo from './assets/vite.svg'
+import { Link } from "react-router";
 
-function App() {
+export default function App() {
   const [count, setCount] = useState(0)
 
   return (
@@ -17,14 +18,19 @@ function App() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+
+        <h1 className="mb-1">Vite + React</h1>
+        <Link to="/other/">test</Link>
+
+        <div className="mt-5">
+          <button className="mb-2" onClick={() => setCount((count) => count + 1)}>
+            count is {count}
+          </button>
+
+          <p>
+            Edit <code>src/App.tsx</code> and save to test HMR
+          </p>
+        </div>
       </div>
       <PingPanel />
       <p className="read-the-docs">
@@ -33,5 +39,3 @@ function App() {
     </>
   )
 }
-
-export default App
