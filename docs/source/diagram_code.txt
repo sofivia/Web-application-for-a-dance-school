@@ -1,0 +1,154 @@
+
+Table account {
+  id                 uuid [pk]
+  email              varchar(50)
+  auth_provider      varchar(50)
+  external_id        varchar(50)
+  is_active          boolean
+  email_verified_at  timestamp
+  created_at         timestamp
+
+  indexes {
+    (email) [unique]
+    (auth_provider, external_id) [unique]
+  }
+}
+
+Table role {
+  id   int [pk]
+  name varchar(32)
+}
+
+Table account_role {
+  account_id uuid [ref: > account.id]
+  role_id    int  [ref: > role.id]
+
+  indexes { (account_id, role_id) [unique] }
+}
+
+Table student {
+  id            uuid [pk]
+  account_id    uuid [ref: > account.id]
+  first_name    varchar(50)
+  last_name     varchar(50)
+  contact_email varchar(50)
+  phone         varchar(30)
+  is_active     boolean
+  created_at    timestamp
+}
+
+Table instructor {
+  id         uuid [pk]
+  account_id uuid [ref: > account.id]
+  first_name varchar(50)
+  last_name  varchar(50)
+  created_at timestamp
+}
+
+Table email_verification {
+  id          uuid [pk]
+  account_id  uuid [ref: > account.id]
+  token       varchar(128)
+  sent_at     timestamp
+  verified_at timestamp
+
+  indexes { (token) [unique] }
+}
+
+Table deletion_request {
+  id           uuid [pk]
+  student_id   uuid [ref: > student.id]
+  requested_at timestamp
+  processed_at timestamp
+  status       varchar(20)
+}
+
+
+Table class_type {
+  id   uuid [pk]
+  name varchar(50)
+}
+
+Table class_group {
+  id            uuid [pk]
+  class_type_id uuid [ref: > class_type.id]
+  instructor_id uuid [ref: > instructor.id]
+  weekday       int
+  start_time    time
+  end_time      time
+  location      varchar(100)
+  capacity      int
+  is_active     boolean
+}
+
+Table class_session {
+  id        uuid [pk]
+  group_id  uuid [ref: > class_group.id]
+  starts_at timestamp
+  ends_at   timestamp
+  status    varchar(20)
+}
+
+Table enrollment {
+  id          uuid [pk]
+  student_id  uuid [ref: > student.id]
+  group_id    uuid [ref: > class_group.id]
+  status      varchar(20)
+  enrolled_at timestamp
+
+  indexes { (student_id, group_id) [unique] }
+}
+
+Table waitlist_entry {
+  id         uuid [pk]
+  student_id uuid [ref: > student.id]
+  group_id   uuid [ref: > class_group.id]
+  created_at timestamp
+  status     varchar(20)
+
+  indexes { (student_id, group_id) [unique] }
+  indexes { (group_id, created_at) }
+}
+
+Table attendance_record {
+  id                  uuid [pk]
+  session_id          uuid [ref: > class_session.id]
+  student_id          uuid [ref: > student.id]
+  status              varchar(20)
+  marked_by_instr_id  uuid [ref: > instructor.id]
+  marked_at           timestamp
+
+  indexes { (session_id, student_id) [unique] }
+}
+
+Table pass_product {
+  id              uuid [pk]
+  name            varchar(100)      
+  description     text
+  sessions_per_week int              
+  price_cents     int
+  billing_period  varchar(20)       
+  is_active       boolean
+}
+
+Table pass_instance {
+  id               uuid [pk]
+  student_id       uuid [ref: > student.id]
+  product_id       uuid [ref: > pass_product.id]
+  month_for        date              
+  paid_at          timestamp       
+  payment_due      date              
+  amount_cents     int
+  discount_cents   int              
+  recorded_by_acc  uuid [ref: > account.id]
+}
+
+Table pass_usage {
+  id               uuid [pk]
+  pass_instance_id uuid [ref: > pass_instance.id]
+  session_id       uuid [ref: > class_session.id]
+  used_at          timestamp
+}
+
+
+
