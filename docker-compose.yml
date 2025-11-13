@@ -29,6 +29,11 @@ services:
       - back-tier
       - front-tier
     restart: unless-stopped
+    secrets:
+      - db_app_passwd
+    depends_on:
+      db:
+        condition: service_healthy
 
   frontend:
     build: ./frontend
@@ -38,9 +43,9 @@ services:
       - "443:443"
     networks:
       - front-tier
-#   depends_on:
-#     backend:
-#         condition: service_healthy
+    depends_on:
+      backend:
+        condition: service_healthy
 
 networks:
   back-tier:
