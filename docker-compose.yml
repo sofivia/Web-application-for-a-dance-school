@@ -10,11 +10,18 @@ services:
     command:
       - "--config"
       - "/etc/mongo/mongod.conf"
+    environment:
+      PING_PASSWD: "ping"
+    healthcheck:
+      test: ["CMD-SHELL", "./healthcheck.sh"]
+      start_period: 5s
+      start_interval: 1s 
     tmpfs:
       - "/data/db"
     secrets:
       - db_passwd
       - db_app_passwd
+      - ping_passwd
   
   backend:
     build: ./backend
@@ -56,3 +63,5 @@ secrets:
     file: db/db_passwd.txt
   db_app_passwd:
     file: db/db_app_passwd.txt
+  ping_passwd:
+    file: db/ping_passwd.txt

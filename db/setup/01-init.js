@@ -10,6 +10,13 @@
         roles: [{ role: "readWrite", db: "szkola" }]
     });
 
+    const pingPasswd = fs.readFileSync("/run/secrets/ping_passwd", "utf8");
+    db.createUser({
+        user: "ping",
+        pwd: pingPasswd,
+        roles: [{ role: "clusterMonitor", db: "admin" }]
+    });
+
     const szkola = db.getSiblingDB("szkola");
 
     szkola.getCollection("students").insertMany([
