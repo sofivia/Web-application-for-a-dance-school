@@ -1,6 +1,7 @@
 services:
   db:
     build: ./db
+    image: pzsp2-db
     env_file: "db/db.env"
     ports:
       - "27017:27017"
@@ -9,12 +10,15 @@ services:
     command:
       - "--config"
       - "/etc/mongo/mongod.conf"
+    tmpfs:
+      - "/data/db"
     secrets:
       - db_passwd
       - db_app_passwd
   
   backend:
     build: ./backend
+    image: pzsp2-backend
     environment:
       DJANGO_DEBUG: "1"
       DJANGO_SECRET_KEY: "dev-secret"
@@ -28,6 +32,7 @@ services:
 
   frontend:
     build: ./frontend
+    image: pzsp2-frontend
     ports:
       - "80:80"
       - "443:443"

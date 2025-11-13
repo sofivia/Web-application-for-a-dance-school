@@ -10,7 +10,9 @@
         roles: [{ role: "readWrite", db: "szkola" }]
     });
 
-    db.getCollection("students").insertMany([
+    const szkola = db.getSiblingDB("szkola");
+
+    szkola.getCollection("students").insertMany([
         { "name": "kij", age: 12 },
         { "name": "piłka", age: 21 }]);
 })()
