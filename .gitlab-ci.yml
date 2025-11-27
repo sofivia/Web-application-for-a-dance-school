@@ -2,6 +2,10 @@ stages:
   - build
   - test
 
+.mount-secrets:
+  script:
+    - install -D db/db_app_passwd.txt /run/secrets/db_app_passwd
+
 build-frontend:
   stage: build
   image: node:22-alpine3.21
@@ -15,6 +19,7 @@ test-backend:
   stage: test
   image: python:3.12-slim
   script:
+    - !reference [.mount-secrets, script]
     - cd backend
     - pip install -r requirements-dev.txt
     - python3 -m flake8 manage.py config/ ping/

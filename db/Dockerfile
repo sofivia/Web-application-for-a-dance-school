@@ -1,7 +1,7 @@
 FROM mongo:8.0.15-noble
 EXPOSE 27017
+WORKDIR db
 COPY mongo/ /etc/mongo/
 COPY setup/ /docker-entrypoint-initdb.d/
-HEALTHCHECK --interval="20s" --timeout=5s \
-	CMD echo "hello"
-
+COPY healthcheck.sh .
+RUN chmod u+x healthcheck.sh
