@@ -1,0 +1,80 @@
+% !TEX program = latexmk (xelatex)
+\documentclass[12pt, a4paper]{article}
+
+\usepackage[polish]{babel}
+\usepackage{fontspec}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\setlength{\parskip}{0.3em}
+\usepackage{fancyhdr}
+
+\begin{document}
+\pagestyle{myheadings}
+\markright{PZSP2 konsultacje z oprogramowania 1 \hfill \today \hfill}
+
+\section{Cel projektu}
+Chcemy stworzyć system rezerwacji dla szkoły tańca. Będzie to strona internetowa
+z interfejsem dla: uczniów, instruktorów i dla właścicielki.
+
+\section{Technologie}
+Pracując nad projektem, używamy konteneryzacji. Pozwala to ujednolicić środowisko
+deweloperskie oraz zapobiec niespodziankom podczas wdrożenia.
+
+Frontend piszemy w Typescrip'cie, używając frameworku React i narzędzia
+do budowania Vite. Tak wybraliśmy, bo znamy React'a z poprzednich projektów.
+
+Backend to Django w Pythonie - jeden z prostszych sposobów na napisanie
+backendu webowego., prostszy od np. Springa. Plus, Ihor ma z nim doświadczenie.
+
+Baza danych to PostgreSQL. Otrzymaliśmy ciekawą sugestię użycia SQLite
+-- wtedy oszczędzilibyśmy na jednym kontenerze, co uprościłoby architekturę,
+lecz zrobiło ją mniej elastyczną. Gdy baza jest oddzielnie, można w przyszłości
+dodać jakiś mikroserwis. Nie planujemy tego robić, ale architekturę chcemy mieć
+„pełną” -- pozostali eksperci przychylniej na to patrzą.
+
+Potok CI/CD składa się z budowania frontendu, lintowania i testowania frontendu oraz
+testowania backendu. Są to czynności podstawowe, które każdy programista wykonuje
+na bieżąco podczas pracy z kodem, więc z odpalania potoku „na gałęzi”, korzyść
+dla programisty jest nikła. Dlatego, potok można włączyć ręcznie przy otwartym
+merge reques'cie. Pomyślne wykonanie potoku jest warunkiem koniecznym
+do przyjęcia MR'a.
+
+\section{Higiena pracy}
+Na gitlabie tworzymy isia. Programista tworzy draft MR na to isiu i implementuje.
+Jak uzna, że gotowe, to odznacza „draft” i MR czeka na recenzję \textit{jednej} osoby.
+Jednym z warunków wdrożenia jest, że gałąź musi być przedłużeniem gałęzi
+głównej (rebase).
+
+\section{Testy akceptacyjne}
+Chcąc zasymulować scenariusz przemysłowego wytwarzania oprogramowania,
+opracowaliśmy schemat testów akceptacyjnych.
+
+\subsection{Rejestracja na zajęcia}
+Uczeń, po założeniu konta, będzie mógł przejrzeć dostępne grupy zajęciowe
+i~zapisać się na wybraną. Gdy przebiegnie to pomyślnie, zostanie o tym poinformowany,
+będzie figurował na liście zapisanych oraz odpowiednio zwiększy się kwota jego karnetu.
+
+\subsection{Odrabianie nieobecności}
+Jeśli na przewidzianych dla danego ucznia zajęciach zostanie odnotowana
+jego nieobecność,
+na stronie pojawi się informacja o możliwości jej odrobienia.
+Na dowolnych innych zajęciach, instruktor będzie miał możliwość dopisania tej osoby
+do standardowej listy obecności, co „odrobi” nieobecność.
+
+\subsection{Płatności}
+Jeśli uczeń nie dokonał jeszcze płatności za obecny miesiąc lub któryś poprzedni,
+na jego koncie powinna widnieć o tym informacja. Właścicielka powinna widzieć
+taką samą informację oraz mieć możliwość ręcznego oznaczenia tej płatności
+jako uregulowanej.
+
+\raggedleft
+\vspace{1em}
+\begin{tabular}{l}
+    Zespół 2 \\\hline
+    \rule{0pt}{1.5em}Gavrylenko Ihor\\
+    Kukiełka Wojciech\\
+    Rybachok Andrii\\
+    Yedzeika Sofiya
+\end{tabular}
+
+\end{document}
