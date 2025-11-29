@@ -31,7 +31,7 @@ export default function Login() {
    const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault();
       if (validate()) {
-         alert(`Logowanie powiodło się: ${email}`);
+         alert(`Logowanie powiodło się: ${email}`); // TODO: Dodać prawdziwy login
       }
    };
 
@@ -68,6 +68,8 @@ export default function Login() {
             <p className={styles.footer}>
                Nie masz konta?{" "}
                <a href="#" className={styles.link}>
+                  {" "}
+                  {/* TODO: podmienić link do strony rejestracji */}
                   Zarejestruj się
                </a>
             </p>
