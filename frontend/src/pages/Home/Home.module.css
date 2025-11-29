@@ -1,0 +1,50 @@
+@import "tailwindcss";
+@reference 'tailwindcss';
+
+.app_container {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+  justify-items: center;
+  align-items: center;
+  @apply py-8;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  @apply px-4;
+}
+
+.app_panel {
+  grid-row-start: 2;
+  width: 100%;
+}
+
+.logolink {
+  display: inline-flex;
+  @apply mx-4;
+  @apply w-50;
+  @apply h-50;
+}
+
+.logo {
+  width: 30%;
+  max-width: 600px;
+  min-width: 200px;
+  @apply mx-auto;
+  will-change: filter;
+  transition: filter 300ms;
+}
+
+@media not all and (prefers-reduced-motion: reduce),
+  not all and (prefers-reduced-transparency: reduce) {
+    .logo:hover {
+      filter: drop-shadow(0 0 2em #646cffaa);
+    }
+}
+
+.footer {
+  grid-row-start: 3;
+}
