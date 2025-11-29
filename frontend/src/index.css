@@ -1,5 +1,67 @@
 body {
-    margin: 0;
-    min-height: 100vh;
-    width: 100vw;
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  width: 100vw;
+  text-align: center;
+}
+
+.dark {
+  --main: cornflowerblue;
+  --secondary: blueviolet;
+  --background: #242424;
+  --fnt: rgba(255, 255, 255, 0.87);
+  --gray: rgba(255, 255, 255, 0.15);
+  --acol: #535bf2;
+  --ahov: #646cff;
+}
+
+.light {
+  --main: darkblue;
+  --secondary: darkmagenta;
+  --background: aliceblue;
+  --fnt: #213547;
+  --gray: rgba(0, 0, 0, 0.3);
+  --acol: #646cff;
+  --ahov: #747bff;
+}
+
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  height: inherit;
+  flex: 1;
+  overflow: auto;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+@media (prefers-color-scheme: light) {}
+
+@theme inline {
+  --color-bckg: var(--background);
+  --color-main: var(--main);
+  --color-secondary: var(--secondary);
+  --color-fnt: var(--fnt);
+}
+
+.root_container {
+  height: 100%;
+  @apply bg-bckg;
+  @apply text-fnt;
 }
