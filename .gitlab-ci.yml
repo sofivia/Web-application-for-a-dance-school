@@ -7,9 +7,9 @@ workflow:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
-.mount-secrets:
-  script:
-    - install -D db/db_app_passwd.txt /run/secrets/db_app_passwd
+# .mount-secrets:
+#   script:
+#     - install -D db/db_app_passwd.txt /run/secrets/db_app_passwd
 
 .default_rules:
   rules:
