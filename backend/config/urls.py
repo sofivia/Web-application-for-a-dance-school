@@ -1,7 +1,15 @@
-from django.urls import path
-from ping.views import ping
+from django.contrib import admin
+from django.urls import path, include
+from django.http import JsonResponse
+
+
+def ping(request):
+    return JsonResponse({"status": "ok"})
+
 
 urlpatterns = [
-    path("api/ping", ping, name="ping-no-slash"),
-    path("api/ping/", ping, name="ping"),
+    path("admin/", admin.site.urls),
+    path("api/ping/", ping),
+
+    path("api/accounts/", include("accounts.urls")),
 ]

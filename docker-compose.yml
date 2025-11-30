@@ -1,46 +1,46 @@
+version: "3.9"
+
 services:
   db:
-    build: ./db
-    image: pzsp2-db
-    env_file: "db/db.env"
-    ports:
-      - "27017:27017"
+    image: postgres:16
+    container_name: pzsp2-db
+    restart: unless-stopped
     networks:
       - back-tier
-    command:
-      - "--config"
-      - "/etc/mongo/mongod.conf"
     environment:
-      PING_PASSWD: "ping"
+      POSTGRES_DB: szkola
+      POSTGRES_USER: app
+    volumes:
+      - db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "./healthcheck.sh"]
+      test: ["CMD-SHELL", "pg_isready -U app -d szkola"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
       start_period: 5s
-      start_interval: 1s 
-    tmpfs:
-      - "/data/db"
-    secrets:
-      - db_passwd
-      - db_app_passwd
-      - ping_passwd
-  
+
   backend:
     build: ./backend
     image: pzsp2-backend
-    environment:
-      DJANGO_DEBUG: "1"
-      DJANGO_SECRET_KEY: "dev-secret"
-      CORS_ALLOWED_ORIGINS: "https://localhost"
-    ports:
-      - "8000:8000"
+    restart: unless-stopped
     networks:
       - back-tier
       - front-tier
-    restart: unless-stopped
-    secrets:
-      - db_app_passwd
+    environment:
+      DJANGO_DEBUG: "0"
+      DJANGO_SECRET_KEY: "change-me"
+      DJANGO_ALLOWED_HOSTS: "backend,localhost,127.0.0.1"
+      CORS_ALLOWED_ORIGINS: "http://localhost:5173,http://127.0.0.1:5173"
+      POSTGRES_DB: szkola
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: "RybyZjedza"
+      POSTGRES_HOST: db
+      POSTGRES_PORT: "5432"
     depends_on:
       db:
         condition: service_healthy
+    ports:
+      - "8000:8000"
 
   frontend:
     build: ./frontend
@@ -58,10 +58,5 @@ networks:
   back-tier:
   front-tier:
 
-secrets:
-  db_passwd:
-    file: db/db_passwd.txt
-  db_app_passwd:
-    file: db/db_app_passwd.txt
-  ping_passwd:
-    file: db/ping_passwd.txt
+volumes:
+  db-data:
