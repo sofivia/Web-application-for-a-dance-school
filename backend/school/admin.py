@@ -8,6 +8,7 @@ from .models import (
     Enrollment,
     WaitlistEntry,
     AttendanceRecord,
+    GroupMessage
 )
 
 
@@ -72,3 +73,10 @@ class AttendanceRecordAdmin(admin.ModelAdmin):
     list_display = ("session", "student", "status", "marked_by", "marked_at")
     list_filter = ("status", "session__group")
     search_fields = ("student__first_name", "student__last_name")
+
+
+@admin.register(GroupMessage)
+class GroupMessageAdmin(admin.ModelAdmin):
+    list_display = ("subject", "group", "sent_by", "sent_at")
+    list_filter = ("group",)
+    search_fields = ("subject", "body")

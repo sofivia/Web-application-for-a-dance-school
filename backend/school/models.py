@@ -284,3 +284,32 @@ class AttendanceRecord(models.Model):
 
     def __str__(self) -> str:
         return f"{self.session}: {self.student} -> {self.status}"
+
+
+class GroupMessage(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    group = models.ForeignKey(
+        ClassGroup,
+        on_delete=models.CASCADE,
+        related_name="messages",
+    )
+
+    sent_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="sent_group_messages",
+    )
+
+    subject = models.CharField(max_length=200)
+    body = models.TextField()
+
+    sent_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-sent_at"]
+
+    def __str__(self) -> str:
+        return f"{self.subject} ({self.group})"

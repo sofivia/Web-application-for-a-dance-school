@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     "accounts",
     "ping",
     "school",
+    "billing",
 ]
 
 MIDDLEWARE = [
