@@ -26,5 +26,6 @@ class PurchaseAdmin(admin.ModelAdmin):
 
 @admin.register(PaymentAllocation)
 class PaymentAllocationAdmin(admin.ModelAdmin):
-    list_display = ("purchase", "session", "month", "amount_cents", "created_at")
+    list_display = ("purchase", "session", "month",
+                    "amount_cents", "created_at")
     list_filter = ("month", "session__group")

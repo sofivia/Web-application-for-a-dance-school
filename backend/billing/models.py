@@ -69,7 +69,10 @@ class Purchase(models.Model):
         ordering = ["-paid_at"]
 
     def __str__(self) -> str:
-        return f"{self.student} - {self.product} ({self.period_start}..{self.period_end})"
+        return (
+            f"{self.student} - {self.product} "
+            f"({self.period_start}..{self.period_end})"
+        )
 
 
 class PaymentAllocation(models.Model):

@@ -5,7 +5,6 @@ import uuid
 from django.conf import settings
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from django.db import models
 
 
 class AccountManager(BaseUserManager):
@@ -83,7 +82,8 @@ class EmailVerification(models.Model):
     )
     token = models.CharField(max_length=255, unique=True)
     token_type = models.CharField(
-        max_length=32, choices=TokenType.choices, default=TokenType.REGISTRATION
+        max_length=32, choices=TokenType.choices, 
+        default=TokenType.REGISTRATION
     )
     created_at = models.DateTimeField(auto_now_add=True)
     sent_at = models.DateTimeField(null=True, blank=True)

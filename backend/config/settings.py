@@ -13,11 +13,14 @@ def read_secret(name: str, default: str | None = None) -> str | None:
         return default
 
 
-
 # ---------------------------------------------------------------------
 # Core settings
 # ---------------------------------------------------------------------
+
+
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret-key-change-me")
+
+
 DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() not in {"0", "false", "no"}
 
 ALLOWED_HOSTS = [
@@ -109,16 +112,28 @@ else:
 # ---------------------------------------------------------------------
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": (
+            "django.contrib.auth.password_validation."
+            "UserAttributeSimilarityValidator"
+        ),
     },
     {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "NAME": (
+            "django.contrib.auth.password_validation."
+            "MinimumLengthValidator"
+        ),
     },
     {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+        "NAME": (
+            "django.contrib.auth.password_validation."
+            "CommonPasswordValidator"
+        ),
     },
     {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+        "NAME": (
+            "django.contrib.auth.password_validation."
+            "NumericPasswordValidator"
+        ),
     },
 ]
 
@@ -150,7 +165,11 @@ REST_FRAMEWORK = {
 # ---------------------------------------------------------------------
 # CORS
 # ---------------------------------------------------------------------
-_default_cors = "http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000"
+_default_cors = (
+    "http://localhost:5173,"
+    "http://127.0.0.1:5173,"
+    "http://localhost:3000"
+)
 CORS_ALLOWED_ORIGINS = [
     o for o in os.getenv("CORS_ALLOWED_ORIGINS", _default_cors).split(",") if o
 ]

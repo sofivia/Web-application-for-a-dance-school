@@ -28,7 +28,8 @@ class InstructorAdmin(admin.ModelAdmin):
 
 @admin.register(ClassType)
 class ClassTypeAdmin(admin.ModelAdmin):
-    list_display = ("name", "level", "duration_minutes", "default_capacity", "is_active")
+    list_display = ("name", "level", "duration_minutes",
+                    "default_capacity", "is_active")
     list_filter = ("is_active", "level")
     search_fields = ("name",)
 
