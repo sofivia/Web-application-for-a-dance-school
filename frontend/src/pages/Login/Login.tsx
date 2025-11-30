@@ -19,7 +19,7 @@ export default function Login() {
          newErrors.email = "Nieprawidłowy adres email";
       }
 
-      // Sprawdzenie hasła
+      // Sprawdzenie hasła!
       if (!password) {
          newErrors.password = "Hasło jest wymagane";
       } else if (password.length < 6) {
