@@ -24,7 +24,7 @@ export default function App() {
         <Logo className={`${styles.logo} mb-3`} />
         <div>
           <LinkButton to="/login" className="mx-4"> Zaloguj się </LinkButton>
-          <LinkButton to="/login" className="mx-4"> Zarejestruj się </LinkButton>
+          <LinkButton to="/login" className="mx-4 mt-2"> Zarejestruj się </LinkButton>
         </div>
       </div>
       <div className={styles.footer}>
