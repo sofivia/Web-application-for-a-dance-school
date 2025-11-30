@@ -26,31 +26,6 @@
     margin-bottom: 30px;
 }
 
-.form {
-    display: flex;
-    flex-direction: column;
-}
-
-.input {
-    padding: 12px 15px;
-    border: 2px solid #2c3e50;
-    border-radius: 12px;
-    background-color: var(--background3);
-    color: var(--fnt);
-    font-size: 16px;
-    transition: 0.3s;
-}
-
-.input::placeholder {
-    color: #7f8c8d;
-}
-
-.input:focus {
-    border-color: var(--main);
-    outline: none;
-    box-shadow: 0 0 8px var(--shadow);
-}
-
 .button {
     padding: 12px;
     border: none;
@@ -61,6 +36,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: 0.3s;
+    width: 100%;
 }
 
 .button:hover {
@@ -83,12 +59,4 @@
 
 .link:hover {
     text-decoration: underline;
-}
-
-.error {
-    color: var(--error);
-    font-size: 14px;
-    margin-top: -15px;
-    margin-bottom: 15px;
-    text-align: left;
 }

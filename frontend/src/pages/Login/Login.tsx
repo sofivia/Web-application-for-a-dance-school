@@ -3,8 +3,25 @@ import type { FormEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { login } from "../../api";
 import styles from "./Login.module.css";
+import inputstyles from "@/components/forms/Input.module.css";
 import global from "@/global.module.css";
 import DarkModeToggle from "@/components/DarkModeToggle.tsx";
+import Input from "@/components/forms/Input.tsx"
+import type { InputValues } from "@/components/forms/Input.tsx"
+import type FormValue from "@/utils/FormValue.ts"
+
+class Email implements FormValue {
+  value: string;
+  constructor(email: string) {
+    this.value = email;
+  }
+  validate(): string | undefined {
+    if (!this.value)
+      return "Email jest wymagany";
+    else if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(this.value))
+      return "Nieprawidłowy adres email";
+  }
+}
 
 type FieldErrors = {
   email?: string;
@@ -86,6 +103,9 @@ export default function Login() {
     setLoading(false);
   };
 
+  const emailValues: InputValues = { value: email, setValue: setEmail, placeholder: "Email" };
+  const passValues: InputValues = { value: password, setValue: setPassword, placeholder: "Hasło" };
+
   return (
     <div className={`${global.app_container} ${styles.container}`}>
       <div className={global.header}>
@@ -96,31 +116,10 @@ export default function Login() {
         <p className={styles.subtitle}>Zaloguj się, aby kontynuować</p>
 
         <form onSubmit={handleSubmit} className={styles.form} noValidate>
-          {errors.global && <p className={styles.error}>{errors.global}</p>}
+          {errors.global && <p className={`${inputstyles.error} mb-1`}>{errors.global}</p>}
 
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            autoComplete="email"
-            onChange={(e) => setEmail(e.target.value)}
-            onBlur={validate}
-            className={`${styles.input} mb-3`}
-            aria-invalid={!!errors.email}
-          />
-          {errors.email && <p className={styles.error}>{errors.email}</p>}
-
-          <input
-            type="password"
-            placeholder="Hasło"
-            value={password}
-            autoComplete="current-password"
-            onChange={(e) => setPassword(e.target.value)}
-            onBlur={validate}
-            className={`${styles.input} mb-5`}
-            aria-invalid={!!errors.password}
-          />
-          {errors.password && <p className={styles.error}>{errors.password}</p>}
+          <Input type="email" values={emailValues} error={errors.email} onBlur={validate} className="mb-3" />
+          <Input type="password" values={passValues} error={errors.password} onBlur={validate} className="mb-5" />
 
           <button
             type="submit"
