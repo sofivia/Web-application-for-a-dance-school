@@ -14,20 +14,30 @@ body {
   --main: cornflowerblue;
   --secondary: blueviolet;
   --background: #242424;
+  --background2: #2c5364;
+  --background3: #121212;
   --fnt: rgba(255, 255, 255, 0.87);
+  --fnt2: #213547;
   --gray: rgba(255, 255, 255, 0.15);
   --acol: #535bf2;
   --ahov: #646cff;
+  --shadow: rgba(77, 171, 247, 0.4);
+  --error: #ff6b6b;
 }
 
 .light {
   --main: darkblue;
   --secondary: darkmagenta;
   --background: aliceblue;
+  --background2: skyblue;
+  --background3: lavenderblush;
   --fnt: #213547;
+  --fnt2: rgba(255, 255, 255, 0.87);
   --gray: rgba(0, 0, 0, 0.3);
   --acol: #646cff;
   --ahov: #747bff;
+  --shadow: drop-shadow(0 0 2em #646cffaa);
+  --error: crimson;
 }
 
 :root {
@@ -60,6 +70,7 @@ h1 {
   --color-main: var(--main);
   --color-secondary: var(--secondary);
   --color-fnt: var(--fnt);
+  --color-fnt2: var(--fnt2);
 }
 
 .root_container {

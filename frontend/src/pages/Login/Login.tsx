@@ -1,5 +1,7 @@
 import { useState } from "react";
 import styles from "./Login.module.css";
+import global from "@/global.module.css";
+import DarkModeToggle from "@/components/DarkModeToggle.tsx";
 
 export default function Login() {
    const [email, setEmail] = useState("");
@@ -36,7 +38,10 @@ export default function Login() {
    };
 
    return (
-      <div className={styles.container}>
+      <div className={`${global.app_container} ${styles.container}`}>
+         <div className={global.header}>
+            <DarkModeToggle />
+         </div>
          <div className={styles.card}>
             <h2 className={styles.title}>Szkoła Tańca</h2>
             <p className={styles.subtitle}>Zaloguj się, aby kontynuować</p>
@@ -47,7 +52,7 @@ export default function Login() {
                   placeholder="Email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className={styles.input}
+                  className={`${styles.input} mb-3`}
                />
                {errors.email && <p className={styles.error}>{errors.email}</p>}
 
@@ -56,7 +61,7 @@ export default function Login() {
                   placeholder="Hasło"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={styles.input}
+                  className={`${styles.input} mb-5`}
                />
                {errors.password && <p className={styles.error}>{errors.password}</p>}
 
