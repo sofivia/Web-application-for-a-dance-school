@@ -1,7 +1,14 @@
 import { useState } from "react";
 import { validate } from "./validateRegister";
+import type { Errors } from "./validateRegister";
 import type { LoginFormData } from "./validateRegister";
 import { Link } from "react-router";
+import global from "@/global.module.css";
+import formstyle from "@/styles/forms.module.css";
+import DarkModeToggle from "@/components/DarkModeToggle.tsx";
+import Input from "@/components/forms/Input.tsx"
+import type { InputValues } from "@/components/forms/Input.tsx"
+
 
 export default function Register() {
    const [data, setData] = useState<LoginFormData>({
@@ -9,11 +16,7 @@ export default function Register() {
       password: "",
       confirmPassword: "",
    });
-   const [errors, setErrors] = useState<{
-      email?: string;
-      password?: string;
-      confirmPassword?: string;
-   }>({});
+   const [errors, setErrors] = useState<Errors>({});
 
    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
@@ -25,65 +28,38 @@ export default function Register() {
       const validationErrors = validate(data);
       setErrors(validationErrors);
 
-      if (Object.keys(validationErrors).length === 0) {
+      if (Object.values(validationErrors).every(x => x === undefined)) {
          alert(`Rejestracja zakończona sukcesem: ${data.email}`);
          // TODO: wywołanie API registerUser()
       }
    };
 
+   const emailValues: InputValues = { value: data.email, setValue: handleChange, placeholder: "Email" };
+   const passwordValues: InputValues = { value: data.password, setValue: handleChange, placeholder: "Hasło" };
+   const confPasswordValues: InputValues = { value: data.confirmPassword, setValue: handleChange, placeholder: "Powtórz hasło" };
+
    return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] ">
-         <div className="bg-[#121212] p-10 rounded-2xl shadow-2xl w-full max-w-md text-center">
-            <h2 className="text-3xl font-bold text-[#4dabf7] mb-2">Szkoła Tańca</h2>
-            <p className="text-[#a0aec0] mb-8">Utwórz nowe konto</p>
+      <div className={`${global.app_container} ${formstyle.container}`}>
+         <div className={global.header}>
+            <DarkModeToggle />
+         </div>
+         <div className={formstyle.card}>
+            <h2 className={formstyle.title}>Szkoła Tańca</h2>
+            <p className={formstyle.subtitle}>Zarejestruj się, aby kontynuować</p>
 
-            <form className="flex flex-col" onSubmit={handleSubmit}>
-               <input
-                  type="email"
-                  name="email"
-                  placeholder="Email"
-                  value={data.email}
-                  onChange={handleChange}
-                  className="px-4 py-3 mb-2 border-2 border-[#2c3e50] rounded-xl bg-[#1a1a1a] text-[#e0e0e0] text-lg placeholder-[#7f8c8d]
-                             focus:outline-none focus:border-[#4dabf7] focus:shadow-[0_0_8px_rgba(77,171,247,0.4)] transition"
-               />
-               {errors.email && <p className="text-[#ff6b6b] text-sm mb-2 text-left">{errors.email}</p>}
+            <form className={formstyle.form} onSubmit={handleSubmit}>
+               <Input type="email" values={emailValues} error={errors.email} className="mb-3" name="email" />
+               <Input type="password" values={passwordValues} error={errors.password} className="mb-5" name="password" />
+               <Input type="password" values={confPasswordValues} error={errors.confirmPassword} className="mb-5" name="confirmPassword" />
 
-               <input
-                  type="password"
-                  name="password"
-                  placeholder="Hasło"
-                  value={data.password}
-                  onChange={handleChange}
-                  className="px-4 py-3 mb-2 border-2 border-[#2c3e50] rounded-xl bg-[#1a1a1a] text-[#e0e0e0] text-lg placeholder-[#7f8c8d]
-                             focus:outline-none focus:border-[#4dabf7] focus:shadow-[0_0_8px_rgba(77,171,247,0.4)] transition"
-               />
-               {errors.password && <p className="text-[#ff6b6b] text-sm mb-2 text-left">{errors.password}</p>}
-
-               <input
-                  type="password"
-                  name="confirmPassword"
-                  placeholder="Powtórz hasło"
-                  value={data.confirmPassword}
-                  onChange={handleChange}
-                  className="px-4 py-3 mb-2 border-2 border-[#2c3e50] rounded-xl bg-[#1a1a1a] text-[#e0e0e0] text-lg placeholder-[#7f8c8d]
-                             focus:outline-none focus:border-[#4dabf7] focus:shadow-[0_0_8px_rgba(77,171,247,0.4)] transition"
-               />
-               {errors.confirmPassword && (
-                  <p className="text-[#ff6b6b] text-sm mb-2 text-left">{errors.confirmPassword}</p>
-               )}
-
-               <button
-                  type="submit"
-                  className="py-3 mt-3 rounded-xl bg-[#4dabf7] text-white text-lg font-semibold transition
-                             hover:bg-[#3a9ad9] hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(77,171,247,0.4)] cursor-pointer">
+               <button type="submit" className={formstyle.button}>
                   Zarejestruj się
                </button>
             </form>
 
-            <p className="text-[#a0aec0] mt-5 text-sm">
-               Masz już konto?
-               <Link to={"/login"} className="text-[#4dabf7] font-semibold ml-1 hover:underline">
+            <p className={formstyle.footer}>
+               Masz już konto?{" "}
+               <Link to={"/login"} className={formstyle.link}>
                   Zaloguj się
                </Link>
             </p>

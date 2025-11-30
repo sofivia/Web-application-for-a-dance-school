@@ -54,3 +54,13 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 12px var(--shadow);
 }
+
+.link {
+    color: var(--main);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.link:hover {
+    text-decoration: underline;
+}

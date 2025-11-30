@@ -1,27 +1,23 @@
+import { Email, Password } from "@/forms/Registration.ts"
+
 export interface LoginFormData {
+   email: string;
+   password: string;
+   confirmPassword: string;
+}
+
+export type Errors = {
    email?: string;
    password?: string;
    confirmPassword?: string;
 }
 
+
 export const validate = (data: LoginFormData) => {
-   const newErrors: {
-      email?: string;
-      password?: string;
-      confirmPassword?: string;
-   } = {};
+   const newErrors: Errors = {};
 
-   if (!data.email) {
-      newErrors.email = "Email jest wymagany";
-   } else if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(data.email)) {
-      newErrors.email = "Nieprawidłowy adres email";
-   }
-
-   if (!data.password) {
-      newErrors.password = "Hasło jest wymagane";
-   } else if (data.password.length < 6) {
-      newErrors.password = "Hasło musi mieć przynajmniej 6 znaków";
-   }
+   newErrors.email = new Email(data.email).validate()
+   newErrors.password = new Password(data.password).validate()
 
    if (data.confirmPassword !== data.password) {
       newErrors.confirmPassword = "Hasła muszą być takie same";

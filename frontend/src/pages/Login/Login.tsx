@@ -2,28 +2,16 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { login } from "../../api";
-import styles from "./Login.module.css";
 import inputstyles from "@/components/forms/Input.module.css";
 import global from "@/global.module.css";
+import formstyle from "@/styles/forms.module.css"
 import DarkModeToggle from "@/components/DarkModeToggle.tsx";
 import Input from "@/components/forms/Input.tsx"
 import type { InputValues } from "@/components/forms/Input.tsx"
-import type FormValue from "@/utils/FormValue.ts"
+import { Email, Password } from "@/forms/Registration.ts"
 
-class Email implements FormValue {
-  value: string;
-  constructor(email: string) {
-    this.value = email;
-  }
-  validate(): string | undefined {
-    if (!this.value)
-      return "Email jest wymagany";
-    else if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(this.value))
-      return "Nieprawidłowy adres email";
-  }
-}
 
-type FieldErrors = {
+type Errors = {
   email?: string;
   password?: string;
   global?: string;
@@ -53,38 +41,27 @@ async function handleLogin(email: string, password: string) {
 }
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [emailstr, setEmail] = useState("");
+  const email = new Email(emailstr);
+  const [passwordstr, setPassword] = useState("");
+  const password = new Password(passwordstr);
 
-  const [errors, setErrors] = useState<FieldErrors>({});
+
+  const [errors, setErrors] = useState<Errors>({});
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
   const validate = (): boolean => {
-    const newErrors: FieldErrors = {};
-
-    // email
-    if (!email.trim()) {
-      newErrors.email = "Email jest wymagany";
-    } else if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email.trim())) {
-      newErrors.email = "Nieprawidłowy adres email";
-    }
-
-    // hasło
-    if (!password) {
-      newErrors.password = "Hasło jest wymagane";
-    } else if (password.length < 6) {
-      newErrors.password = "Hasło musi mieć przynajmniej 6 znaków";
-    }
-
+    const newErrors: Errors = {};
+    newErrors.email = email.validate();
+    newErrors.password = password.validate();
     setErrors(prev => ({
       ...prev,
       email: newErrors.email,
       password: newErrors.password,
       global: prev.global && Object.keys(newErrors).length === 0 ? prev.global : undefined,
     }));
-
     return Object.keys(newErrors).length === 0;
   };
 
@@ -95,7 +72,7 @@ export default function Login() {
     setLoading(true);
     setErrors(prev => ({ ...prev, global: undefined }));
 
-    const msg = await handleLogin(email, password);
+    const msg = await handleLogin(email.value, password.value);
     if (msg === undefined)
       navigate("/");
     else
@@ -103,19 +80,24 @@ export default function Login() {
     setLoading(false);
   };
 
-  const emailValues: InputValues = { value: email, setValue: setEmail, placeholder: "Email" };
-  const passValues: InputValues = { value: password, setValue: setPassword, placeholder: "Hasło" };
+  const emailValues: InputValues = {
+    value: email.value, setValue: e => setEmail(e.target.value), placeholder: "Email"
+  };
+  const passValues: InputValues = {
+    value: password.value, setValue: e => setPassword(e.target.value), placeholder: "Hasło"
+  };
 
   return (
-    <div className={`${global.app_container} ${styles.container}`}>
+    <div className={`${global.app_container} ${formstyle.container}`}>
       <div className={global.header}>
         <DarkModeToggle />
       </div>
-      <div className={styles.card}>
-        <h2 className={styles.title}>Szkoła Tańca</h2>
-        <p className={styles.subtitle}>Zaloguj się, aby kontynuować</p>
 
-        <form onSubmit={handleSubmit} className={styles.form} noValidate>
+      <div className={formstyle.card}>
+        <h2 className={formstyle.title}>Szkoła Tańca</h2>
+        <p className={formstyle.subtitle}>Zaloguj się, aby kontynuować</p>
+
+        <form onSubmit={handleSubmit} className={formstyle.form} noValidate>
           {errors.global && <p className={`${inputstyles.error} mb-1`}>{errors.global}</p>}
 
           <Input type="email" values={emailValues} error={errors.email} onBlur={validate} className="mb-3" />
@@ -123,16 +105,16 @@ export default function Login() {
 
           <button
             type="submit"
-            className={styles.button}
+            className={formstyle.button}
             disabled={loading}
           >
             {loading ? "Logowanie..." : "Zaloguj się"}
           </button>
         </form>
 
-        <p className={styles.footer}>
+        <p className={formstyle.footer}>
           Nie masz konta?{" "}
-          <Link to="/register" className={styles.link}>
+          <Link to="/register" className={formstyle.link}>
             Zarejestruj się
           </Link>
         </p>
