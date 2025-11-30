@@ -82,7 +82,7 @@ class EmailVerification(models.Model):
     )
     token = models.CharField(max_length=255, unique=True)
     token_type = models.CharField(
-        max_length=32, choices=TokenType.choices, 
+        max_length=32, choices=TokenType.choices,
         default=TokenType.REGISTRATION
     )
     created_at = models.DateTimeField(auto_now_add=True)
