@@ -43,7 +43,7 @@ test-backend:
   script:
     - cd backend
     - pip install -r requirements-dev.txt
-    - python3 -m flake8 manage.py config/ ping/
+    - python3 -m flake8 manage.py config/ accounts/ school/ billing/
     - pip install -r requirements.txt
     - python3 manage.py check
     - python3 manage.py test
