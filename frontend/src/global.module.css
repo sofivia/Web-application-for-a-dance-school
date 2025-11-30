@@ -1,0 +1,18 @@
+@import "tailwindcss";
+@reference 'tailwindcss';
+
+.app_container {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100vh;
+    justify-items: center;
+    align-items: center;
+    @apply py-8;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    @apply px-4;
+}

@@ -2,23 +2,17 @@
 
 import PingPanel from '@/components/PingPanel.tsx'
 import Logo from '@/assets/tip-tap-logo.svg?react'
-import { useContext, useId } from 'react';
 import LinkButton from '@/components/LinkButton.tsx'
-import Toggle from "@/components/Toggle.tsx";
+import DarkModeToggle from "@/components/DarkModeToggle.tsx";
 import '@/index.css';
 import styles from './Home.module.css';
-import { ThemeContext } from '@/utils/theme.tsx';
+import global from '@/global.module.css';
 
 export default function App() {
-  const { theme, setTheme } = useContext(ThemeContext);
-  const setActive = () => { setTheme(theme == 'dark' ? 'light' : 'dark') }
-  const toggleId = useId();
-
   return (
-    <div className={styles.app_container}>
-      <div className={styles.header}>
-        <label htmlFor={toggleId} className='pr-2'> Tryb ciemny </label>
-        <Toggle callback={setActive} isOn={theme == 'dark'} id={toggleId} />
+    <div className={global.app_container}>
+      <div className={global.header}>
+        <DarkModeToggle />
       </div>
       <div className={styles.app_panel}>
         <Logo className={`${styles.logo} mb-3`} />
