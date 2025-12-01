@@ -30,7 +30,7 @@ services:
       DJANGO_DEBUG: "0"
       DJANGO_SECRET_KEY: "change-me"
       DJANGO_ALLOWED_HOSTS: "backend,localhost,127.0.0.1"
-      CORS_ALLOWED_ORIGINS: "http://localhost:5173,http://127.0.0.1:5173"
+      CORS_ALLOWED_ORIGINS: "http://localhost:5173,http://127.0.0.1:5173,https://localhost,http://localhost"
       POSTGRES_DB: szkola
       POSTGRES_USER: app
       POSTGRES_PASSWORD: "RybyZjedza"
