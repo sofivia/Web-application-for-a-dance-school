@@ -60,11 +60,23 @@ export default function Login() {
       await login(email.trim(), password);
 
       navigate("/");
-    } catch (err: any) {
+    } catch (err: unknown) {
+      type AxiosErr = {
+        response?: {
+          data?: {
+            detail?: string;
+            error?: string;
+            message?: string;
+          };
+        };
+      };
+
       const backendMessage =
-        err?.response?.data?.detail ||
-        err?.response?.data?.error ||
-        err?.response?.data?.message;
+        typeof err === "object" && err !== null
+          ? (err as AxiosErr).response?.data?.detail ||
+            (err as AxiosErr).response?.data?.error ||
+            (err as AxiosErr).response?.data?.message
+          : undefined;
 
       setErrors(prev => ({
         ...prev,
