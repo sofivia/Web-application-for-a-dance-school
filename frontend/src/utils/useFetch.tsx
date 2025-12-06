@@ -20,7 +20,7 @@ export default function useFetch<T>(fetchfunc: FetchFunc<T>) {
             .finally(() => setLoading(false));
 
         return () => controller.abort();
-    }, []);
+    }, [fetchfunc]);
 
     return { data, loading, error };
 }

@@ -62,13 +62,12 @@ export default function Login() {
       password: newErrors.password,
       global: prev.global && Object.keys(newErrors).length === 0 ? prev.global : undefined,
     }));
-    return Object.keys(newErrors).length === 0;
+    return Object.values(errors).every(x => x === undefined);
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validate()) return;
-
     setLoading(true);
     setErrors(prev => ({ ...prev, global: undefined }));
 
