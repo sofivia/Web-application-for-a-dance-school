@@ -12,6 +12,29 @@ type FieldErrors = {
   global?: string;
 };
 
+type AxiosErr = {
+  response?: {
+    data?: {
+      detail?: string;
+      error?: string;
+      message?: string;
+    };
+  };
+};
+
+async function handleLogin(email: string, password: string) {
+  let message;
+  try {
+    await login(email.trim(), password);
+  } catch (err: unknown) {
+    const axiosData = typeof err === "object" && err !== null ?
+      (err as AxiosErr)?.response?.data : undefined;
+    message = axiosData?.detail || axiosData?.error || axiosData?.message
+      || "Nieprawidłowy email lub hasło";
+  }
+  return message;
+}
+
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -50,41 +73,17 @@ export default function Login() {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     if (!validate()) return;
 
     setLoading(true);
     setErrors(prev => ({ ...prev, global: undefined }));
 
-    try {
-      await login(email.trim(), password);
-
+    const msg = await handleLogin(email, password);
+    if (msg === undefined)
       navigate("/");
-    } catch (err: unknown) {
-      type AxiosErr = {
-        response?: {
-          data?: {
-            detail?: string;
-            error?: string;
-            message?: string;
-          };
-        };
-      };
-
-      const backendMessage =
-        typeof err === "object" && err !== null
-          ? (err as AxiosErr).response?.data?.detail ||
-            (err as AxiosErr).response?.data?.error ||
-            (err as AxiosErr).response?.data?.message
-          : undefined;
-
-      setErrors(prev => ({
-        ...prev,
-        global: backendMessage || "Nieprawidłowy email lub hasło",
-      }));
-    } finally {
-      setLoading(false);
-    }
+    else
+      setErrors(prev => ({ ...prev, global: msg }));
+    setLoading(false);
   };
 
   return (
@@ -106,7 +105,7 @@ export default function Login() {
             autoComplete="email"
             onChange={(e) => setEmail(e.target.value)}
             onBlur={validate}
-            className={styles.input}
+            className={`${styles.input} mb-3`}
             aria-invalid={!!errors.email}
           />
           {errors.email && <p className={styles.error}>{errors.email}</p>}
@@ -118,7 +117,7 @@ export default function Login() {
             autoComplete="current-password"
             onChange={(e) => setPassword(e.target.value)}
             onBlur={validate}
-            className={styles.input}
+            className={`${styles.input} mb-5`}
             aria-invalid={!!errors.password}
           />
           {errors.password && <p className={styles.error}>{errors.password}</p>}

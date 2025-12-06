@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { type AxiosError, type AxiosRequestConfig } from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 
@@ -101,8 +101,8 @@ async function refreshTokens(): Promise<string> {
 
 api.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const originalRequest = error.config as any & { _retry?: boolean };
+  async (error: AxiosError) => {
+    const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
 
     if (!error.response || error.response.status !== 401) {
       return Promise.reject(error);
