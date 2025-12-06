@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { validate } from "./validateRegister";
-import type { Errors } from "./validateRegister";
-import type { LoginFormData } from "./validateRegister";
+import { useNavigate } from "react-router";
+import { Validator, handleRegister } from "./validateRegister";
+import type { Errors, LoginFormData } from "./validateRegister";
 import { Link } from "react-router";
 import global from "@/global.module.css";
 import formstyle from "@/styles/forms.module.css";
@@ -17,26 +17,36 @@ export default function Register() {
       confirmPassword: "",
    });
    const [errors, setErrors] = useState<Errors>({});
+   const [loading, setLoading] = useState(false);
+
+   const navigate = useNavigate();
 
    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
       setData((prev) => ({ ...prev, [name]: value }));
    };
 
-   const handleSubmit = (e: React.FormEvent) => {
-      e.preventDefault();
-      const validationErrors = validate(data);
-      setErrors(validationErrors);
+   const validator = new Validator(data, setErrors);
 
-      if (Object.values(validationErrors).every(x => x === undefined)) {
-         alert(`Rejestracja zakończona sukcesem: ${data.email}`);
-         // TODO: wywołanie API registerUser()
-      }
+   const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!validator.validate()) return;
+      setLoading(true);
+      setErrors(prev => ({ ...prev, global: undefined }));
+
+      const msg = await handleRegister(data.email, data.password);
+      if (msg === undefined)
+         navigate("/");
+      else
+         setErrors(prev => ({ ...prev, global: msg }));
+      setLoading(false);
    };
 
    const emailValues: InputValues = { value: data.email, setValue: handleChange, placeholder: "Email" };
    const passwordValues: InputValues = { value: data.password, setValue: handleChange, placeholder: "Hasło" };
    const confPasswordValues: InputValues = { value: data.confirmPassword, setValue: handleChange, placeholder: "Powtórz hasło" };
+
+   const validation = () => validator.validate();
 
    return (
       <div className={`${global.app_container} ${formstyle.container}`}>
@@ -48,12 +58,12 @@ export default function Register() {
             <p className={formstyle.subtitle}>Zarejestruj się, aby kontynuować</p>
 
             <form className={formstyle.form} onSubmit={handleSubmit}>
-               <Input type="email" values={emailValues} error={errors.email} className="mb-3" name="email" />
-               <Input type="password" values={passwordValues} error={errors.password} className="mb-5" name="password" />
-               <Input type="password" values={confPasswordValues} error={errors.confirmPassword} className="mb-5" name="confirmPassword" />
+               <Input type="email" values={emailValues} error={errors.email} onBlur={validation} className="mb-3" name="email" />
+               <Input type="password" values={passwordValues} error={errors.password} onBlur={validation} className="mb-5" name="password" />
+               <Input type="password" values={confPasswordValues} error={errors.confirmPassword} onBlur={validation} className="mb-5" name="confirmPassword" />
 
-               <button type="submit" className={formstyle.button}>
-                  Zarejestruj się
+               <button type="submit" className={formstyle.button} disabled={loading}>
+                  {loading ? "Rejestracja..." : "Zarejestruj się"}
                </button>
             </form>
 
