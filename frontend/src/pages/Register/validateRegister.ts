@@ -1,6 +1,5 @@
 import { Email, Password } from "@/forms/Registration.ts"
 import { register } from "@/api.ts";
-import type { AxiosErr } from "@/api.ts";
 
 export interface LoginFormData {
    email: string;
@@ -45,6 +44,14 @@ export class Validator {
    };
 }
 
+export type AxiosErr = {
+   response?: {
+      data?: {
+         email?: string[];
+      };
+   };
+};
+
 export async function handleRegister(email: string, password: string) {
   let message;
   try {
@@ -52,8 +59,7 @@ export async function handleRegister(email: string, password: string) {
   } catch (err: unknown) {
     const axiosData = typeof err === "object" && err !== null ?
       (err as AxiosErr)?.response?.data : undefined;
-    message = axiosData?.detail || axiosData?.error || axiosData?.message
-      || "Nieprawidłowy email lub hasło";
+    message = axiosData?.email?.at(0) || "Wystąpił problem";
   }
   return message;
 }

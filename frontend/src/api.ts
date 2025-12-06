@@ -185,14 +185,3 @@ export async function getMe(): Promise<AuthUser> {
   const response = await api.get("/api/accounts/me/");
   return response.data as AuthUser;
 }
-
-
-export type AxiosErr = {
-  response?: {
-    data?: {
-      detail?: string;
-      error?: string;
-      message?: string;
-    };
-  };
-};

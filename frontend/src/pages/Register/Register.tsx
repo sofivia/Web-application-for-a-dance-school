@@ -5,6 +5,7 @@ import type { Errors, LoginFormData } from "./validateRegister";
 import { Link } from "react-router";
 import global from "@/global.module.css";
 import formstyle from "@/styles/forms.module.css";
+import inputstyles from "@/components/forms/Input.module.css";
 import DarkModeToggle from "@/components/DarkModeToggle.tsx";
 import Input from "@/components/forms/Input.tsx"
 import type { InputValues } from "@/components/forms/Input.tsx"
@@ -58,6 +59,7 @@ export default function Register() {
             <p className={formstyle.subtitle}>Zarejestruj się, aby kontynuować</p>
 
             <form className={formstyle.form} onSubmit={handleSubmit}>
+               {errors.global && <p className={`${inputstyles.error} mb-1`}>{errors.global}</p>}
                <Input type="email" values={emailValues} error={errors.email} onBlur={validation} className="mb-3" name="email" />
                <Input type="password" values={passwordValues} error={errors.password} onBlur={validation} className="mb-5" name="password" />
                <Input type="password" values={confPasswordValues} error={errors.confirmPassword} onBlur={validation} className="mb-5" name="confirmPassword" />

@@ -2,7 +2,6 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { login } from "../../api";
-import type { AxiosErr } from "@/api.ts";
 import inputstyles from "@/components/forms/Input.module.css";
 import global from "@/global.module.css";
 import formstyle from "@/styles/forms.module.css"
@@ -16,6 +15,16 @@ type Errors = {
   email?: string;
   password?: string;
   global?: string;
+};
+
+export type AxiosErr = {
+  response?: {
+    data?: {
+      detail?: string;
+      error?: string;
+      message?: string;
+    };
+  };
 };
 
 async function handleLogin(email: string, password: string) {
