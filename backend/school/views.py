@@ -1,10 +1,7 @@
 from django.db import IntegrityError
-from rest_framework.views import APIView
 from rest_framework.exceptions import APIException
-from rest_framework.response import Response
-from rest_framework import status, permissions, generics, mixins, serializers
+from rest_framework import status, permissions, generics, mixins
 from .serializers import StudentSerializer
-from .models import Student
 
 
 class Conflict(APIException):

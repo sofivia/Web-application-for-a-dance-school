@@ -1,0 +1,12 @@
+.accountPane {
+    width: 100%;
+    padding: 0 10%;
+    text-align: left;
+}
+
+td {
+    padding: 4px 0px;
+}
+td:first-of-type {
+    padding-right: 20px;
+}
