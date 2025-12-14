@@ -12,4 +12,5 @@ urlpatterns = [
     path("api/ping/", ping),
 
     path("api/accounts/", include("accounts.urls")),
+    path("api/school/", include("school.urls")),
 ]

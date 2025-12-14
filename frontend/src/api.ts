@@ -23,6 +23,15 @@ export interface AuthUser {
   roles: string[];
 }
 
+export type Student = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  date_of_birth: string;
+  phone: string;
+}
+
+
 export function getAccessToken(): string | null {
   return localStorage.getItem(ACCESS_TOKEN_KEY);
 }
@@ -181,7 +190,27 @@ export async function register(
   };
 }
 
+export function logout() {
+  onLogoutCallback?.();
+}
+
 export async function getMe(): Promise<AuthUser> {
   const response = await api.get("/api/accounts/me/");
   return response.data as AuthUser;
+}
+
+export async function getStudent(): Promise<Student> {
+  const response = await api.get("/api/school/students/");
+  return response.data as Student;
+}
+
+export type StudentData = {
+  first_name: string;
+  last_name: string;
+  date_of_birth: string;
+  phone: string;
+}
+
+export async function createStudent(student: StudentData) {
+  return api.post("/api/school/students/", student);
 }
