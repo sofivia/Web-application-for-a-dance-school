@@ -20,7 +20,7 @@ RUN python manage.py collectstatic --noinput
 EXPOSE 8000
 
 HEALTHCHECK --start-period=5s --interval=10s \
-    CMD curl -fsS http://localhost:8000/api/ping || exit 1
+    CMD curl -fsS http://localhost:8000/api/ping/ || exit 1
 
 COPY entrypoint.sh ./
 RUN chmod +x /app/entrypoint.sh
