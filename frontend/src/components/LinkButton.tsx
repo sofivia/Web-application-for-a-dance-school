@@ -5,14 +5,16 @@ import { Link } from "react-router";
 type ButtonProps = {
     children: React.ReactNode;
     to: string;
+    id?: string;
     className?: string;
+    ariaLabel?: string;
 };
 
 function LinkButton(props: ButtonProps) {
-    const { children, to, className } = props;
+    const { children, to, className, ariaLabel } = props;
     const classNames = `${styles.button} ${linkStyles.linkButton} ${className}`;
     return (
-        <Link to={to} className={classNames}>
+        <Link to={to} className={classNames} aria-label={ariaLabel}>
             {children}
         </Link>
     );

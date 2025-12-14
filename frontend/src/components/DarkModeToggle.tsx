@@ -7,8 +7,8 @@ export default function DarkModeToggle() {
     const setActive = () => { setTheme(theme == 'dark' ? 'light' : 'dark') }
     const toggleId = useId();
 
-    return (<>
+    return (<div>
         <label htmlFor={toggleId} className='pr-2'> Tryb ciemny </label>
         <Toggle callback={setActive} isOn={theme == 'dark'} id={toggleId} />
-    </>)
+    </div>)
 }
