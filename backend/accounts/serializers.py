@@ -42,21 +42,11 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         password = validated_data.pop("password")
-
         user = Account.objects.create_user(
             password=password,
             **validated_data,
         )
 
-        student_role, _ = Role.objects.get_or_create(
-            code="student",
-            defaults={
-                "name": "Student",
-                "description": "Default student role",
-                "is_active": True,
-            },
-        )
-
+        student_role = Role.objects.get(code="student")
         user.roles.add(student_role)
-
         return user
