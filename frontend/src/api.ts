@@ -108,12 +108,17 @@ async function refreshTokens(): Promise<string> {
   return newTokens.access;
 }
 
+interface MyAxiosRequestConfig extends AxiosRequestConfig {
+  _retry?: boolean;
+  _retryDisabled?: boolean;
+}
+
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
+    const originalRequest = error.config as MyAxiosRequestConfig;
 
-    if (!error.response || error.response.status !== 401) {
+    if (!error.response || error.response.status !== 401 || originalRequest._retryDisabled) {
       return Promise.reject(error);
     }
 
@@ -160,7 +165,8 @@ api.interceptors.response.use(
 );
 
 export async function login(email: string, password: string): Promise<AuthTokens> {
-  const response = await api.post("/api/accounts/token/", { email, password });
+  const response = await api.post("/api/accounts/token/", { email, password },
+    {_retryDisabled: true} as MyAxiosRequestConfig);
 
   const tokens: AuthTokens = {
     access: response.data.access,

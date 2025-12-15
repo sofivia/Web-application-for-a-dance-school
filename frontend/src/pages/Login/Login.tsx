@@ -31,11 +31,12 @@ async function handleLogin(email: string, password: string) {
   let message;
   try {
     await login(email.trim(), password);
-  } catch (err: unknown) {
+  } catch (err) {
     const axiosData = typeof err === "object" && err !== null ?
       (err as AxiosErr)?.response?.data : undefined;
     message = axiosData?.detail || axiosData?.error || axiosData?.message
       || "Nieprawidłowy email lub hasło";
+    console.log((err as AxiosErr))
   }
   return message;
 }
