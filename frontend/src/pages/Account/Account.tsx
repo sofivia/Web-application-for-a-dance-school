@@ -38,24 +38,19 @@ export default function Account() {
             <div className={styles.accountPane}>
                 <table className="mb-5">
                     {user && <> <tr> <td> Email: </td> <td> {user.email} </td> </tr> </>}
-                    {student ?
+                    {student &&
                         <>
                             <tr> <td> Imię: </td> <td> {student.first_name} </td> </tr>
                             <tr> <td> Nazwisko: </td> <td> {student.last_name} </td> </tr>
                             <tr> <td> Data urodzenia: </td> <td> {student.date_of_birth} </td> </tr>
                             <tr> <td> Numer telefonu: </td> <td> {student.phone} </td> </tr>
                         </>
-                        :
-                        <>
-                            <tr> <td>
-                                <div className="mb-3">
-                                    <div className="mb-1"> Aby móc zapisać się na zajęcia, musisz podać swoje dane. </div>
-                                    <LinkButton to="/me/finish-registration" className="block"> Dokończ rejestrację </LinkButton>
-                                </div>
-                            </td> </tr>
-                        </>
                     }
                 </table>
+                {!student && <div className="mb-3">
+                    <div className="mb-1"> Aby móc zapisać się na zajęcia, musisz dokończyć rejestrację. </div>
+                    <LinkButton to="/me/finish-registration" className="block"> Dokończ rejestrację </LinkButton>
+                </div>}
                 <Button onClick={handleLogout} className="block"> Wyloguj się </Button>
             </div>
             <div className={styles.footer} />
