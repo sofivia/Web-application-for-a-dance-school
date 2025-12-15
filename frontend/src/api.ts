@@ -214,7 +214,7 @@ export type StudentData = {
   first_name: string;
   last_name: string;
   date_of_birth: string;
-  phone: string;
+  phone?: string;
 }
 
 export async function createStudent(student: StudentData) {

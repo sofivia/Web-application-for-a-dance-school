@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { Validator, handleRegister } from "./validateRegister";
+import { Validator } from "./validateRegister";
 import type { Errors, LoginFormData } from "./validateRegister";
 import { Link } from "react-router";
 import global from "@/global.module.css";
@@ -9,6 +9,8 @@ import inputstyles from "@/components/forms/Input.module.css";
 import DarkModeToggle from "@/components/DarkModeToggle.tsx";
 import Input from "@/components/forms/Input.tsx"
 import type { InputValues } from "@/components/forms/Input.tsx"
+import { handlePost, getErrors } from "@/utils/apiutils.ts";
+import { register } from "@/api.ts";
 
 
 export default function Register() {
@@ -35,11 +37,11 @@ export default function Register() {
       setLoading(true);
       setErrors(prev => ({ ...prev, global: undefined }));
 
-      const msg = await handleRegister(data.email, data.password);
+      const msg = await handlePost(() => register(data.email.trim(), data.password));
       if (msg === undefined)
          navigate("/");
       else
-         setErrors(prev => ({ ...prev, global: msg }));
+         setErrors(prev => ({ ...prev, ...getErrors(msg) }));
       setLoading(false);
    };
 

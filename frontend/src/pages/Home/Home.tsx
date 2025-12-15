@@ -1,7 +1,6 @@
 /// <reference types="vite-plugin-svgr/client" />
 
 import { useState, useEffect } from 'react';
-import PingPanel from '@/components/PingPanel.tsx'
 import Logo from '@/assets/tip-tap-logo.svg?react'
 import LinkButton from '@/components/LinkButton.tsx'
 import UserButton from '@/components/UserButton'
@@ -37,9 +36,7 @@ export default function App() {
           {!isLoggedIn && <LinkButton to="/login" className="mx-4 mt-2"> Zarejestruj się </LinkButton>}
         </div>
       </div>
-      <div className={styles.footer}>
-        <PingPanel />
-      </div>
+      <div className={styles.footer}></div>
     </div >
   )
 }

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { login } from "../../api";
+import { handlePost, getErrors } from "@/utils/apiutils.ts";
+import { login } from "@/api.ts";
 import inputstyles from "@/components/forms/Input.module.css";
 import global from "@/global.module.css";
 import formstyle from "@/styles/forms.module.css"
@@ -16,30 +17,6 @@ type Errors = {
   password?: string;
   global?: string;
 };
-
-export type AxiosErr = {
-  response?: {
-    data?: {
-      detail?: string;
-      error?: string;
-      message?: string;
-    };
-  };
-};
-
-async function handleLogin(email: string, password: string) {
-  let message;
-  try {
-    await login(email.trim(), password);
-  } catch (err) {
-    const axiosData = typeof err === "object" && err !== null ?
-      (err as AxiosErr)?.response?.data : undefined;
-    message = axiosData?.detail || axiosData?.error || axiosData?.message
-      || "Nieprawidłowy email lub hasło";
-    console.log((err as AxiosErr))
-  }
-  return message;
-}
 
 export default function Login() {
   const [emailstr, setEmail] = useState("");
@@ -72,11 +49,11 @@ export default function Login() {
     setLoading(true);
     setErrors(prev => ({ ...prev, global: undefined }));
 
-    const msg = await handleLogin(email.value, password.value);
+    const msg = await handlePost(() => login(email.value.trim(), password.value));
     if (msg === undefined)
       navigate("/");
     else
-      setErrors(prev => ({ ...prev, global: msg }));
+      setErrors(prev => ({ ...prev, ...getErrors(msg) }));
     setLoading(false);
   };
 

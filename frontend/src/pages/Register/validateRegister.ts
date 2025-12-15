@@ -1,5 +1,4 @@
 import { Email, Password } from "@/forms/Registration.ts"
-import { register } from "@/api.ts";
 
 export interface LoginFormData {
    email: string;
@@ -46,20 +45,12 @@ export class Validator {
 
 export type AxiosErr = {
    response?: {
-      data?: {
-         email?: string[];
-      };
+     data?: {
+       detail?: string;
+       error?: string;
+       message?: string;
+       email?: string[];
+         password?: string[];
+     };
    };
-};
-
-export async function handleRegister(email: string, password: string) {
-  let message;
-  try {
-    await register(email.trim(), password);
-  } catch (err: unknown) {
-    const axiosData = typeof err === "object" && err !== null ?
-      (err as AxiosErr)?.response?.data : undefined;
-    message = axiosData?.email?.at(0) || "Wystąpił problem";
-  }
-  return message;
-}
+ };
