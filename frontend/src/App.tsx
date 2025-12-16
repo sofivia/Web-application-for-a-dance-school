@@ -19,11 +19,11 @@ export default function App() {
    return (
       <Routes>
          <Route path="/" element={<Container />}>
-            <Route index element={<Home />} />
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
+            <Route index element={<Home />} />
             <Route path="me/*" element={<AccountRoutes />} />
-         </Route >
-      </Routes >
+         </Route>
+      </Routes>
    );
 }

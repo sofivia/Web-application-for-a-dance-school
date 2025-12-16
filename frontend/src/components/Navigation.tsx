@@ -3,12 +3,10 @@ import DarkModeToggle from "@/components/DarkModeToggle";
 import styles from "./Navigation.module.css";
 import UserButton from "./UserButton";
 import Logo from "@/assets/tip-tap-logo.svg?react";
+import { useAuth } from "@/utils/AuthContex";
 
-type NavigationProps = {
-   isAuthenticated: boolean;
-};
-
-export default function Navigation({ isAuthenticated }: NavigationProps) {
+export default function Navigation() {
+   const { isLoggedIn } = useAuth();
    return (
       <div className={`${styles.navbar}`}>
          <div className={styles.left}>
@@ -16,7 +14,7 @@ export default function Navigation({ isAuthenticated }: NavigationProps) {
                <Logo className={`${styles.logo} mb-3`} aria-label="Logo TipTap" />
             </Link>
 
-            {isAuthenticated && (
+            {isLoggedIn && (
                <nav className={styles.nav}>
                   <NavLink to="/attendance" className={({ isActive }) => (isActive ? styles.active : styles.link)}>
                      Dziennik obecności
@@ -36,18 +34,13 @@ export default function Navigation({ isAuthenticated }: NavigationProps) {
          <div className={styles.right}>
             <DarkModeToggle />
 
-            {!isAuthenticated ? (
-               <>
-                  <Link to="/login" className={styles.link}>
-                     Zaloguj się
-                  </Link>
-                  <Link to="/register" className={styles.primary}>
-                     Rejestracja
-                  </Link>
-               </>
+            {!isLoggedIn ? (
+               <></>
             ) : (
                <NavLink to="me/" className={({ isActive }) => (isActive ? styles.active : styles.link)}>
-                  <div>{isAuthenticated && <UserButton />}</div>
+                  <div>
+                     <UserButton />
+                  </div>
                </NavLink>
             )}
          </div>
