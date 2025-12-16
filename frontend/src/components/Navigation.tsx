@@ -1,0 +1,57 @@
+import { Link, NavLink } from "react-router-dom";
+import DarkModeToggle from "@/components/DarkModeToggle";
+import styles from "./Navigation.module.css";
+import UserButton from "./UserButton";
+import Logo from "@/assets/tip-tap-logo.svg?react";
+
+type NavigationProps = {
+   isAuthenticated: boolean;
+   onLogout?: () => void;
+};
+
+export default function Navigation({ isAuthenticated, onLogout }: NavigationProps) {
+   return (
+      <div className={`${styles.navbar}`}>
+         <div className={styles.left}>
+            <Link to="/">
+               <Logo className={`${styles.logo} mb-3`} aria-label="Logo TipTap" />
+            </Link>
+
+            {isAuthenticated && (
+               <nav className={styles.nav}>
+                  <NavLink to="/attendance" className={({ isActive }) => (isActive ? styles.active : styles.link)}>
+                     Dziennik obecności
+                  </NavLink>
+
+                  <NavLink to="/payments" className={({ isActive }) => (isActive ? styles.active : styles.link)}>
+                     Płatności
+                  </NavLink>
+
+                  <NavLink to="/classReg" className={({ isActive }) => (isActive ? styles.active : styles.link)}>
+                     Zapis na zajęcia
+                  </NavLink>
+               </nav>
+            )}
+         </div>
+
+         <div className={styles.right}>
+            <DarkModeToggle />
+
+            {!isAuthenticated ? (
+               <>
+                  <Link to="/login" className={styles.link}>
+                     Zaloguj się
+                  </Link>
+                  <Link to="/register" className={styles.primary}>
+                     Rejestracja
+                  </Link>
+               </>
+            ) : (
+               <NavLink to="me/" className={({ isActive }) => (isActive ? styles.active : styles.link)}>
+                  <div>{isAuthenticated && <UserButton />}</div>
+               </NavLink>
+            )}
+         </div>
+      </div>
+   );
+}
