@@ -3,7 +3,7 @@ import DarkModeToggle from "@/components/DarkModeToggle";
 import styles from "./Navigation.module.css";
 import UserButton from "./UserButton";
 import Logo from "@/assets/tip-tap-logo.svg?react";
-import { useAuth } from "@/utils/AuthContex";
+import { useAuth } from "@/utils/useAuth";
 
 export default function Navigation() {
    const { isLoggedIn } = useAuth();

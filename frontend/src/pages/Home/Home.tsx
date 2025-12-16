@@ -4,7 +4,7 @@ import Logo from "@/assets/tip-tap-logo.svg?react";
 import "@/index.css";
 import styles from "./Home.module.css";
 import global from "@/global.module.css";
-import { useAuth } from "@/utils/AuthContex";
+import { useAuth } from "@/utils/useAuth";
 import LinkButton from "@/components/LinkButton";
 
 export default function App() {
