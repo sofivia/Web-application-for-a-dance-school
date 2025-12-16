@@ -6,10 +6,9 @@ import Logo from "@/assets/tip-tap-logo.svg?react";
 
 type NavigationProps = {
    isAuthenticated: boolean;
-   onLogout?: () => void;
 };
 
-export default function Navigation({ isAuthenticated, onLogout }: NavigationProps) {
+export default function Navigation({ isAuthenticated }: NavigationProps) {
    return (
       <div className={`${styles.navbar}`}>
          <div className={styles.left}>
