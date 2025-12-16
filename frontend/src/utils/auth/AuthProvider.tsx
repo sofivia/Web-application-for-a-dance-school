@@ -1,13 +1,6 @@
-import { createContext, useState, useEffect, type ReactNode } from "react";
-import { getMe } from "../api";
-
-interface AuthContextType {
-   isLoggedIn: boolean;
-   loading: boolean;
-   refreshAuth: () => Promise<void>;
-}
-
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+import { getMe } from "@/api";
+import { type ReactNode, useState, useEffect } from "react";
+import { AuthContext } from "./authContext";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
    const [isLoggedIn, setIsLoggedIn] = useState(false);
