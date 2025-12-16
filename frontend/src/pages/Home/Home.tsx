@@ -1,7 +1,6 @@
 /// <reference types="vite-plugin-svgr/client" />
 
 import Logo from "@/assets/tip-tap-logo.svg?react";
-import LinkButton from "@/components/LinkButton.tsx";
 import "@/index.css";
 import styles from "./Home.module.css";
 import global from "@/global.module.css";

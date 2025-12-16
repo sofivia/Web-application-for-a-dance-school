@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState, type FormEvent } from "react";
-import DarkModeToggle from "@/components/DarkModeToggle.tsx";
+
 import "@/index.css";
 import global from "@/global.module.css";
 import inputstyles from "@/components/forms/Input.module.css";

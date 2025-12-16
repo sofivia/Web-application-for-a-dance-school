@@ -1,4 +1,3 @@
-import LinkButton from "./LinkButton";
 import UserLogo from "@/assets/user.svg?react";
 
 export default function UserButton() {

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { handlePost, getErrors } from "@/utils/apiutils.ts";
 import { login } from "@/api.ts";
 import inputstyles from "@/components/forms/Input.module.css";
@@ -24,8 +24,6 @@ export default function Login() {
 
    const [errors, setErrors] = useState<Errors>({});
    const [loading, setLoading] = useState(false);
-
-   const navigate = useNavigate();
 
    const validate = (): boolean => {
       const newErrors: Errors = {};

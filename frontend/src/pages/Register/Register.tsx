@@ -6,7 +6,6 @@ import { Link } from "react-router";
 import global from "@/global.module.css";
 import formstyle from "@/styles/forms.module.css";
 import inputstyles from "@/components/forms/Input.module.css";
-import DarkModeToggle from "@/components/DarkModeToggle.tsx";
 import Input from "@/components/forms/Input.tsx";
 import type { InputValues } from "@/components/forms/Input.tsx";
 import { handlePost, getErrors } from "@/utils/apiutils.ts";

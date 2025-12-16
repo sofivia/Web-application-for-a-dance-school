@@ -1,15 +1,12 @@
-import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Button from "@/components/Button.tsx";
 import LinkButton from "@/components/LinkButton.tsx";
-import DarkModeToggle from "@/components/DarkModeToggle.tsx";
 import "@/index.css";
 import styles from "./Account.module.css";
 import global from "@/global.module.css";
 import { getMe, getStudent, logout, type AuthUser, type Student } from "@/api";
 
 export default function Account() {
-   const navigate = useNavigate();
    const [user, setUser] = useState<AuthUser | null | undefined>(null);
    const [student, setStudent] = useState<Student | null | undefined>(null);
 
