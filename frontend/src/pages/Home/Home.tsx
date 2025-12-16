@@ -1,33 +1,18 @@
 /// <reference types="vite-plugin-svgr/client" />
 
-import { useState, useEffect } from 'react';
-import Logo from '@/assets/tip-tap-logo.svg?react'
-import LinkButton from '@/components/LinkButton.tsx'
-import UserButton from '@/components/UserButton'
-import DarkModeToggle from "@/components/DarkModeToggle.tsx";
-import '@/index.css';
-import styles from './Home.module.css';
-import global from '@/global.module.css';
-import { getMe } from '@/api';
-
+import Logo from "@/assets/tip-tap-logo.svg?react";
+import LinkButton from "@/components/LinkButton.tsx";
+import "@/index.css";
+import styles from "./Home.module.css";
+import global from "@/global.module.css";
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  useEffect(() => {
-    async function fetchEmail() {
-      const isLoggedIn = await getMe()
-        .then(_response => true)
-        .catch(_error => false);
-      setIsLoggedIn(isLoggedIn)
-    }
-    fetchEmail();
-  }, [])
-
-  return (
-    <div className={global.app_container}>
-      <div className={global.header}>
-        <DarkModeToggle />
-        {isLoggedIn && <UserButton />}
+   return (
+      <div className={global.app_container}>
+         <div className={styles.app_panel}>
+            <Logo className={`${styles.logo} mb-3`} aria-label="Logo TipTap" />
+         </div>
+         <div className={styles.footer}></div>
       </div>
       <div className={styles.app_panel}>
         <Logo className={`${styles.logo} mb-3`} aria-label="Logo TipTap" />
@@ -40,4 +25,3 @@ export default function App() {
     </div >
   )
 }
-

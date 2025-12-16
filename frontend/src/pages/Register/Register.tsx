@@ -7,11 +7,10 @@ import global from "@/global.module.css";
 import formstyle from "@/styles/forms.module.css";
 import inputstyles from "@/components/forms/Input.module.css";
 import DarkModeToggle from "@/components/DarkModeToggle.tsx";
-import Input from "@/components/forms/Input.tsx"
-import type { InputValues } from "@/components/forms/Input.tsx"
+import Input from "@/components/forms/Input.tsx";
+import type { InputValues } from "@/components/forms/Input.tsx";
 import { handlePost, getErrors } from "@/utils/apiutils.ts";
 import { register } from "@/api.ts";
-
 
 export default function Register() {
    const [data, setData] = useState<LoginFormData>({
@@ -35,36 +34,57 @@ export default function Register() {
       e.preventDefault();
       if (!validator.validate()) return;
       setLoading(true);
-      setErrors(prev => ({ ...prev, global: undefined }));
+      setErrors((prev) => ({ ...prev, global: undefined }));
 
       const msg = await handlePost(() => register(data.email.trim(), data.password));
-      if (msg === undefined)
-         navigate("/");
-      else
-         setErrors(prev => ({ ...prev, ...getErrors(msg) }));
+      if (msg === undefined) navigate("/");
+      else setErrors((prev) => ({ ...prev, ...getErrors(msg) }));
       setLoading(false);
    };
 
    const emailValues: InputValues = { value: data.email, setValue: handleChange, placeholder: "Email" };
    const passwordValues: InputValues = { value: data.password, setValue: handleChange, placeholder: "Hasło" };
-   const confPasswordValues: InputValues = { value: data.confirmPassword, setValue: handleChange, placeholder: "Powtórz hasło" };
+   const confPasswordValues: InputValues = {
+      value: data.confirmPassword,
+      setValue: handleChange,
+      placeholder: "Powtórz hasło",
+   };
 
    const validation = () => validator.validate();
 
    return (
       <div className={`${global.app_container} ${formstyle.container}`}>
-         <div className={global.header}>
-            <DarkModeToggle />
-         </div>
+         <div className={global.header}></div>
          <div className={formstyle.card}>
             <h2 className={formstyle.title}>Szkoła Tańca</h2>
             <p className={formstyle.subtitle}>Zarejestruj się, aby kontynuować</p>
 
             <form className={formstyle.form} onSubmit={handleSubmit}>
                {errors.global && <p className={`${inputstyles.error} mb-1`}>{errors.global}</p>}
-               <Input type="email" values={emailValues} error={errors.email} onBlur={validation} className="mb-3" name="email" />
-               <Input type="password" values={passwordValues} error={errors.password} onBlur={validation} className="mb-5" name="password" />
-               <Input type="password" values={confPasswordValues} error={errors.confirmPassword} onBlur={validation} className="mb-5" name="confirmPassword" />
+               <Input
+                  type="email"
+                  values={emailValues}
+                  error={errors.email}
+                  onBlur={validation}
+                  className="mb-3"
+                  name="email"
+               />
+               <Input
+                  type="password"
+                  values={passwordValues}
+                  error={errors.password}
+                  onBlur={validation}
+                  className="mb-5"
+                  name="password"
+               />
+               <Input
+                  type="password"
+                  values={confPasswordValues}
+                  error={errors.confirmPassword}
+                  onBlur={validation}
+                  className="mb-5"
+                  name="confirmPassword"
+               />
 
                <button type="submit" className={formstyle.button} disabled={loading}>
                   {loading ? "Rejestracja..." : "Zarejestruj się"}
