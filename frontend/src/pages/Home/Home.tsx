@@ -33,7 +33,7 @@ export default function App() {
         <Logo className={`${styles.logo} mb-3`} aria-label="Logo TipTap" />
         <div>
           {!isLoggedIn && <LinkButton to="/login" className="mx-4"> Zaloguj się </LinkButton>}
-          {!isLoggedIn && <LinkButton to="/login" className="mx-4 mt-2"> Zarejestruj się </LinkButton>}
+          {!isLoggedIn && <LinkButton to="/register" className="mx-4 mt-2"> Zarejestruj się </LinkButton>}
         </div>
       </div>
       <div className={styles.footer}></div>
