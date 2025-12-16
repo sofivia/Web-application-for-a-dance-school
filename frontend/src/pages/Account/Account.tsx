@@ -29,7 +29,7 @@ export default function Account() {
 
    const handleLogout = () => {
       logout();
-      navigate("/");
+      window.location.href = "/";
    };
 
    return (

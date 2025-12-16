@@ -6,7 +6,6 @@ import { login } from "@/api.ts";
 import inputstyles from "@/components/forms/Input.module.css";
 import global from "@/global.module.css";
 import formstyle from "@/styles/forms.module.css";
-import DarkModeToggle from "@/components/DarkModeToggle.tsx";
 import Input from "@/components/forms/Input.tsx";
 import type { InputValues } from "@/components/forms/Input.tsx";
 import { Email, Password } from "@/forms/Registration.ts";
