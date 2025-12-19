@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { handlePost, getErrors } from "@/utils/apiutils.ts";
 import { login } from "@/api.ts";
 import inputstyles from "@/components/forms/Input.module.css";
@@ -9,6 +9,7 @@ import formstyle from "@/styles/forms.module.css";
 import Input from "@/components/forms/Input.tsx";
 import type { InputValues } from "@/components/forms/Input.tsx";
 import { Email, Password } from "@/forms/Registration.ts";
+import { useAuth } from "@/utils/auth/useAuth";
 
 type Errors = {
    email?: string;
@@ -24,6 +25,9 @@ export default function Login() {
 
    const [errors, setErrors] = useState<Errors>({});
    const [loading, setLoading] = useState(false);
+
+   const navigate = useNavigate();
+   const { refreshAuth } = useAuth();
 
    const validate = (): boolean => {
       const newErrors: Errors = {};
@@ -45,7 +49,10 @@ export default function Login() {
       setErrors((prev) => ({ ...prev, global: undefined }));
 
       const msg = await handlePost(() => login(email.value.trim(), password.value));
-      if (msg === undefined) window.location.href = "/";
+      if (msg === undefined) {
+         refreshAuth();
+         navigate("/");
+      }
       else setErrors((prev) => ({ ...prev, ...getErrors(msg) }));
       setLoading(false);
    };

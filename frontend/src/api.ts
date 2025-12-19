@@ -33,6 +33,14 @@ export type Student = {
   phone: string;
 }
 
+export type Instructor = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  bio: string;
+  phone: string;
+}
+
 
 export function getAccessToken(): string | null {
   return localStorage.getItem(ACCESS_TOKEN_KEY);
@@ -207,9 +215,14 @@ export async function getMe(): Promise<AuthUser> {
   return response.data as AuthUser;
 }
 
-export async function getStudent(): Promise<Student> {
+export async function getStudent() {
   const response = await api.get("/api/school/students/");
   return response.data as Student;
+}
+
+export async function getInstructor() {
+  const response = await api.get("/api/school/instructors/");
+  return response.data as Instructor;
 }
 
 export type StudentData = {

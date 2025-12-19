@@ -32,7 +32,7 @@ export default function Navigation() {
 
          {isLoggedIn &&
             <nav className={styles.nav}>
-               {role == undefined ? <></> : links[role].map(link => <NavLink to={link[1]} className={styl}>
+               {role == undefined ? <></> : links[role].map((link, i) => <NavLink key={i} to={link[1]} className={styl}>
                   {link[0]}
                </NavLink>)}
             </nav>

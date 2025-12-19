@@ -4,25 +4,62 @@ import LinkButton from "@/components/LinkButton.tsx";
 import "@/index.css";
 import styles from "./Account.module.css";
 import global from "@/global.module.css";
-import { getMe, getStudent, logout, type AuthUser, type Student } from "@/api";
+import { getInstructor, getMe, getStudent, logout } from "@/api.ts";
+import { useAuth } from "@/utils/auth/useAuth";
+
+type Attribute = [string, string];
+
+async function fetchUser(): Promise<Attribute[]> {
+   const user = await getMe()
+      .then((user) => user)
+      .catch((_error) => undefined);
+   return user === undefined ? [] : [
+      ["Email", user.email]
+   ];
+}
+
+async function fetchStudent(): Promise<Attribute[]> {
+   const userAttrs = await fetchUser();
+   const student = await getStudent()
+      .then((user) => user)
+      .catch((_error) => undefined);
+   return student === undefined ? userAttrs : [
+      ...userAttrs,
+      ["Imię", student.first_name],
+      ["Nazwisko", student.last_name],
+      ["Data urodzenia", student.date_of_birth],
+      ["Numer telefonu", student.phone]
+   ];
+}
+
+async function fetchInstructor(): Promise<Attribute[]> {
+   const userAttrs = await fetchUser();
+   const instructor = await getInstructor()
+      .then((user) => user)
+      .catch((_error) => undefined);
+   return instructor === undefined ? userAttrs : [
+      ...userAttrs,
+      ["Imię", instructor.first_name],
+      ["Nazwisko", instructor.last_name],
+      ["Bio", instructor.bio],
+      ["Numer telefonu", instructor.phone]
+   ];
+}
+
 
 export default function Account() {
-   const [user, setUser] = useState<AuthUser | null | undefined>(null);
-   const [student, setStudent] = useState<Student | null | undefined>(null);
+   const [attrs, setAttrs] = useState<Attribute[]>([]);
+   const { role } = useAuth();
 
    useEffect(() => {
       async function fetchUser() {
-         const user = await getMe()
-            .then((user) => user)
-            .catch((_error) => undefined);
-         setUser(user);
-         const student = await getStudent()
-            .then((user) => user)
-            .catch((_error) => undefined);
-         setStudent(student);
+         if (role == "student")
+            setAttrs(await fetchStudent());
+         else if (role == "instructor")
+            setAttrs(await fetchInstructor());
       }
       fetchUser();
-   }, []);
+   }, [role]);
 
    const handleLogout = () => {
       logout();
@@ -35,46 +72,24 @@ export default function Account() {
          <div className={styles.accountPane}>
             <table className="mb-5">
                <tbody>
-                  {user && (
-                     <tr>
-                        <td> Email: </td>
-                        <td> {user.email} </td>
+                  {attrs.map((a, i) =>
+                     <tr key={i}>
+                        <td> {a[0]}: </td>
+                        <td> {a[1]} </td>
                      </tr>
-                  )}
-                  {student && (
-                     <>
-                        <tr>
-                           <td> Imię: </td>
-                           <td> {student.first_name} </td>
-                        </tr>
-                        <tr>
-                           <td> Nazwisko: </td>
-                           <td> {student.last_name} </td>
-                        </tr>
-                        <tr>
-                           <td> Data urodzenia: </td>
-                           <td> {student.date_of_birth} </td>
-                        </tr>
-                        <tr>
-                           <td> Numer telefonu: </td>
-                           <td> {student.phone} </td>
-                        </tr>
-                     </>
                   )}
                </tbody>
             </table>
-            {!student && (
+            {attrs.length == 1 && (
                <div className="mb-3">
                   <div className="mb-1"> Aby móc zapisać się na zajęcia, musisz dokończyć rejestrację. </div>
                   <LinkButton to="/me/finish-registration" className="block">
-                     {" "}
-                     Dokończ rejestrację{" "}
+                     Dokończ rejestrację
                   </LinkButton>
                </div>
             )}
             <Button onClick={handleLogout} className="block">
-               {" "}
-               Wyloguj się{" "}
+               Wyloguj się
             </Button>
          </div>
          <div className={styles.footer} />
