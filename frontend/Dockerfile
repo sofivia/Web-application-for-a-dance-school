@@ -1,11 +1,11 @@
-FROM node:20-alpine AS build
+FROM docker.io/library/node:20-alpine AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci || npm install
 COPY . .
 RUN npm rebuild esbuild
 RUN npm run build
-FROM nginx:alpine
+FROM dock/nginx:alpine
 WORKDIR /usr/share/nginx/html
 COPY --from=build /app/dist ./
 COPY nginx-default.conf /etc/nginx/conf.d/default.conf
