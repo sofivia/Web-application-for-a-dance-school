@@ -36,15 +36,22 @@ not all and (prefers-reduced-transparency: reduce) {
     padding-left: 2em;
 }
 
-.link {
+.link, .active {
+    padding: 0.45rem 0.9rem;
+    border-radius: 10px;
     text-decoration: none;
+    font-weight: 600;
+}
+
+.link {
     color: var(--text-secondary);
-    font-weight: 500;
+    border: 1px solid rgba(255,255,255,0.12);
 }
 
 .active {
-    color: var(--accent);
-    font-weight: 700;
+    background: var(--accent);
+    color: white;
+    border: 1px solid transparent;
 }
 
 .right {

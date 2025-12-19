@@ -232,3 +232,47 @@ export async function createInstructor(instructor: Instructor) {
   const resp = await api.post("/api/school/instructors/", instructor);
   return resp.data;
 }
+
+export type ClassFilters = {
+  class_types: { id: string; name: string; level: string; duration_minutes: number }[];
+  instructors: { id: string; first_name: string; last_name: string }[];
+  studios: string[];
+};
+
+export type ClassSessionRow = {
+  id: string;
+  group_id: string;
+  starts_at: string;
+  ends_at: string;
+  class_type: { id: string; name: string; level: string; duration_minutes: number };
+  instructor: { id: string; first_name: string; last_name: string } | null;
+  studio: string;
+  limit: number;
+  enrolled: number;
+  is_enrolled: boolean;
+};
+
+export async function getClassFilters(): Promise<ClassFilters> {
+  const res = await api.get("/api/school/class-filters/");
+  return res.data as ClassFilters;
+}
+
+export async function getClasses(params: {
+  page: number;
+  class_type?: string;
+  instructor?: string;
+  studio?: string;
+  date_from?: string;
+  date_to?: string;
+}): Promise<{ count: number; results: ClassSessionRow[] }> {
+  const res = await api.get("/api/school/classes/", { params });
+  return res.data as { count: number; results: ClassSessionRow[] };
+}
+
+export async function enroll(groupId: string | number) {
+  return api.post("/api/school/enroll/", { group_id: groupId });
+}
+
+export async function unenroll(groupId: string | number) {
+  return api.post("/api/school/unenroll/", { group_id: groupId });
+}

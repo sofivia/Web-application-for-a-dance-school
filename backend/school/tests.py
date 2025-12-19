@@ -32,6 +32,7 @@ class StudentViewTest(APITestCase):
         getresponse = self.client.get(self.url)
         self.assertEqual(getresponse.status_code, status.HTTP_200_OK)
 
+        getresponse.data.pop("id")
         self.assertEqual(self.data, getresponse.data)
 
     def test_create_student_not_logged_in(self):
@@ -57,6 +58,7 @@ class StudentViewTest(APITestCase):
         getresponse = self.client.get(self.url)
         self.assertEqual(getresponse.status_code, status.HTTP_200_OK)
 
+        getresponse.data.pop("id")
         self.assertEqual(self.data, getresponse.data)
 
     def test_patch(self):
@@ -72,4 +74,5 @@ class StudentViewTest(APITestCase):
         self.assertEqual(getresponse.status_code, status.HTTP_200_OK)
 
         self.data["first_name"] = "Jan"
+        getresponse.data.pop("id")
         self.assertEqual(self.data, getresponse.data)

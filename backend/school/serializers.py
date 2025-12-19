@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Student, Instructor
+from .models import Student, Instructor, ClassType, ClassSession
 
 
 class StudentSerializer(serializers.ModelSerializer):
@@ -10,8 +10,9 @@ class StudentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Student
-        fields = ("account", "first_name", "last_name",
+        fields = ("id", "account", "first_name", "last_name",
                   "date_of_birth", "phone")
+        read_only_fields = ("id",)
 
 
 class InstructorSerializer(serializers.ModelSerializer):
@@ -21,4 +22,63 @@ class InstructorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Instructor
-        fields = ("account", "first_name", "last_name", "short_bio", "phone")
+        fields = ("id", "account", "first_name", "last_name", "short_bio",
+                  "phone")
+        read_only_fields = ("id",)
+
+
+class ClassTypeMiniSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = ClassType
+        fields = ("id", "name", "level", "duration_minutes")
+
+
+class InstructorMiniSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Instructor
+        fields = ("id", "first_name", "last_name")
+
+
+class ClassSessionRowSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(read_only=True)
+    group_id = serializers.CharField(source="group.id", read_only=True)
+
+    class_type = ClassTypeMiniSerializer(source="group.class_type", read_only=True)
+
+    instructor = serializers.SerializerMethodField()
+    studio = serializers.SerializerMethodField()
+
+    limit = serializers.SerializerMethodField()
+    enrolled = serializers.IntegerField(read_only=True)
+    is_enrolled = serializers.BooleanField(read_only=True)
+
+    class Meta:
+        model = ClassSession
+        fields = (
+            "id",
+            "group_id",
+            "starts_at",
+            "ends_at",
+            "class_type",
+            "instructor",
+            "studio",
+            "limit",
+            "enrolled",
+            "is_enrolled",
+        )
+
+    def get_instructor(self, obj):
+        inst = obj.substitute_instructor or obj.group.primary_instructor
+        if not inst:
+            return None
+        return InstructorMiniSerializer(inst).data
+
+    def get_studio(self, obj):
+        return obj.group.location or ""
+
+    def get_limit(self, obj):
+        if obj.group.capacity is not None:
+            return obj.group.capacity
+        return obj.group.class_type.default_capacity
