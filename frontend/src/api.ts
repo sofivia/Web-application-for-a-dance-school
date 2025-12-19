@@ -10,6 +10,8 @@ export interface AuthTokens {
   refresh: string;
 }
 
+export type Role = "student" | "instructor" | "admin";
+
 export interface AuthUser {
   id: string;
   email: string;
@@ -20,7 +22,7 @@ export interface AuthUser {
   email_verified_at: string | null;
   created_at: string;
   updated_at: string;
-  roles: string[];
+  roles: Role[];
 }
 
 export type Student = {

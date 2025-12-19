@@ -7,28 +7,24 @@ import global from "@/global.module.css";
 import { useAuth } from "@/utils/auth/useAuth";
 import LinkButton from "@/components/LinkButton";
 
-export default function App() {
+export default function Home() {
    const { isLoggedIn } = useAuth();
    return (
       <div className={global.app_container}>
          <div className={styles.app_panel}>
             <Logo className={`${styles.logo} mb-3`} aria-label="Logo TipTap" />
-            <div>
-               {!isLoggedIn && (
-                  <LinkButton to="/login" className="mx-4">
-                     {" "}
-                     Zaloguj się{" "}
-                  </LinkButton>
-               )}
-               {!isLoggedIn && (
-                  <LinkButton to="/register" className="mx-4 mt-2">
-                     {" "}
-                     Zarejestruj się{" "}
-                  </LinkButton>
-               )}
-            </div>
+            {!isLoggedIn && <div>
+               <LinkButton to="/login" className="mx-4">
+                  {" "}
+                  Zaloguj się{" "}
+               </LinkButton>
+               <LinkButton to="/register" className="mx-4 mt-2">
+                  {" "}
+                  Zarejestruj się{" "}
+               </LinkButton>
+            </div>}
          </div>
          <div className={styles.footer}></div>
-      </div>
+      </div >
    );
 }
