@@ -26,18 +26,16 @@ export interface AuthUser {
 }
 
 export type Student = {
-  id: string;
   first_name: string;
   last_name: string;
   date_of_birth: string;
-  phone: string;
+  phone?: string;
 }
 
 export type Instructor = {
-  id: string;
   first_name: string;
   last_name: string;
-  bio: string;
+  short_bio: string;
   phone: string;
 }
 
@@ -225,13 +223,10 @@ export async function getInstructor() {
   return response.data as Instructor;
 }
 
-export type StudentData = {
-  first_name: string;
-  last_name: string;
-  date_of_birth: string;
-  phone?: string;
+export async function createStudent(student: Student) {
+  return api.post("/api/school/students/", student);
 }
 
-export async function createStudent(student: StudentData) {
-  return api.post("/api/school/students/", student);
+export async function createInstructor(instructor: Instructor) {
+  return api.post("/api/school/instructors/", instructor);
 }
