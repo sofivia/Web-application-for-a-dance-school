@@ -3,6 +3,8 @@ from rest_framework.exceptions import APIException
 from rest_framework import status, permissions, generics, mixins
 from .serializers import StudentSerializer, InstructorSerializer
 from .permissions import IsStudent, IsInstructor
+from .models import Student, Instructor
+from rest_framework.generics import get_object_or_404
 
 
 class Conflict(APIException):
@@ -11,49 +13,38 @@ class Conflict(APIException):
     default_code = 'conflict'
 
 
-class StudentView(
+class CreateUpdateRetrieveAPIView(
         mixins.CreateModelMixin,
-        mixins.RetrieveModelMixin,
-        generics.GenericAPIView):
+        generics.RetrieveUpdateAPIView):
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+
+class StudentView(CreateUpdateRetrieveAPIView):
     serializer_class = StudentSerializer
     permission_classes = [permissions.IsAuthenticated, IsStudent]
 
     def perform_create(self, serializer):
         try:
-            serializer.save(account=self.request.user)
+            serializer.save()
         except IntegrityError:
             raise Conflict({'account': ['Information already provided '
                                         'for this account.']})
 
     def get_object(self):
-        return self.request.user.student
-
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+        return get_object_or_404(Student, account=self.request.user)
 
 
-class InstructorView(
-        mixins.CreateModelMixin,
-        mixins.RetrieveModelMixin,
-        generics.GenericAPIView):
+class InstructorView(CreateUpdateRetrieveAPIView):
     serializer_class = InstructorSerializer
     permission_classes = [permissions.IsAuthenticated, IsInstructor]
 
     def perform_create(self, serializer):
         try:
-            serializer.save(account=self.request.user)
+            serializer.save()
         except IntegrityError:
             raise Conflict({'account': ['Information already provided '
                                         'for this account.']})
 
     def get_object(self):
-        return self.request.user.instructor
-
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+        return get_object_or_404(Instructor, account=self.request.user)

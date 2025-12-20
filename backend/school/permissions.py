@@ -10,8 +10,8 @@ class IsStudent(permissions.BasePermission):
 
 
 class IsInstructor(permissions.BasePermission):
-    def _has_student_role(self, user):
-        return "instructor" in [r.code for r in user.roles]
+    def _has_instructor_role(self, user):
+        return "instructor" in [r.code for r in user.roles.all()]
 
     def has_permission(self, request, view):
-        return request.user and self._has_student_role(request.user)
+        return request.user and self._has_instructor_role(request.user)

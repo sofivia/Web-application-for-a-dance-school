@@ -4,16 +4,21 @@ from .models import Student, Instructor
 
 
 class StudentSerializer(serializers.ModelSerializer):
+    account = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
+    )
+
     class Meta:
         model = Student
-        fields = ("id", "account", "first_name",
-                  "last_name", "date_of_birth", "phone")
-        read_only_fields = ("id", "account")
+        fields = ("account", "first_name", "last_name",
+                  "date_of_birth", "phone")
 
 
 class InstructorSerializer(serializers.ModelSerializer):
+    account = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
+    )
+
     class Meta:
         model = Instructor
-        fields = ("id", "account", "first_name",
-                  "last_name", "short_bio", "phone")
-        read_only_fields = ("id", "account")
+        fields = ("account", "first_name", "last_name", "short_bio", "phone")

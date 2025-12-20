@@ -8,6 +8,7 @@ class Student(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     account = models.OneToOneField(
         settings.AUTH_USER_MODEL,
+        unique=True,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
