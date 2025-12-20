@@ -28,7 +28,7 @@ async function fetchStudent(): Promise<Attribute[]> {
       ["Imię", student.first_name],
       ["Nazwisko", student.last_name],
       ["Data urodzenia", student.date_of_birth],
-      ["Numer telefonu", student.phone]
+      ["Numer telefonu", student.phone ?? ""]
    ];
 }
 
@@ -41,7 +41,7 @@ async function fetchInstructor(): Promise<Attribute[]> {
       ...userAttrs,
       ["Imię", instructor.first_name],
       ["Nazwisko", instructor.last_name],
-      ["Bio", instructor.bio],
+      ["Bio", instructor.short_bio],
       ["Numer telefonu", instructor.phone]
    ];
 }
@@ -82,7 +82,7 @@ export default function Account() {
             </table>
             {attrs.length == 1 && (
                <div className="mb-3">
-                  <div className="mb-1"> Aby móc zapisać się na zajęcia, musisz dokończyć rejestrację. </div>
+                  <div className="mb-1"> Aby móc korzystać ze strony musisz dokończyć rejestrację. </div>
                   <LinkButton to="/me/finish-registration" className="block">
                      Dokończ rejestrację
                   </LinkButton>
