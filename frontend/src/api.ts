@@ -224,9 +224,11 @@ export async function getInstructor() {
 }
 
 export async function createStudent(student: Student) {
-  return api.post("/api/school/students/", student);
+  const resp = await api.post<Student>("/api/school/students/", student);
+  return resp.data;
 }
 
 export async function createInstructor(instructor: Instructor) {
-  return api.post("/api/school/instructors/", instructor);
+  const resp = await api.post("/api/school/instructors/", instructor);
+  return resp.data;
 }

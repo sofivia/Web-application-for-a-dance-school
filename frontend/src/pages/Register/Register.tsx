@@ -7,7 +7,7 @@ import global from "@/global.module.css";
 import formstyle from "@/styles/forms.module.css";
 import inputstyles from "@/components/forms/Input.module.css";
 import Input from "@/components/forms/Input.tsx";
-import type { InputValues } from "@/components/forms/Input.tsx";
+import type { InputValues } from "@/components/forms/commons.ts";
 import { handlePost, getErrors } from "@/utils/apiutils.ts";
 import { register } from "@/api.ts";
 import { useAuth } from "@/utils/auth/useAuth";

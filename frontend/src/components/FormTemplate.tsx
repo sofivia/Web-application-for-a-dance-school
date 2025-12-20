@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { useState, type FormEvent } from "react";
-import type { AxiosResponse } from "axios";
 import Input from "@/components/forms/Input.tsx";
 import type { InputValues } from "@/components/forms/commons.ts";
 import { handlePost, getErrors } from "@/utils/apiutils.ts";
@@ -24,15 +23,15 @@ export interface TextAreaField extends BaseField {
     rows?: number;
 }
 
-export type ApiCall = (data: Record<string, string>) => Promise<AxiosResponse<any, any, {}>>;
+export type ApiCall<T> = (data: Record<string, string>) => Promise<T>;
 
-type Props = {
-    apiCall: ApiCall;
+type Props<T> = {
+    apiCall: ApiCall<T>;
     fields: BaseField[];
     redirect: string;
 };
 
-export default function FormTemplate(props: Props) {
+export default function FormTemplate<T>(props: Props<T>) {
     const { apiCall, fields, redirect } = props;
     const navigate = useNavigate();
 
@@ -42,7 +41,6 @@ export default function FormTemplate(props: Props) {
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log("submit");
         setLoading(true);
         const msg = await handlePost(() => apiCall(data));
         if (msg === undefined) navigate(redirect);
