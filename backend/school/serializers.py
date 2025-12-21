@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
-from .models import Student, Instructor, ClassType, ClassSession
-
+from .models import Student, Instructor, ClassType, ClassSession, ClassGroup
 
 class StudentSerializer(serializers.ModelSerializer):
     account = serializers.HiddenField(
@@ -82,3 +81,23 @@ class ClassSessionRowSerializer(serializers.ModelSerializer):
         if obj.group.capacity is not None:
             return obj.group.capacity
         return obj.group.class_type.default_capacity
+
+
+class ClassGroupReadSerializer(serializers.ModelSerializer):
+    primary_instructor = serializers.StringRelatedField()
+    location = serializers.StringRelatedField()
+
+    class Meta:
+        model = ClassGroup
+        fields = ("name", "primary_instructor", "weekday",
+                  "start_time", "end_time", "location", "capacity",
+                  "start_date", "end_date")
+        read_only_fields = fields
+
+
+class ClassGroupWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ClassGroup
+        fields = ("name", "class_type", "primary_instructor", "weekday",
+                  "start_time", "end_time", "location", "capacity",
+                  "start_date", "end_date", "is_active")

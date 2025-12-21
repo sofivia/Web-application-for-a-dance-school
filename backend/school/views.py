@@ -3,10 +3,10 @@ from django.db.models import Count, OuterRef, Subquery, IntegerField, Exists
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 
-from rest_framework import status, permissions, generics, mixins
-from .permissions import IsStudent, IsInstructor
-from rest_framework.generics import get_object_or_404
 from rest_framework.exceptions import APIException, ValidationError
+from rest_framework import status, generics, permissions, mixins, viewsets
+from .permissions import IsStudent, IsInstructor, IsAdminOrReadOnly
+from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -24,6 +24,8 @@ from .serializers import (
     ClassTypeMiniSerializer,
     InstructorMiniSerializer,
     ClassSessionRowSerializer,
+    ClassGroupReadSerializer,
+    ClassGroupWriteSerializer
 )
 
 
@@ -42,7 +44,7 @@ class CreateUpdateRetrieveAPIView(
 
 class StudentView(CreateUpdateRetrieveAPIView):
     serializer_class = StudentSerializer
-    permission_classes = [permissions.IsAuthenticated, IsStudent]
+    permission_classes = [IsStudent]
 
     def perform_create(self, serializer):
         try:
@@ -57,7 +59,7 @@ class StudentView(CreateUpdateRetrieveAPIView):
 
 class InstructorView(CreateUpdateRetrieveAPIView):
     serializer_class = InstructorSerializer
-    permission_classes = [permissions.IsAuthenticated, IsInstructor]
+    permission_classes = [IsInstructor]
 
     def perform_create(self, serializer):
         try:
@@ -225,3 +227,13 @@ class UnenrollView(APIView):
         enrollment.save(update_fields=["status", "cancelled_at"])
 
         return Response({"ok": True}, status=status.HTTP_200_OK)
+
+
+class ClassGroupView(viewsets.ModelViewSet):
+    permission_classes = [IsAdminOrReadOnly]
+    queryset = ClassGroup.objects.all().select_related("location")
+
+    def get_serializer_class(self):
+        if self.action in ['create', 'update', 'partial_update']:
+            return ClassGroupWriteSerializer
+        return ClassGroupReadSerializer
