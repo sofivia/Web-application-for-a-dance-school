@@ -38,8 +38,8 @@ export function getErrors(msg: ErrMsg) {
   }
 }
 
-export function getWeekday(weekday: number, locale='pl-PL') {
-    const date = new Date(2024, 0, weekday); // Jan 2024 started on a Monday
+export function getWeekday(daynr: number, locale='pl-PL') {
+    const date = new Date(2024, 0, daynr); // Jan 2024 started on a Monday
     return date.toLocaleDateString(locale, { weekday: 'long' });
 }
 

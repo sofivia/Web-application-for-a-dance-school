@@ -6,8 +6,7 @@ import { setOnLogoutCallback, clearTokens } from "./api";
 import { useEffect } from "react";
 import Register from "./pages/Register/Register";
 import AccountRoutes from "./pages/Account/AccountRoutes.tsx";
-import GroupRegistration from "./pages/ClassReg/ClassReg.tsx";
-
+import GroupRoutes from "./pages/GroupRegistration/GroupRoutes.tsx";
 
 export default function App() {
    const navigate = useNavigate();
@@ -25,7 +24,7 @@ export default function App() {
             <Route path="register" element={<Register />} />
             <Route index element={<Home />} />
             <Route path="me/*" element={<AccountRoutes />} />
-            <Route path="group-reg/" element={<GroupRegistration />} />
+            <Route path="group-reg/*" element={<GroupRoutes />} />
          </Route>
       </Routes>
    );

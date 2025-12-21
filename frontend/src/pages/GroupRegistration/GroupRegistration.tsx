@@ -19,27 +19,29 @@ export default function GroupRegisteration() {
 
     return (
         <div className={global.app_container}>
-            <table>
-                <tr>
-                    <td> Nazwa </td>
-                    <td> Czas </td>
-                    <td> Limit miejsc </td>
-                    <td> Szczegóły </td>
-                </tr>
-                {groups.map(g =>
+            <table className={styles.grupy}>
+                <tbody>
                     <tr>
-                        <td> {g.name} </td>
-                        <td>
-                            {`${getWeekday(g.weekday)} ${getHour(g.start_time)}`}
-                        </td>
-                        <td> {g.capacity} </td>
-                        <td>
-                            <Link to="/group-reg/" className={formstyle.link}>
-                                Szczegóły
-                            </Link>
-                        </td>
+                        <td> Nazwa </td>
+                        <td> Czas </td>
+                        <td> Limit miejsc </td>
+                        <td> Szczegóły </td>
                     </tr>
-                )}
+                    {groups.map(g =>
+                        <tr>
+                            <td> {g.name} </td>
+                            <td>
+                                {`${getWeekday(g.weekday)} ${getHour(g.start_time)}`}
+                            </td>
+                            <td> {g.capacity} </td>
+                            <td>
+                                <Link to={`${g.pk}`} className={formstyle.link}>
+                                    Szczegóły
+                                </Link>
+                            </td>
+                        </tr>
+                    )}
+                </tbody>
             </table>
         </div>
     )

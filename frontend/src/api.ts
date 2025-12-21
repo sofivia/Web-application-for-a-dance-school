@@ -275,7 +275,10 @@ export async function enroll(groupId: string | number) {
 
 export async function unenroll(groupId: string | number) {
   return api.post("/api/school/unenroll/", { group_id: groupId });
+}
+
 export type ClassGroup = {
+  pk: string;
   name: string;
   primary_instructor: string;
   weekday: number;
@@ -290,4 +293,9 @@ export type ClassGroup = {
 export async function getClassGroups() {
   let resp = await api.get("/api/school/classgroups/");
   return resp.data as ClassGroup[];
+}
+
+export async function getClassGroup(id: string) {
+  let resp = await api.get(`/api/school/classgroups/${id}/`);
+  return resp.data as ClassGroup;
 }

@@ -75,7 +75,7 @@ class ClassSessionRowSerializer(serializers.ModelSerializer):
         return InstructorMiniSerializer(inst).data
 
     def get_studio(self, obj):
-        return obj.group.location or ""
+        return str(obj.group.location) or None
 
     def get_limit(self, obj):
         if obj.group.capacity is not None:
@@ -89,7 +89,7 @@ class ClassGroupReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ClassGroup
-        fields = ("name", "primary_instructor", "weekday",
+        fields = ("pk", "name", "primary_instructor", "weekday",
                   "start_time", "end_time", "location", "capacity",
                   "start_date", "end_date")
         read_only_fields = fields

@@ -79,7 +79,7 @@ class ClassFiltersView(APIView):
         class_types = ClassType.objects.filter(is_active=True).order_by("name")
         instructors = Instructor.objects.filter(is_active=True).order_by("last_name", "first_name")
         studios = (
-            ClassGroup.objects.exclude(location="")
+            ClassGroup.objects
             .exclude(location__isnull=True)
             .values_list("location", flat=True)
             .distinct()
