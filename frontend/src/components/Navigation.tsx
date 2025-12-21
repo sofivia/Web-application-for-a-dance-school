@@ -12,7 +12,7 @@ const links: Record<Role, NamedLink[]> = {
    student: [
       ["Dziennik obecności", "/attendance"],
       ["Płatności", "/payments"],
-      ["Zapisy na zajęcia", "/classReg"]],
+      ["Zapisy na zajęcia", "/group-reg"]],
    instructor: [
       ["Grupy zajęciowe", "/classes"]
    ],
