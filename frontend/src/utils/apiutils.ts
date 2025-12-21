@@ -37,3 +37,14 @@ export function getErrors(msg: ErrMsg) {
       return Object.keys(m).reduce((acc, k) => (acc[k] = m[k][0], acc), {} as Record<string, string>)
   }
 }
+
+export function getWeekday(weekday: number, locale='pl-PL') {
+    const date = new Date(2024, 0, weekday); // Jan 2024 started on a Monday
+    return date.toLocaleDateString(locale, { weekday: 'long' });
+}
+
+export function getHour(hours: string, locale='pl-PL') {
+    const date = new Date(`1970-01-01T${hours}`);
+    return new Intl.DateTimeFormat(locale, {hour: '2-digit', minute: '2-digit'})
+        .format(date);
+}
