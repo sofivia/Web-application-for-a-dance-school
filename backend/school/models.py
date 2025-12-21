@@ -78,16 +78,24 @@ class ClassType(models.Model):
         return self.name
 
 
-class ClassGroup(models.Model):
-    class Weekday(models.IntegerChoices):
-        MONDAY = 1, "Monday"
-        TUESDAY = 2, "Tuesday"
-        WEDNESDAY = 3, "Wednesday"
-        THURSDAY = 4, "Thursday"
-        FRIDAY = 5, "Friday"
-        SATURDAY = 6, "Saturday"
-        SUNDAY = 7, "Sunday"
+class Location(models.Model):
+    name = models.CharField(max_length=100, blank=False)
 
+    def __str__(self) -> str:
+        return self.name
+
+
+class Weekday(models.IntegerChoices):
+    MONDAY = 1, "Monday"
+    TUESDAY = 2, "Tuesday"
+    WEDNESDAY = 3, "Wednesday"
+    THURSDAY = 4, "Thursday"
+    FRIDAY = 5, "Friday"
+    SATURDAY = 6, "Saturday"
+    SUNDAY = 7, "Sunday"
+
+
+class ClassGroup(models.Model):
     name = models.CharField(max_length=100)
     class_type = models.ForeignKey(
         ClassType,
@@ -104,7 +112,10 @@ class ClassGroup(models.Model):
     start_time = models.TimeField()
     end_time = models.TimeField()
 
-    location = models.CharField(max_length=100, blank=True)
+    location = models.ForeignKey(
+        Location,
+        on_delete=models.PROTECT,
+        related_name="groups")
 
     capacity = models.PositiveIntegerField(
         null=True,

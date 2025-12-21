@@ -3,6 +3,7 @@ from .models import (
     Student,
     Instructor,
     ClassType,
+    Location,
     ClassGroup,
     ClassSession,
     Enrollment,
@@ -31,6 +32,12 @@ class ClassTypeAdmin(admin.ModelAdmin):
     list_display = ("name", "level", "duration_minutes",
                     "default_capacity", "is_active")
     list_filter = ("is_active", "level")
+    search_fields = ("name",)
+
+
+@admin.register(Location)
+class LocationAdmin(admin.ModelAdmin):
+    list_display = ("name",)
     search_fields = ("name",)
 
 
