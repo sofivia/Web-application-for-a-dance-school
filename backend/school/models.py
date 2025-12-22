@@ -142,8 +142,8 @@ class ClassGroup(models.Model):
                else self.class_type.default_capacity
 
     def is_full(self):
-        active_count = self.enrollments_set.filter(status="ACTIVE").count()
-        return active_count >= self.effective_capacity
+        cnt = self.enrollments.filter(status=Enrollment.Status.ACTIVE).count()
+        return cnt >= self.effective_capacity
 
 
 class ClassSession(models.Model):

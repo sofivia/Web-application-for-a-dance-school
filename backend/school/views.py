@@ -12,7 +12,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .permissions import IsStudent, IsInstructor, IsAdminOrReadOnly
-from .services import enroll_student
 
 from .models import (
     Student,
@@ -196,17 +195,12 @@ class EnrollView(APIView):
 
 
 class UnenrollView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsStudent]
 
     def post(self, request):
         group_id = request.data.get("group_id")
         if not group_id:
             raise ValidationError({"group_id": ["This field is required."]})
-
-        try:
-            student = request.user.student
-        except Student.DoesNotExist:
-            raise Conflict({"student": ["Finish registration first."]})
 
         enrollment = Enrollment.objects.filter(student=student, group_id=group_id).first()
         if not enrollment:
