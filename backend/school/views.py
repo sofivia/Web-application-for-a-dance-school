@@ -2,6 +2,7 @@ from django.db import IntegrityError
 from django.db.models import Count, OuterRef, Subquery, IntegerField, Exists
 from django.db.models.functions import Coalesce
 from django.utils import timezone
+import django_filters
 
 from rest_framework.exceptions import APIException, ValidationError
 from rest_framework import status, generics, permissions, mixins, viewsets
@@ -101,10 +102,23 @@ class StandardPagination(PageNumberPagination):
     max_page_size = 100
 
 
+class ProductFilter(django_filters.FilterSet):
+    date_from = django_filters.DateFilter(field_name="starts_at",
+                                          lookup_expr='gte')
+    date_to = django_filters.DateFilter(field_name="starts_at",
+                                        lookup_expr='lte')
+
+    class Meta:
+        model = ClassSession
+        fields = ['group__class_type', 'group__primary_instructor',
+                  'group__location', 'date_from', 'date_to']
+
+
 class ClassSessionListView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = ClassSessionRowSerializer
     pagination_class = StandardPagination
+    filterset_class = ProductFilter
 
     def _get_student_or_none(self):
         try:
@@ -123,27 +137,6 @@ class ClassSessionListView(generics.ListAPIView):
             )
             .filter(status=ClassSession.Status.PLANNED)
         )
-
-        class_type = self.request.query_params.get("class_type") or ""
-        instructor = self.request.query_params.get("instructor") or ""
-        studio = self.request.query_params.get("studio") or ""
-        date_from = self.request.query_params.get("date_from") or ""
-        date_to = self.request.query_params.get("date_to") or ""
-
-        if class_type:
-            qs = qs.filter(group__class_type_id=class_type)
-
-        if instructor:
-            qs = qs.filter(group__primary_instructor_id=instructor)
-
-        if studio:
-            qs = qs.filter(group__location=studio)
-
-        if date_from:
-            qs = qs.filter(starts_at__date__gte=date_from)
-
-        if date_to:
-            qs = qs.filter(starts_at__date__lte=date_to)
 
         enrolled_subq = (
             Enrollment.objects

@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from .models import Student, Instructor, ClassType, ClassSession, ClassGroup
 
+
 class StudentSerializer(serializers.ModelSerializer):
     account = serializers.HiddenField(
         default=serializers.CurrentUserDefault()
@@ -35,6 +36,8 @@ class ClassTypeMiniSerializer(serializers.ModelSerializer):
 
 
 class InstructorMiniSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(read_only=True)
+
     class Meta:
         model = Instructor
         fields = ("id", "first_name", "last_name")
@@ -42,9 +45,9 @@ class InstructorMiniSerializer(serializers.ModelSerializer):
 
 class ClassSessionRowSerializer(serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)
-    group_id = serializers.CharField(source="group.id", read_only=True)
 
-    class_type = ClassTypeMiniSerializer(source="group.class_type", read_only=True)
+    class_type = ClassTypeMiniSerializer(source="group.class_type",
+                                         read_only=True)
 
     instructor = serializers.SerializerMethodField()
     studio = serializers.SerializerMethodField()

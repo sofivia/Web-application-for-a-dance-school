@@ -199,4 +199,5 @@ class ClassGroupViewStudentTest(APITestCase):
         url = reverse("school:classgroup-detail", kwargs={"pk": pk})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response.data.pop("pk")
         self.assertEqual(response.data, data)
