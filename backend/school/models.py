@@ -136,6 +136,15 @@ class ClassGroup(models.Model):
     def __str__(self) -> str:
         return f"{self.name} ({self.class_type})"
 
+    @property
+    def effective_capacity(self):
+        return self.capacity if self.capacity is not None \
+               else self.class_type.default_capacity
+
+    def is_full(self):
+        active_count = self.enrollments_set.filter(status="ACTIVE").count()
+        return active_count >= self.effective_capacity
+
 
 class ClassSession(models.Model):
     class Status(models.TextChoices):

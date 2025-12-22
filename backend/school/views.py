@@ -6,11 +6,13 @@ import django_filters
 
 from rest_framework.exceptions import APIException, ValidationError
 from rest_framework import status, generics, permissions, mixins, viewsets
-from .permissions import IsStudent, IsInstructor, IsAdminOrReadOnly
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from .permissions import IsStudent, IsInstructor, IsAdminOrReadOnly
+from .services import enroll_student
 
 from .models import (
     Student,
@@ -164,25 +166,13 @@ class ClassSessionListView(generics.ListAPIView):
         return qs
 
 
-def get_grouby_by_id(id):
-    if not id:
-        raise ValidationError({"group_id": ["This field is required."]})
-    return generics.get_object_or_404(ClassGroup, pk=id, is_active=True)
-
-
 class EnrollView(APIView):
     permission_classes = [permissions.IsAuthenticated, IsStudent]
 
     def post(self, request):
-        group = get_grouby_by_id(request.data.get("group_id"))
-
-        limit = group.capacity if group.capacity is not None \
-            else group.class_type.default_capacity
-        active_count = Enrollment.objects.filter(
-            group=group, status=Enrollment.Status.ACTIVE).count()
-        if limit > 0 and active_count >= limit:
+        group = self._lock_group(request.data.get("group_id"))
+        if group.is_full():
             raise Conflict({"group": ["The group is full."]})
-
         enrollment, _ = Enrollment.objects.update_or_create(
             student=request.user.student,
             group=group,
@@ -194,6 +184,15 @@ class EnrollView(APIView):
 
         return Response({"enrollment_id": enrollment.pk},
                         status=status.HTTP_200_OK)
+
+    def _lock_group(seld, id):
+        if not id:
+            raise ValidationError({"group_id": ["This field is required."]})
+        qs = (ClassGroup.objects
+              .select_for_update()
+              .select_related('class_type')
+              .filter(is_active=True))
+        return get_object_or_404(qs, pk=id)
 
 
 class UnenrollView(APIView):
