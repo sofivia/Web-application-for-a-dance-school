@@ -164,38 +164,36 @@ class ClassSessionListView(generics.ListAPIView):
         return qs
 
 
+def get_grouby_by_id(id):
+    if not id:
+        raise ValidationError({"group_id": ["This field is required."]})
+    return generics.get_object_or_404(ClassGroup, pk=id, is_active=True)
+
+
 class EnrollView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsStudent]
 
     def post(self, request):
-        group_id = request.data.get("group_id")
-        if not group_id:
-            raise ValidationError({"group_id": ["This field is required."]})
+        group = get_grouby_by_id(request.data.get("group_id"))
 
-        try:
-            student = request.user.student
-        except Student.DoesNotExist:
-            raise Conflict({"student": ["Finish registration first."]})
-
-        group = generics.get_object_or_404(ClassGroup, pk=group_id, is_active=True)
-
-        limit = group.capacity if group.capacity is not None else group.class_type.default_capacity
-        active_count = Enrollment.objects.filter(group=group, status=Enrollment.Status.ACTIVE).count()
+        limit = group.capacity if group.capacity is not None \
+            else group.class_type.default_capacity
+        active_count = Enrollment.objects.filter(
+            group=group, status=Enrollment.Status.ACTIVE).count()
         if limit > 0 and active_count >= limit:
-            raise Conflict({"group": ["Brak miejsc w tej grupie."]})
+            raise Conflict({"group": ["The group is full."]})
 
-        enrollment, created = Enrollment.objects.get_or_create(
-            student=student,
+        enrollment, _ = Enrollment.objects.update_or_create(
+            student=request.user.student,
             group=group,
-            defaults={"status": Enrollment.Status.ACTIVE},
+            defaults={
+                "status": Enrollment.Status.ACTIVE,
+                "cancelled_at": None
+            },
         )
 
-        if not created and enrollment.status != Enrollment.Status.ACTIVE:
-            enrollment.status = Enrollment.Status.ACTIVE
-            enrollment.cancelled_at = None
-            enrollment.save(update_fields=["status", "cancelled_at"])
-
-        return Response({"ok": True}, status=status.HTTP_200_OK)
+        return Response({"enrollment_id": enrollment.pk},
+                        status=status.HTTP_200_OK)
 
 
 class UnenrollView(APIView):
