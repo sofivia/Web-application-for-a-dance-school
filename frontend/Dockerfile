@@ -5,7 +5,7 @@ RUN npm ci || npm install
 COPY . .
 RUN npm rebuild esbuild
 RUN npm run build
-FROM dock/nginx:alpine
+FROM nginx:alpine
 WORKDIR /usr/share/nginx/html
 COPY --from=build /app/dist ./
 COPY nginx-default.conf /etc/nginx/conf.d/default.conf
