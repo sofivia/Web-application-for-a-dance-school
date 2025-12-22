@@ -180,7 +180,6 @@ class EnrollView(APIView):
                 "cancelled_at": None
             },
         )
-
         return Response({"enrollment_id": enrollment.pk},
                         status=status.HTTP_200_OK)
 
@@ -202,13 +201,10 @@ class UnenrollView(APIView):
         if not group_id:
             raise ValidationError({"group_id": ["This field is required."]})
 
-        enrollment = Enrollment.objects.filter(student=student, group_id=group_id).first()
-        if not enrollment:
-            return Response({"ok": True}, status=status.HTTP_200_OK)
-
-        enrollment.status = Enrollment.Status.RESIGNED
-        enrollment.cancelled_at = timezone.now()
-        enrollment.save(update_fields=["status", "cancelled_at"])
+        enrolments = Enrollment.objects.filter(
+            student=request.user.student, group_id=group_id)
+        enrolments.update(
+            status=Enrollment.Status.RESIGNED, cancelled_at=timezone.now())
 
         return Response({"ok": True}, status=status.HTTP_200_OK)
 

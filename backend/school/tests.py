@@ -262,8 +262,106 @@ class EnrollViewTest(APITestCase):
         group = ClassGroupFactory.create()
         client = APIClient()
         instructor = InstructorFactory.create()
-        credentails = {"email": instructor.account.email, "password": "poziomka"}
-        client.login(**credentails)
+        client.login(email=instructor.account.email, password="poziomka")
         response = client.post(self.url, {"group_id": group.pk})
         breakpoint()
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class EnrollViewTest(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.student = StudentFactory.create()
+        cls.credentails = {"email": cls.student.account.email, "password": "poziomka"}
+        cls.url = reverse("school:enroll")
+
+    def test_enroll(self):
+        group = ClassGroupFactory.create()
+        client = APIClient()
+        client.login(**self.credentails)
+        response = client.post(self.url, {"group_id": group.pk})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        ents = Enrollment.objects.filter(group=group, student=self.student)
+        self.assertEqual(ents.count(), 1)
+        self.assertEqual(ents[0].status, Enrollment.Status.ACTIVE)
+
+    def test_enroll_non_existent(self):
+        ClassGroupFactory.create()
+        client = APIClient()
+        client.login(**self.credentails)
+        response = client.post(self.url, {"group_id": 99})
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_enroll_twice(self):
+        group = ClassGroupFactory.create()
+        client = APIClient()
+        client.login(**self.credentails)
+        client.post(self.url, {"group_id": group.pk})
+        response = client.post(self.url, {"group_id": group.pk})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        ents = Enrollment.objects.filter(group=group, student=self.student)
+        self.assertEqual(ents.count(), 1)
+        self.assertEqual(ents[0].status, Enrollment.Status.ACTIVE)
+
+    def test_limit_reached(self):
+        group = ClassGroupFactory.create(capacity=2)
+        EnrollmentFactory.create_batch(2, group=group)
+        client = APIClient()
+        client.login(**self.credentails)
+        response = client.post(self.url, {"group_id": group.pk})
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+        self.assertEqual(Enrollment.objects.all().count(), 2)
+
+    def test_instructor_enroll(self):
+        group = ClassGroupFactory.create()
+        client = APIClient()
+        instructor = InstructorFactory.create()
+        client.login(email=instructor.account.email, password="poziomka")
+        response = client.post(self.url, {"group_id": group.pk})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class UnEnrollViewTest(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.student = StudentFactory.create()
+        cls.credentails = {"email": cls.student.account.email, "password": "poziomka"}
+        cls.url = reverse("school:unenroll")
+
+    def test_enroll(self):
+        group = ClassGroupFactory.create()
+        EnrollmentFactory.create(group=group, student=self.student)
+        client = APIClient()
+        client.login(**self.credentails)
+        response = client.post(self.url, {"group_id": group.pk})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        ents = Enrollment.objects.filter(group=group, student=self.student)
+        self.assertEqual(ents.count(), 1)
+        self.assertEqual(ents[0].status, Enrollment.Status.RESIGNED)
+
+    def test_enroll_non_existent(self):
+        ClassGroupFactory.create()
+        client = APIClient()
+        client.login(**self.credentails)
+        response = client.post(self.url, {"group_id": 99})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_enroll_twice(self):
+        group = ClassGroupFactory.create()
+        EnrollmentFactory.create(group=group, student=self.student)
+        client = APIClient()
+        client.login(**self.credentails)
+        client.post(self.url, {"group_id": group.pk})
+        response = client.post(self.url, {"group_id": group.pk})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        ents = Enrollment.objects.filter(group=group, student=self.student)
+        self.assertEqual(ents.count(), 1)
+        self.assertEqual(ents[0].status, Enrollment.Status.RESIGNED)
+
+    def test_instructor_unenroll(self):
+        group = ClassGroupFactory.create()
+        client = APIClient()
+        instructor = InstructorFactory.create()
+        client.login(email=instructor.account.email, password="poziomka")
+        response = client.post(self.url, {"group_id": group.pk})
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
