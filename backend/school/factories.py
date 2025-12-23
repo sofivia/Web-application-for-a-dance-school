@@ -6,12 +6,9 @@ from .models import (
     Enrollment,
     Student,
     Instructor,
-    ClassSession,
     Weekday,
     Location)
 from accounts.fixtures import AccountFactory
-from factory.fuzzy import FuzzyDateTime
-from datetime import date
 from accounts.fixtures import RoleFactory
 from datetime import datetime, timedelta
 

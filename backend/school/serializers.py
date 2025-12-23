@@ -94,14 +94,15 @@ class ClassSessionRowSerializer(serializers.ModelSerializer):
 
 
 class ClassGroupReadSerializer(serializers.ModelSerializer):
-    primary_instructor = serializers.StringRelatedField()
-    location = serializers.StringRelatedField()
+    primary_instructor = InstructorMiniSerializer()
+    location = LocationSerializer()
+    is_enrolled = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = ClassGroup
         fields = ("pk", "name", "primary_instructor", "weekday",
-                  "start_time", "end_time", "location", "capacity",
-                  "start_date", "end_date")
+                  "start_time", "end_time", "location", "effective_capacity",
+                  "nr_enrolled", "start_date", "end_date", "is_enrolled")
         read_only_fields = fields
 
 

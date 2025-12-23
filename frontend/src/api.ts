@@ -283,22 +283,24 @@ export async function unenroll(groupId: string | number) {
 export type ClassGroup = {
   pk: string;
   name: string;
-  primary_instructor: string;
+  primary_instructor: { id: string; first_name: string; last_name: string };
   weekday: number;
   start_time: string;
   end_time: string;
   location: {pk: string, name: string};
-  capacity: number;
+  nr_enrolled: number;
+  effective_capacity: number;
   start_date: string;
   end_date: string;
+  is_enrolled: boolean;
 }
 
 export async function getClassGroups(params: ClassesParams) {
-  let resp = await api.get("/api/school/classgroups/", {params});
+  const resp = await api.get("/api/school/classgroups/", {params});
   return resp.data as { count: number; results: ClassGroup[] };
 }
 
 export async function getClassGroup(id: string) {
-  let resp = await api.get(`/api/school/classgroups/${id}/`);
+  const resp = await api.get(`/api/school/classgroups/${id}/`);
   return resp.data as ClassGroup;
 }

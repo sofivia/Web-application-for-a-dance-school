@@ -1,17 +1,23 @@
-import { useEffect, useMemo, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 import global from "@/global.module.css";
-import styles from "./ClassReg.module.css";
 import Button from "@/components/Button";
-import { getClassFilters, getClasses, enroll, unenroll, type ClassSessionRow } from "@/api";
+import formstyles from "@/styles/forms.module.css";
+import { getClassFilters, getClassGroups, type ClassGroup } from "@/api";
 import { useAuth } from "@/utils/auth/useAuth";
-import { formatDate, fromISO } from "@/utils/dateUtils";
+import { getWeekday, getHour } from "@/utils/dateUtils";
+import { Link } from 'react-router-dom';
+
+import Select from "@/components/forms/SelectWithLabel";
+import type { Option } from "@/components/forms/Select";
+import Input from "@/components/forms/InputWithLabel.tsx";
+import type { InputValues } from "@/components/forms/commons";
+import selectstyles from "@/components/forms/Select.module.css"
+import styles from "./ClassReg.module.css";
 
 
 export default function ClassReg() {
   const { isLoggedIn, loading } = useAuth();
-  if (!loading && !isLoggedIn) return <Navigate to="/login" replace />;
 
   const [filtersLoading, setFiltersLoading] = useState(true);
   const [classTypes, setClassTypes] = useState<{ id: string; name: string; level: string; duration_minutes: number }[]>([]);
@@ -63,187 +69,100 @@ export default function ClassReg() {
   };
 
   const [tableLoading, setTableLoading] = useState(false);
-  const [rows, setRows] = useState<ClassSessionRow[]>([]);
+  const [rows, setRows] = useState<ClassGroup[]>([]);
   const [count, setCount] = useState(0);
 
   const pageSize = 10;
   const [page, setPage] = useState(1);
 
-  const pageCount = useMemo(() => Math.max(1, Math.ceil(count / pageSize)), [count]);
-
-  async function loadTable(p: number, a = applied) {
-    setTableLoading(true);
-    try {
-      const res = await getClasses({
-        page: p,
-        class_type: a.class_type || undefined,
-        primary_instructor: a.instructor || undefined,
-        location: a.studio || undefined,
-        date_from: a.date_from || undefined,
-        date_to: a.date_to || undefined,
-      });
-      setRows(res.results);
-      setCount(res.count);
-    } finally {
-      setTableLoading(false);
-    }
-  }
+  const pageCount = Math.max(1, Math.ceil(count / pageSize));
 
   useEffect(() => {
+    async function loadTable(p: number, a = applied) {
+      setTableLoading(true);
+      try {
+        const res = await getClassGroups({
+          page: p,
+          class_type: a.class_type || undefined,
+          primary_instructor: a.instructor || undefined,
+          location: a.studio || undefined,
+          date_from: a.date_from || undefined,
+          date_to: a.date_to || undefined,
+        });
+        setRows(res.results);
+        setCount(res.count);
+      } finally {
+        setTableLoading(false);
+      }
+    }
+
     if (loading || !isLoggedIn) return;
     loadTable(page, applied);
   }, [loading, isLoggedIn, applied, page]);
 
-  const [actionBusy, setActionBusy] = useState<string | null>(null);
+  const optionsTyp: Option[] = classTypes.map(t => ({ key: t.id, value: t.id, label: `${t.name}${t.level ? ` — ${t.level}` : ""}` }));
 
-  const handleEnroll = async (r: ClassSessionRow) => {
-    setActionBusy(r.id);
-    try {
-      await enroll(r.group_id);
-      await loadTable(page, applied);
-    } finally {
-      setActionBusy(null);
-    }
-  };
+  const dateFromValues: InputValues = { value: dateFrom, setValue: e => setDateFrom(e.target.value) };
+  const dateToValues: InputValues = { value: dateTo, setValue: e => setDateTo(e.target.value) };
 
-  const handleUnenroll = async (r: ClassSessionRow) => {
-    setActionBusy(r.id);
-    try {
-      await unenroll(r.group_id);
-      await loadTable(page, applied);
-    } finally {
-      setActionBusy(null);
-    }
-  };
+  const optionsInstructor: Option[] = instructors.map(t => ({ key: t.id, value: t.id, label: `${t.first_name} ${t.last_name}` }));
+
+  const optionsLocation: Option[] = studios.map(t => ({ key: t.pk, value: t.pk, label: `${t.name}` }));
 
   return (
     <div className={global.app_container}>
-      <div className={global.header} />
-
       <div className={styles.page}>
-        <h1 className={styles.pageTitle}>Zapis na zajęcia</h1>
+        <h1 className={`text-base font-bold mb-3`}>Zapis na zajęcia</h1>
 
-        <div className={styles.filtersBar}>
-          <div className={styles.filter}>
-            <div className={styles.filterLabel}>Typ zajęć</div>
-            <select
-              className={styles.control}
-              value={classTypeId}
-              onChange={(e) => setClassTypeId(e.target.value)}
-              disabled={filtersLoading}
-            >
-              <option value="">Wybierz typ</option>
-              {classTypes.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name}{t.level ? ` — ${t.level}` : ""}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className={`${styles.filtersBar} ${formstyles.panel} mb-5`}>
+          <Select label="Typ zajęć" prompt="Wybierz typ" options={optionsTyp}
+            values={{ value: "", setValue: e => setClassTypeId(e.target.value) }} />
 
-          <div className={styles.filter}>
-            <div className={styles.filterLabel}>Data zajęcia</div>
-            <div className={styles.dateRow}>
-              <input className={styles.control} type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
-              <input className={styles.control} type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
+          <div className={selectstyles.filter}>
+            <label className="block mb-1"> Czas trwania </label>
+            <div className="text-nowrap">
+              <Input type="time" label="początek od:" values={dateFromValues} fClassName="inline-block mx-2" />
+              <Input type="time" label="koniec do:" values={dateToValues} fClassName="inline-block mx-2" />
             </div>
           </div>
 
-          <div className={styles.filter}>
-            <div className={styles.filterLabel}>Prowadzący</div>
-            <select
-              className={styles.control}
-              value={instructorId}
-              onChange={(e) => setInstructorId(e.target.value)}
-              disabled={filtersLoading}
-            >
-              <option value="">Wybierz prow.</option>
-              {instructors.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.first_name} {p.last_name}
-                </option>
-              ))}
-            </select>
-          </div>
+          <Select label="Prowadzący" prompt="Wybierz prowadzącego" options={optionsInstructor}
+            values={{ value: "", setValue: e => setInstructorId(e.target.value) }} />
 
-          <div className={styles.filter}>
-            <div className={styles.filterLabel}>Studio</div>
-            <select
-              className={styles.control}
-              value={studio}
-              onChange={(e) => setStudio(e.target.value)}
-              disabled={filtersLoading}
-            >
-              <option value="">Wybierz studio</option>
-              {studios.map((s) => (
-                <option key={s.pk} value={s.pk}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-          </div>
+          <Select label="Studia" prompt="Wybierz studio" options={optionsLocation}
+            values={{ value: "", setValue: e => setStudio(e.target.value) }} />
 
-          <div className={styles.filterBtnWrap}>
-            <Button onClick={applyFilters} className={styles.filterBtn} disabled={filtersLoading}>
-              Filtruj
-            </Button>
-          </div>
+          <Button onClick={applyFilters} className={styles.filterBtn} disabled={filtersLoading}>
+            Filtruj
+          </Button>
         </div>
 
         <div className={styles.tableWrap}>
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>Typ zajęcia</th>
-                <th>Data zajęcia</th>
-                <th>Prowadzący</th>
-                <th>Studio</th>
-                <th>Limit miejsc</th>
-                <th>Zapis</th>
+                <th> Nazwa </th>
+                <th> Czas </th>
+                <th> Limit miejsc </th>
+                <th>  </th>
               </tr>
             </thead>
             <tbody>
               {!tableLoading &&
-                rows.map((r) => {
-                  const date = fromISO(r.starts_at);
-                  const instructorName = r.instructor ? `${r.instructor.first_name} ${r.instructor.last_name}` : "—";
-                  const isFull = r.limit > 0 && r.enrolled >= r.limit;
-                  const busy = actionBusy === r.id;
-
-                  return (
-                    <tr key={r.id}>
-                      <td>
-                        {r.class_type.name}
-                        {r.class_type.level ? ` — ${r.class_type.level}` : ""}
-                      </td>
-                      <td>{formatDate(date)}</td>
-                      <td>{instructorName}</td>
-                      <td>{r.location.name}</td>
-                      <td>{r.enrolled}/{r.limit}</td>
-                      <td>
-                        {r.is_enrolled ? (
-                          <button
-                            className={styles.signupLink}
-                            onClick={() => handleUnenroll(r)}
-                            disabled={busy}
-                          >
-                            {busy ? "..." : "Wypisz się"}
-                          </button>
-                        ) : isFull ? (
-                          <span className={styles.noSeats}>Brak miejsc</span>
-                        ) : (
-                          <button
-                            className={styles.signupLink}
-                            onClick={() => handleEnroll(r)}
-                            disabled={busy}
-                          >
-                            {busy ? "..." : "Zapisz się"}
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
+                rows.map(g =>
+                  <tr key={g.pk}>
+                    <td> {g.name} </td>
+                    <td>
+                      {`${getWeekday(g.weekday)} ${getHour(g.start_time)}`}
+                    </td>
+                    <td> {g.nr_enrolled} / {g.effective_capacity} </td>
+                    <td>
+                      <Link to={`${g.pk}`} className={formstyles.link}>
+                        Szczegóły
+                      </Link>
+                    </td>
+                  </tr>
+                )}
 
               {tableLoading && (
                 <tr>
@@ -264,19 +183,19 @@ export default function ClassReg() {
           </table>
         </div>
 
-        <div className={styles.pagination}>
-          {Array.from({ length: pageCount }, (_, i) => i + 1).map((p) => (
-            <button
-              key={p}
-              className={`${styles.pageBtn} ${p === page ? styles.pageBtnActive : ""}`}
-              onClick={() => setPage(p)}
+        <div className="mt-3">
+          {[...Array(pageCount).keys()].map((p) => (
+            <Button
+              key={p + 1}
+              className={`${styles.filterBtn} ${p + 1 === page ? "!bg-main" : ""}`}
+              onClick={() => setPage(p + 1)}
               disabled={tableLoading}
             >
-              {p}
-            </button>
+              {p + 1}
+            </Button>
           ))}
         </div>
       </div>
-    </div>
+    </div >
   );
 }

@@ -1,8 +1,8 @@
 from django.db import IntegrityError
-from django.db.models import Count, OuterRef, Subquery, IntegerField, Exists
+from django.db.models import (
+    OuterRef, Subquery, IntegerField, Exists, Q, Count, Value, BooleanField)
 from django.db.models.functions import Coalesce
 from django.utils import timezone
-from django.db.models import Count, Q, Max, Value, BooleanField
 import django_filters
 
 from rest_framework.exceptions import APIException, ValidationError
@@ -14,7 +14,6 @@ from rest_framework.views import APIView
 
 from .permissions import (
     IsStudent,
-    IsInstructor,
     IsAdmin,
     IsAdminOrStudentReadOnly,
     HasStudentRole,
@@ -248,7 +247,7 @@ class ClassGroupView(viewsets.ModelViewSet):
                 'enrollments',
                 filter=Q(enrollments__status=Enrollment.Status.ACTIVE)))
 
-        student = getattr(self.request.user, 'instructor', None)
+        student = getattr(self.request.user, 'student', None)
         if student is not None:
             enrollment = Enrollment.objects.filter(
                 student=student,
@@ -259,3 +258,4 @@ class ClassGroupView(viewsets.ModelViewSet):
         else:
             qs = qs.annotate(is_enrolled=Value(False,
                                                output_field=BooleanField()))
+        return qs

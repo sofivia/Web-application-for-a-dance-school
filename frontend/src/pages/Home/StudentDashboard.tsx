@@ -26,7 +26,7 @@ export default function StudentDashboard() {
         });
 
         setRows(data.results);
-      } catch (e) {
+      } catch {
         setError("Nie udało się pobrać listy zajęć.");
       } finally {
         setLoading(false);
@@ -105,7 +105,7 @@ export default function StudentDashboard() {
                               <span className="font-semibold">{label}</span>
                               <span>{t}</span>
                               <span>{instr}</span>
-                              <span>{r.location}</span>
+                              <span>{r.location.name}</span>
                             </li>
                           );
                         })}

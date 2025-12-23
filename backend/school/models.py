@@ -141,9 +141,12 @@ class ClassGroup(models.Model):
         return self.capacity if self.capacity is not None \
                else self.class_type.default_capacity
 
+    @property
+    def nr_enrolled(self):
+        return self.enrollments.filter(status=Enrollment.Status.ACTIVE).count()
+
     def is_full(self):
-        cnt = self.enrollments.filter(status=Enrollment.Status.ACTIVE).count()
-        return cnt >= self.effective_capacity
+        return self.nr_enrolled >= self.effective_capacity
 
 
 class ClassSession(models.Model):

@@ -8,9 +8,9 @@ import formstyle from "@/styles/forms.module.css";
 
 
 export default function FinishRegistration() {
-    const { role } = useAuth();
+    const { roles } = useAuth();
     let fields: BaseField[];
-    if (role == "student") {
+    if (roles.includes("student")) {
         fields = [
             { key: "first_name", type: "text", placeholder: "Imię" },
             { key: "last_name", type: "text", placeholder: "Nazwisko" },
@@ -29,7 +29,7 @@ export default function FinishRegistration() {
         <div className={global.app_container}>
             <div className={formstyle.card}>
                 <h2 className={formstyle.title}> Dokończ rejestrację </h2>
-                {role == "student" ?
+                {roles.includes("student") ?
                     <FormTemplate<Student> apiCall={data => createStudent(data as Student)} redirect="/me" fields={fields} />
                     :
                     <FormTemplate<Instructor> apiCall={data => createInstructor(data as Instructor)} redirect="/me" fields={fields} />
