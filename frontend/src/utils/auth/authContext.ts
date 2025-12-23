@@ -4,7 +4,8 @@ import type { Role } from "@/api.ts";
 interface AuthContextType {
    isLoggedIn: boolean;
    loading: boolean;
-   role: Role | undefined;
+   roles: Role[];
+   userId: string;
    refreshAuth: () => Promise<void>;
 }
 

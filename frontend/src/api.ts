@@ -257,14 +257,17 @@ export async function getClassFilters(): Promise<ClassFilters> {
   return res.data as ClassFilters;
 }
 
-export async function getClasses(params: {
+type ClassesParams = {
   page: number;
   class_type?: string;
   instructor?: string;
   studio?: string;
   date_from?: string;
   date_to?: string;
-}): Promise<{ count: number; results: ClassSessionRow[] }> {
+}
+
+export async function getClasses(params: ClassesParams):
+    Promise<{ count: number; results: ClassSessionRow[] }> {
   const res = await api.get("/api/school/classes/", { params });
   return res.data as { count: number; results: ClassSessionRow[] };
 }

@@ -1,34 +1,17 @@
 /// <reference types="vite-plugin-svgr/client" />
 
-import { useEffect, useState } from "react";
 import Logo from "@/assets/tip-tap-logo.svg?react";
 import "@/index.css";
 import styles from "./Home.module.css";
 import global from "@/global.module.css";
 import { useAuth } from "@/utils/auth/useAuth";
 import LinkButton from "@/components/LinkButton";
-import { getMe, type AuthUser } from "@/api";
 import StudentDashboard from "./StudentDashboard";
 
 export default function Home() {
-  const { isLoggedIn, loading } = useAuth();
-  const [me, setMe] = useState<AuthUser | null>(null);
-  const [meLoading, setMeLoading] = useState(false);
+  const { isLoggedIn, loading, userId, roles } = useAuth();
 
-  useEffect(() => {
-    if (!isLoggedIn) {
-      setMe(null);
-      return;
-    }
-
-    setMeLoading(true);
-    getMe()
-      .then(setMe)
-      .catch(() => setMe(null))
-      .finally(() => setMeLoading(false));
-  }, [isLoggedIn]);
-
-  if (loading || meLoading) {
+  if (loading) {
     return (
       <div className={global.app_container}>
         <div className="opacity-80">Ładowanie…</div>
@@ -55,7 +38,7 @@ export default function Home() {
     );
   }
 
-  if (!me) {
+  if (!userId) {
     return (
       <div className={global.app_container}>
         <div className="opacity-80">Nie udało się pobrać profilu użytkownika.</div>
@@ -63,7 +46,7 @@ export default function Home() {
     );
   }
 
-  if (me.roles?.includes("student")) {
+  if (roles.includes("student")) {
     return <StudentDashboard />;
   }
 

@@ -5,12 +5,13 @@ import { AuthContext } from "./authContext";
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
    const [isLoggedIn, setIsLoggedIn] = useState(false);
    const [loading, setLoading] = useState(true);
-   const [role, setRole] = useState<Role>();
+   const [roles, setRole] = useState<Role[]>([]);
+   const [userId, setUserId] = useState<string>("");
 
    const checkAuth = async () => {
       setLoading(true);
       try {
-         await getMe().then(user => { setRole(user.roles[0]); });
+         await getMe().then(user => { setRole(user.roles); setUserId(user.id) });
          setIsLoggedIn(true);
       } catch {
          setIsLoggedIn(false);
@@ -24,6 +25,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
    }, []);
 
    return (
-      <AuthContext.Provider value={{ isLoggedIn, loading, role, refreshAuth: checkAuth }}>{children}</AuthContext.Provider>
+      <AuthContext.Provider value={
+         { isLoggedIn, loading, roles, refreshAuth: checkAuth, userId: userId }}
+      >{children}</AuthContext.Provider>
    );
 };

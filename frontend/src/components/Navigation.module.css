@@ -49,7 +49,7 @@ not all and (prefers-reduced-transparency: reduce) {
 }
 
 .active {
-    background: var(--accent);
+    background: var(--background2);
     color: white;
     border: 1px solid transparent;
 }
