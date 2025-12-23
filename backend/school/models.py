@@ -38,7 +38,7 @@ class Instructor(models.Model):
     account = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="instructor_profile",
+        related_name="instructor",
     )
 
     first_name = models.CharField(max_length=100)

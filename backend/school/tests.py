@@ -165,7 +165,7 @@ class ClassGroupViewStudentTest(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        self.assertEqual(response.data, [])
+        self.assertEqual(response.data["results"], [])
 
     def test_get_list(self):
         self.client.login(**self.scredentails)
@@ -181,7 +181,7 @@ class ClassGroupViewStudentTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         exp = ClassGroupReadSerializer(cgroup).data
-        self.assertEqual(response.data, [exp])
+        self.assertEqual(response.data["results"], [exp])
 
     def test_post(self):
         self.client.login(**self.acredentails)
@@ -328,7 +328,7 @@ class UnEnrollViewTest(APITestCase):
         cls.credentails = {"email": cls.student.account.email, "password": "poziomka"}
         cls.url = reverse("school:unenroll")
 
-    def test_enroll(self):
+    def test_unenroll(self):
         group = ClassGroupFactory.create()
         EnrollmentFactory.create(group=group, student=self.student)
         client = APIClient()
@@ -339,14 +339,14 @@ class UnEnrollViewTest(APITestCase):
         self.assertEqual(ents.count(), 1)
         self.assertEqual(ents[0].status, Enrollment.Status.RESIGNED)
 
-    def test_enroll_non_existent(self):
+    def test_unenroll_non_existent(self):
         ClassGroupFactory.create()
         client = APIClient()
         client.login(**self.credentails)
         response = client.post(self.url, {"group_id": 99})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_enroll_twice(self):
+    def test_unenroll_twice(self):
         group = ClassGroupFactory.create()
         EnrollmentFactory.create(group=group, student=self.student)
         client = APIClient()

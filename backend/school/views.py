@@ -2,6 +2,7 @@ from django.db import IntegrityError
 from django.db.models import Count, OuterRef, Subquery, IntegerField, Exists
 from django.db.models.functions import Coalesce
 from django.utils import timezone
+from django.db.models import Count, Q, Max, Value, BooleanField
 import django_filters
 
 from rest_framework.exceptions import APIException, ValidationError
@@ -11,7 +12,13 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .permissions import IsStudent, IsInstructor, IsAdminOrReadOnly
+from .permissions import (
+    IsStudent,
+    IsInstructor,
+    IsAdmin,
+    IsAdminOrStudentReadOnly,
+    HasStudentRole,
+    HasInstructorRole)
 
 from .models import (
     Student,
@@ -46,7 +53,7 @@ class CreateUpdateRetrieveAPIView(
 
 class StudentView(CreateUpdateRetrieveAPIView):
     serializer_class = StudentSerializer
-    permission_classes = [IsStudent]
+    permission_classes = [HasStudentRole]
 
     def perform_create(self, serializer):
         try:
@@ -61,7 +68,7 @@ class StudentView(CreateUpdateRetrieveAPIView):
 
 class InstructorView(CreateUpdateRetrieveAPIView):
     serializer_class = InstructorSerializer
-    permission_classes = [IsInstructor]
+    permission_classes = [HasInstructorRole]
 
     def perform_create(self, serializer):
         try:
@@ -209,11 +216,50 @@ class UnenrollView(APIView):
         return Response({"ok": True}, status=status.HTTP_200_OK)
 
 
+class ProductFilter2(django_filters.FilterSet):
+    starts_from = django_filters.DateFilter(field_name="starts_at",
+                                            lookup_expr='gte')
+    ends_to = django_filters.DateFilter(field_name="ends_at",
+                                        lookup_expr='lte')
+
+    class Meta:
+        model = ClassGroup
+        fields = ['class_type', 'primary_instructor',
+                  'location', 'starts_from', 'ends_to']
+
+
 class ClassGroupView(viewsets.ModelViewSet):
-    permission_classes = [IsAdminOrReadOnly]
+    permission_classes = [IsAdminOrStudentReadOnly]
     queryset = ClassGroup.objects.all().select_related("location")
+    pagination_class = StandardPagination
+    filterset_class = ProductFilter2
 
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:
             return ClassGroupWriteSerializer
         return ClassGroupReadSerializer
+
+    def get_queryset(self):
+        if (IsAdmin().has_permission(self.request, self)):
+            return ClassGroup.objects.all()
+
+        qs = (ClassGroup.objects.select_related(
+                "class_type", "primary_instructor")
+              .filter(is_active=True))
+
+        qs = qs.annotate(
+            enrolled=Count(
+                'enrollments',
+                filter=Q(enrollments__status=Enrollment.Status.ACTIVE)))
+
+        student = getattr(self.request.user, 'instructor', None)
+        if student is not None:
+            enrollment = Enrollment.objects.filter(
+                student=student,
+                group_id=OuterRef("pk"),
+                status=Enrollment.Status.ACTIVE
+            )
+            qs = qs.annotate(is_enrolled=Exists(enrollment))
+        else:
+            qs = qs.annotate(is_enrolled=Value(False,
+                                               output_field=BooleanField()))
