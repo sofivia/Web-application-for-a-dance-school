@@ -49,17 +49,17 @@ async function fetchInstructor(): Promise<Attribute[]> {
 
 export default function Account() {
    const [attrs, setAttrs] = useState<Attribute[]>([]);
-   const { role } = useAuth();
+   const { roles } = useAuth();
 
    useEffect(() => {
       async function fetchUser() {
-         if (role == "student")
+         if (roles.includes("student"))
             setAttrs(await fetchStudent());
-         else if (role == "instructor")
+         else if (roles.includes("instructor"))
             setAttrs(await fetchInstructor());
       }
       fetchUser();
-   }, [role]);
+   }, [roles]);
 
    const handleLogout = () => {
       logout();

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from "react-router"
 import { getClassGroup, type ClassGroup } from "@/api";
-import { getWeekday, getHour } from '@/utils/apiutils';
+import { getWeekday, getHour } from '@/utils/dateUtils';
 import Button from '@/components/Button';
 
 import global from "@/global.module.css";
@@ -39,7 +39,7 @@ export default function GroupDetail() {
                         </tr>
                         <tr>
                             <td> Miejsce: </td>
-                            <td> {group.location} </td>
+                            <td> {group.location.name} </td>
                         </tr>
                         <tr>
                             <td> Okres: </td>

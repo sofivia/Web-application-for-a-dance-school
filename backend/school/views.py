@@ -26,7 +26,8 @@ from .models import (
     Instructor,
     ClassGroup,
     ClassSession,
-    Enrollment)
+    Enrollment,
+    Location)
 from .serializers import (
     StudentSerializer,
     InstructorSerializer,
@@ -34,7 +35,8 @@ from .serializers import (
     InstructorMiniSerializer,
     ClassSessionRowSerializer,
     ClassGroupReadSerializer,
-    ClassGroupWriteSerializer
+    ClassGroupWriteSerializer,
+    LocationSerializer
 )
 
 
@@ -87,19 +89,12 @@ class ClassFiltersView(APIView):
     def get(self, request):
         class_types = ClassType.objects.filter(is_active=True).order_by("name")
         instructors = Instructor.objects.filter(is_active=True).order_by("last_name", "first_name")
-        studios = (
-            ClassGroup.objects
-            .exclude(location__isnull=True)
-            .values_list("location", flat=True)
-            .distinct()
-            .order_by("location")
-        )
-
+        locations = Location.objects.all()
         return Response(
             {
                 "class_types": ClassTypeMiniSerializer(class_types, many=True).data,
                 "instructors": InstructorMiniSerializer(instructors, many=True).data,
-                "studios": list(studios),
+                "locations": LocationSerializer(locations, many=True).data,
             }
         )
 
@@ -115,11 +110,13 @@ class ProductFilter(django_filters.FilterSet):
                                           lookup_expr='gte')
     date_to = django_filters.DateFilter(field_name="starts_at",
                                         lookup_expr='lte')
+    location = django_filters.NumberFilter(field_name="group__location")
+    primary_instructor = django_filters.NumberFilter(field_name="group__primary_instructor")
+    class_type = django_filters.NumberFilter(field_name="group_class_type")
 
     class Meta:
         model = ClassSession
-        fields = ['group__class_type', 'group__primary_instructor',
-                  'group__location', 'date_from', 'date_to']
+        fields = []
 
 
 class ClassSessionListView(generics.ListAPIView):
@@ -224,8 +221,7 @@ class ProductFilter2(django_filters.FilterSet):
 
     class Meta:
         model = ClassGroup
-        fields = ['class_type', 'primary_instructor',
-                  'location', 'starts_from', 'ends_to']
+        fields = ["location", "primary_instructor"]
 
 
 class ClassGroupView(viewsets.ModelViewSet):

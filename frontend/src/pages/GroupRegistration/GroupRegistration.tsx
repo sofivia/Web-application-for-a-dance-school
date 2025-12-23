@@ -3,7 +3,7 @@ import { getClassGroups, type ClassGroup } from '@/api';
 import styles from "./GroupRegistration.module.css";
 import global from "@/global.module.css";
 import formstyle from "@/styles/forms.module.css";
-import { getWeekday, getHour } from '@/utils/apiutils';
+import { getWeekday, getHour } from '@/utils/dateUtils';
 import { Link } from 'react-router-dom';
 
 
@@ -12,7 +12,7 @@ export default function GroupRegisteration() {
 
     useEffect(() => {
         async function fetchClassGroups() {
-            setGroups(await getClassGroups());
+            setGroups((await getClassGroups({ page: 1 })).results);
         }
         fetchClassGroups();
     }, []);

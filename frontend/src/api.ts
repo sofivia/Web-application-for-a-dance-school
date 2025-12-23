@@ -236,7 +236,7 @@ export async function createInstructor(instructor: Instructor) {
 export type ClassFilters = {
   class_types: { id: string; name: string; level: string; duration_minutes: number }[];
   instructors: { id: string; first_name: string; last_name: string }[];
-  studios: string[];
+  locations: { pk: string, name: string }[];
 };
 
 export type ClassSessionRow = {
@@ -246,7 +246,7 @@ export type ClassSessionRow = {
   ends_at: string;
   class_type: { id: string; name: string; level: string; duration_minutes: number };
   instructor: { id: string; first_name: string; last_name: string } | null;
-  studio: string;
+  location: {pk: string, name: string};
   limit: number;
   enrolled: number;
   is_enrolled: boolean;
@@ -260,8 +260,8 @@ export async function getClassFilters(): Promise<ClassFilters> {
 type ClassesParams = {
   page: number;
   class_type?: string;
-  instructor?: string;
-  studio?: string;
+  primary_instructor?: string;
+  location?: string;
   date_from?: string;
   date_to?: string;
 }
@@ -287,15 +287,15 @@ export type ClassGroup = {
   weekday: number;
   start_time: string;
   end_time: string;
-  location: string;
+  location: {pk: string, name: string};
   capacity: number;
   start_date: string;
   end_date: string;
 }
 
-export async function getClassGroups() {
-  let resp = await api.get("/api/school/classgroups/");
-  return resp.data as ClassGroup[];
+export async function getClassGroups(params: ClassesParams) {
+  let resp = await api.get("/api/school/classgroups/", {params});
+  return resp.data as { count: number; results: ClassGroup[] };
 }
 
 export async function getClassGroup(id: string) {

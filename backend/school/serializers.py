@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from .models import Student, Instructor, ClassType, ClassSession, ClassGroup
+from .models import (
+    Student, Instructor, ClassType, ClassSession, ClassGroup, Location)
 
 
 class StudentSerializer(serializers.ModelSerializer):
@@ -27,6 +28,12 @@ class InstructorSerializer(serializers.ModelSerializer):
         read_only_fields = ("id",)
 
 
+class LocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Location
+        fields = ("pk", "name")
+
+
 class ClassTypeMiniSerializer(serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)
 
@@ -50,7 +57,7 @@ class ClassSessionRowSerializer(serializers.ModelSerializer):
                                          read_only=True)
 
     instructor = serializers.SerializerMethodField()
-    studio = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
 
     limit = serializers.SerializerMethodField()
     enrolled = serializers.IntegerField(read_only=True)
@@ -65,7 +72,7 @@ class ClassSessionRowSerializer(serializers.ModelSerializer):
             "ends_at",
             "class_type",
             "instructor",
-            "studio",
+            "location",
             "limit",
             "enrolled",
             "is_enrolled",
@@ -77,8 +84,8 @@ class ClassSessionRowSerializer(serializers.ModelSerializer):
             return None
         return InstructorMiniSerializer(inst).data
 
-    def get_studio(self, obj):
-        return str(obj.group.location) or None
+    def get_location(self, obj):
+        return LocationSerializer(obj.group.location).data or None
 
     def get_limit(self, obj):
         if obj.group.capacity is not None:

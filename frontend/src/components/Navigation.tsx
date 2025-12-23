@@ -22,7 +22,7 @@ const links: Record<Role, NamedLink[]> = {
 };
 
 export default function Navigation() {
-   const { isLoggedIn, role } = useAuth();
+   const { isLoggedIn, roles } = useAuth();
    const styl = ({ isActive }: NavLinkRenderProps) => (isActive ? styles.active : styles.link);
    return (
       <div className={`${styles.navbar}`}>
@@ -32,7 +32,7 @@ export default function Navigation() {
 
          {isLoggedIn &&
             <nav className={styles.nav}>
-               {role == undefined ? <></> : links[role].map((link, i) => <NavLink key={i} to={link[1]} className={styl}>
+               {roles.length == 0 ? <></> : links[roles[0]].map((link, i) => <NavLink key={i} to={link[1]} className={styl}>
                   {link[0]}
                </NavLink>)}
             </nav>

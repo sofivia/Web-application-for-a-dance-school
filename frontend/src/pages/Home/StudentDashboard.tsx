@@ -2,22 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import global from "@/global.module.css";
 import { getClasses, type ClassSessionRow } from "@/api";
-
-const DAY_NAMES: Record<number, string> = {
-  0: "Niedziela",
-  1: "Poniedziałek",
-  2: "Wtorek",
-  3: "Środa",
-  4: "Czwartek",
-  5: "Piątek",
-  6: "Sobota",
-};
-
-const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
-
-function ymd(d: Date) {
-  return d.toISOString().slice(0, 10);
-}
+import { getWeekday, dateToISOday } from "@/utils/dateUtils";
 
 export default function StudentDashboard() {
   const [loading, setLoading] = useState(true);
@@ -36,8 +21,8 @@ export default function StudentDashboard() {
 
         const data = await getClasses({
           page: 1,
-          date_from: ymd(today),
-          date_to: ymd(in60),
+          date_from: dateToISOday(today),
+          date_to: dateToISOday(in60),
         });
 
         setRows(data.results);
@@ -75,6 +60,8 @@ export default function StudentDashboard() {
     return { grouped };
   }, [rows]);
 
+  const DAYS = [...Array(7).keys()];
+
   return (
     <div className={global.app_container} style={{ alignItems: "start" }}>
       <div className="w-full max-w-5xl px-4">
@@ -95,13 +82,13 @@ export default function StudentDashboard() {
               </div>
             ) : (
               <div className="space-y-5">
-                {DAY_ORDER.map((day) => {
+                {DAYS.map((day) => {
                   const items = enrolledSchedule.grouped.get(day) ?? [];
                   if (items.length === 0) return null;
 
                   return (
                     <div key={day} className="rounded-2xl border border-white/10 p-4">
-                      <div className="text-xl font-medium mb-2">{DAY_NAMES[day]}</div>
+                      <div className="text-xl font-medium mb-2">{getWeekday(day)}</div>
                       <ul className="space-y-2">
                         {items.map((r) => {
                           const t = new Date(r.starts_at).toLocaleTimeString("pl-PL", {
@@ -118,7 +105,7 @@ export default function StudentDashboard() {
                               <span className="font-semibold">{label}</span>
                               <span>{t}</span>
                               <span>{instr}</span>
-                              <span>{r.studio}</span>
+                              <span>{r.location}</span>
                             </li>
                           );
                         })}

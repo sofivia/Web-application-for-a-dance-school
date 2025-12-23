@@ -47,7 +47,9 @@ export default function Home() {
   }
 
   if (roles.includes("student")) {
-    return <StudentDashboard />;
+    return (<div className={global.app_container}>
+      <StudentDashboard />
+    </div>)
   }
 
   return (

@@ -1,46 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 import global from "@/global.module.css";
 import styles from "./ClassReg.module.css";
 import Button from "@/components/Button";
-import { getStudent, type Student, getClassFilters, getClasses, enroll, unenroll, type ClassSessionRow } from "@/api";
+import { getClassFilters, getClasses, enroll, unenroll, type ClassSessionRow } from "@/api";
 import { useAuth } from "@/utils/auth/useAuth";
+import { formatDate, fromISO } from "@/utils/dateUtils";
 
-function formatPLFromISODate(dateISO: string) {
-  const [y, m, d] = dateISO.split("-");
-  return `${d}.${m}.${y}`;
-}
-
-function toISODateOnly(isoDateTime: string) {
-  return isoDateTime.slice(0, 10);
-}
 
 export default function ClassReg() {
   const { isLoggedIn, loading } = useAuth();
   if (!loading && !isLoggedIn) return <Navigate to="/login" replace />;
 
-  const [student, setStudent] = useState<Student | null | undefined>(undefined);
-  useEffect(() => {
-    let mounted = true;
-    async function load() {
-      try {
-        const s = await getStudent();
-        if (mounted) setStudent(s);
-      } catch {
-        if (mounted) setStudent(null);
-      }
-    }
-    if (!loading && isLoggedIn) load();
-    return () => {
-      mounted = false;
-    };
-  }, [loading, isLoggedIn]);
-
   const [filtersLoading, setFiltersLoading] = useState(true);
   const [classTypes, setClassTypes] = useState<{ id: string; name: string; level: string; duration_minutes: number }[]>([]);
   const [instructors, setInstructors] = useState<{ id: string; first_name: string; last_name: string }[]>([]);
-  const [studios, setStudios] = useState<string[]>([]);
+  const [studios, setStudios] = useState<{ pk: string, name: string }[]>([]);
 
   useEffect(() => {
     let mounted = true;
@@ -50,7 +26,7 @@ export default function ClassReg() {
         if (!mounted) return;
         setClassTypes(f.class_types);
         setInstructors(f.instructors);
-        setStudios(f.studios);
+        setStudios(f.locations);
       } finally {
         if (mounted) setFiltersLoading(false);
       }
@@ -101,8 +77,8 @@ export default function ClassReg() {
       const res = await getClasses({
         page: p,
         class_type: a.class_type || undefined,
-        instructor: a.instructor || undefined,
-        studio: a.studio || undefined,
+        primary_instructor: a.instructor || undefined,
+        location: a.studio || undefined,
         date_from: a.date_from || undefined,
         date_to: a.date_to || undefined,
       });
@@ -118,12 +94,9 @@ export default function ClassReg() {
     loadTable(page, applied);
   }, [loading, isLoggedIn, applied, page]);
 
-  const canSignup = student !== null;
-
   const [actionBusy, setActionBusy] = useState<string | null>(null);
 
   const handleEnroll = async (r: ClassSessionRow) => {
-    if (!canSignup) return;
     setActionBusy(r.id);
     try {
       await enroll(r.group_id);
@@ -134,7 +107,6 @@ export default function ClassReg() {
   };
 
   const handleUnenroll = async (r: ClassSessionRow) => {
-    if (!canSignup) return;
     setActionBusy(r.id);
     try {
       await unenroll(r.group_id);
@@ -150,17 +122,6 @@ export default function ClassReg() {
 
       <div className={styles.page}>
         <h1 className={styles.pageTitle}>Zapis na zajęcia</h1>
-
-        {!loading && isLoggedIn && student === null && (
-          <div className={styles.callout}>
-            <div className={styles.calloutText}>
-              Aby móc zapisać się na zajęcia, musisz dokończyć rejestrację.
-            </div>
-            <Link className={styles.calloutLink} to="/me/finish-registration">
-              Dokończ rejestrację →
-            </Link>
-          </div>
-        )}
 
         <div className={styles.filtersBar}>
           <div className={styles.filter}>
@@ -215,8 +176,8 @@ export default function ClassReg() {
             >
               <option value="">Wybierz studio</option>
               {studios.map((s) => (
-                <option key={s} value={s}>
-                  {s}
+                <option key={s.pk} value={s.pk}>
+                  {s.name}
                 </option>
               ))}
             </select>
@@ -244,7 +205,7 @@ export default function ClassReg() {
             <tbody>
               {!tableLoading &&
                 rows.map((r) => {
-                  const dateISO = toISODateOnly(r.starts_at);
+                  const date = fromISO(r.starts_at);
                   const instructorName = r.instructor ? `${r.instructor.first_name} ${r.instructor.last_name}` : "—";
                   const isFull = r.limit > 0 && r.enrolled >= r.limit;
                   const busy = actionBusy === r.id;
@@ -255,17 +216,16 @@ export default function ClassReg() {
                         {r.class_type.name}
                         {r.class_type.level ? ` — ${r.class_type.level}` : ""}
                       </td>
-                      <td>{formatPLFromISODate(dateISO)}</td>
+                      <td>{formatDate(date)}</td>
                       <td>{instructorName}</td>
-                      <td>{r.studio}</td>
+                      <td>{r.location.name}</td>
                       <td>{r.enrolled}/{r.limit}</td>
                       <td>
                         {r.is_enrolled ? (
                           <button
                             className={styles.signupLink}
                             onClick={() => handleUnenroll(r)}
-                            disabled={!canSignup || busy}
-                            title={!canSignup ? "Dokończ rejestrację" : undefined}
+                            disabled={busy}
                           >
                             {busy ? "..." : "Wypisz się"}
                           </button>
@@ -275,8 +235,7 @@ export default function ClassReg() {
                           <button
                             className={styles.signupLink}
                             onClick={() => handleEnroll(r)}
-                            disabled={!canSignup || busy}
-                            title={!canSignup ? "Dokończ rejestrację" : undefined}
+                            disabled={busy}
                           >
                             {busy ? "..." : "Zapisz się"}
                           </button>
