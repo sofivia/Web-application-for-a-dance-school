@@ -263,7 +263,6 @@ class EnrollViewTest(APITestCase):
         instructor = InstructorFactory.create()
         client.login(email=instructor.account.email, password="poziomka")
         response = client.post(self.url, {"group_id": group.pk})
-        breakpoint()
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
