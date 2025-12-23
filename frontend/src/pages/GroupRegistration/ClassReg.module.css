@@ -54,23 +54,6 @@
   opacity: 0.85;
 }
 
-.signupLink {
-  background: none;
-  border: none;
-  color: var(--main);
-  font-weight: 600;
-  cursor: pointer;
-  padding: 0;
-}
-.signupLink:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.noSeats {
-  opacity: 0.85;
-}
-
 .pagination {
   display: flex;
   gap: 10px;
@@ -100,36 +83,4 @@
   .filterBtn {
     @apply mt-2;
   }
-
-  .grupy td {
-    width: 25%;
-    padding: 2px;
-  }
-}
-
-table.grupy {
-  width: 95%;
-  max-width: 1000px;
-  table-layout: fixed;
-  border-left: 1px solid var(--fnt);
-  border-right: 1px solid var(--fnt);
-}
-
-.grupy td {
-  width: 25%;
-  padding: 6px;
-}
-
-.grupy tr:nth-of-type(2n+1) td {
-  background-color: var(--gray);
-}
-
-.grupy tr:first-of-type td {
-  background-color: var(--background2);
-  font-weight: 500;
-}
-
-.grupy tr {
-  border-top: 1px solid var(--fnt);
-  border-bottom: 1px solid var(--fnt);
 }

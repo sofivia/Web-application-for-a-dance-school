@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import global from "@/global.module.css";
 import { getClasses, type ClassSessionRow } from "@/api";
-import { getWeekday, dateToISOday } from "@/utils/dateUtils";
+import { dateToISOday } from "@/utils/dateUtils";
+import Day from "./Day";
 
 export default function StudentDashboard() {
   const [loading, setLoading] = useState(true);
@@ -38,7 +39,6 @@ export default function StudentDashboard() {
 
   const enrolledSchedule = useMemo(() => {
     const enrolled = rows.filter((r) => r.is_enrolled);
-
     const byGroup = new Map<string, ClassSessionRow>();
     for (const r of enrolled) {
       const prev = byGroup.get(r.group_id);
@@ -63,7 +63,7 @@ export default function StudentDashboard() {
   const DAYS = [...Array(7).keys()];
 
   return (
-    <div className={global.app_container} style={{ alignItems: "start" }}>
+    <div className={global.app_container}>
       <div className="w-full max-w-5xl px-4">
         <h1 className="text-3xl font-semibold mb-6">Moje zajęcia</h1>
 
@@ -85,33 +85,7 @@ export default function StudentDashboard() {
                 {DAYS.map((day) => {
                   const items = enrolledSchedule.grouped.get(day) ?? [];
                   if (items.length === 0) return null;
-
-                  return (
-                    <div key={day} className="rounded-2xl border border-white/10 p-4">
-                      <div className="text-xl font-medium mb-2">{getWeekday(day)}</div>
-                      <ul className="space-y-2">
-                        {items.map((r) => {
-                          const t = new Date(r.starts_at).toLocaleTimeString("pl-PL", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          });
-                          const label = `${r.class_type.name} — ${r.class_type.level}`;
-                          const instr = r.instructor
-                            ? `${r.instructor.first_name} ${r.instructor.last_name}`
-                            : "—";
-
-                          return (
-                            <li key={r.group_id} className="flex flex-wrap gap-x-4 gap-y-1 opacity-90">
-                              <span className="font-semibold">{label}</span>
-                              <span>{t}</span>
-                              <span>{instr}</span>
-                              <span>{r.location.name}</span>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </div>
-                  );
+                  return (<Day day={day} items={items} />);
                 })}
               </div>
             )}
