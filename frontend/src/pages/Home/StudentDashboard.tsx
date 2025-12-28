@@ -75,7 +75,7 @@ export default function StudentDashboard() {
             {Array.from(enrolledSchedule.grouped.keys()).length === 0 ? (
               <div className="opacity-80">
                 Nie jesteś jeszcze zapisana na żadne zajęcia.{" "}
-                <Link className="underline" to="/classReg">
+                <Link className="underline" to="/group-reg">
                   Przejdź do zapisów
                 </Link>
                 .
@@ -91,7 +91,7 @@ export default function StudentDashboard() {
             )}
 
             <div className="mt-6">
-              <Link to="/classReg" className="underline">
+              <Link to="/group-reg" className="underline">
                 Zapis na zajęcia →
               </Link>
             </div>
