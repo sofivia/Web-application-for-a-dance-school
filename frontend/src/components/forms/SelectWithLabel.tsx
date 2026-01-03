@@ -1,21 +1,33 @@
 import { useId } from 'react';
 import Select from "./Select.tsx";
 import type { SelectProps } from "./Select.tsx";
+import type { ClassicSelectProps } from "./classic/ClassicSelect.tsx";
 import styles from "./Select.module.css";
+import ClassicSelect from './classic/ClassicSelect.tsx';
 
 
-export type Props = SelectProps & {
-    label: string;
+type Props = {
+    label?: string;
     fClassName?: string;
 }
 
-export default function SelectWithLabel(props: Props) {
+export type SelectWithLabelProps = SelectProps & Props & { kind: "react" };
+export type ClassicSelectWithLabelProps = ClassicSelectProps & Props;
+
+
+export default function SelectWithLabel(props: SelectWithLabelProps | ClassicSelectWithLabelProps) {
     const { fClassName, label } = props;
     const id = useId();
+    const renderInput = () => {
+        if (props.kind == "react")
+            return <Select id={id} {...props} />
+        else
+            return <ClassicSelect id={id} {...props} />
+    }
     return (
         <div className={`${styles.filter} ${fClassName ?? ""}`} >
-            <label htmlFor={id} className="block mb-1"> {label} </label>
-            <Select id={id} {...props} />
+            {label && <label htmlFor={id} className="block mb-1"> {label} </label>}
+            {renderInput()}
         </ div >
     );
 }

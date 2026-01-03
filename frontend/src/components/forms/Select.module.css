@@ -3,8 +3,14 @@
     padding: 10px 12px;
     border: 2px solid var(--background2);
     border-radius: 10px;
-    background-color: transparent;
+    background-color: var(--background3);
+    color: var(--fnt);
     font-size: 14px;
+}
+
+select option {
+    background-color: var(--background3);
+    color: var(--fnt);
 }
 
 .control:focus {

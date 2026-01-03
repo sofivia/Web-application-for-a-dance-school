@@ -115,21 +115,21 @@ export default function ClassReg() {
         <h1 className={`text-base font-bold mb-3`}>Zapis na zajęcia</h1>
 
         <div className={`${styles.filtersBar} ${formstyles.panel} mb-5`}>
-          <Select label="Typ zajęć" prompt="Wybierz typ" options={optionsTyp}
+          <Select kind='react' label="Typ zajęć" prompt="Wybierz typ" options={optionsTyp}
             values={{ value: "", setValue: e => setClassTypeId(e.target.value) }} />
 
           <div className={selectstyles.filter}>
             <label className="block mb-1"> Czas trwania </label>
             <div className="text-nowrap">
-              <Input type="time" label="początek od:" values={dateFromValues} fClassName="inline-block mx-2" />
-              <Input type="time" label="koniec do:" values={dateToValues} fClassName="inline-block mx-2" />
+              <Input kind='react' type="time" label="początek od:" values={dateFromValues} fClassName="inline-block mx-2" />
+              <Input kind='react' type="time" label="koniec do:" values={dateToValues} fClassName="inline-block mx-2" />
             </div>
           </div>
 
-          <Select label="Prowadzący" prompt="Wybierz prowadzącego" options={optionsInstructor}
+          <Select kind='react' label="Prowadzący" prompt="Wybierz prowadzącego" options={optionsInstructor}
             values={{ value: "", setValue: e => setInstructorId(e.target.value) }} />
 
-          <Select label="Studia" prompt="Wybierz studio" options={optionsLocation}
+          <Select kind='react' label="Studia" prompt="Wybierz studio" options={optionsLocation}
             values={{ value: "", setValue: e => setStudio(e.target.value) }} />
 
           <Button onClick={applyFilters} className={styles.filterBtn} disabled={filtersLoading}>

@@ -10,6 +10,10 @@
     width: 100%;
 }
 
+.input[type=text] {
+    padding: 8px 8px;
+}
+
 .input::placeholder {
     color: #7f8c8d;
 }

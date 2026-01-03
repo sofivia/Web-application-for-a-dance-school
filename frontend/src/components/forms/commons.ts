@@ -14,3 +14,11 @@ export type InputProps = {
     name?: string;
     rows?: number;
 };
+
+
+export type ClassicBaseInputProps = {
+    id?: string;
+    name: string;
+    error?: string;
+    className?: string;
+};

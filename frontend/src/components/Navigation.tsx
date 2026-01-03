@@ -12,13 +12,14 @@ const links: Record<Role, NamedLink[]> = {
    student: [
       ["Dziennik obecności", "/attendance"],
       ["Płatności", "/payments"],
-      ["Zapisy na zajęcia", "/group-reg"]],
-   instructor: [
-      ["Grupy zajęciowe", "/classes"]
+      ["Zapisy na zajęcia", "/group-reg"],
    ],
+   instructor: [["Grupy zajęciowe", "/classes"]],
    admin: [
-      ["Płatności", "/studPayments"]
-   ]
+      ["Płatności", "/studPayments"],
+      ["Użytkownicy", "/userManage"],
+      ["Zajęcia", "/studSubj"],
+   ],
 };
 
 export default function Navigation() {
@@ -30,21 +31,28 @@ export default function Navigation() {
             <Logo className={`${styles.logo}`} aria-label="Logo TipTap" />
          </Link>
 
-         {isLoggedIn &&
+         {isLoggedIn && (
             <nav className={styles.nav}>
-               {roles.length == 0 ? <></> : links[roles[0]].map((link, i) => <NavLink key={i} to={link[1]} className={styl}>
-                  {link[0]}
-               </NavLink>)}
+               {roles.length == 0 ? (
+                  <></>
+               ) : (
+                  links[roles[0]].map((link, i) => (
+                     <NavLink key={i} to={link[1]} className={styl}>
+                        {link[0]}
+                     </NavLink>
+                  ))
+               )}
             </nav>
-         }
+         )}
 
          <div className={styles.right}>
             <DarkModeToggle />
 
-            {isLoggedIn &&
+            {isLoggedIn && (
                <NavLink to="me/" className={({ isActive }) => (isActive ? styles.active : styles.link)}>
                   <UserButton />
-               </NavLink>}
+               </NavLink>
+            )}
          </div>
       </div>
    );

@@ -1,7 +1,10 @@
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.db.models import (
     OuterRef, Subquery, IntegerField, Exists, Q, Count, Value, BooleanField)
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.contrib.auth.password_validation import validate_password
 from django.db.models.functions import Coalesce
+from django.contrib.auth import get_user_model
 from django.utils import timezone
 import django_filters
 
@@ -35,8 +38,23 @@ from .serializers import (
     ClassSessionRowSerializer,
     ClassGroupReadSerializer,
     ClassGroupWriteSerializer,
-    LocationSerializer
+    LocationSerializer,
+    AccountViewSerializer,
+    AdminStudentCreatePayloadSerializer,
+    AdminInstructorCreatePayloadSerializer,
+    AdminStudentUpdateSerializer,
+    AdminInstructorUpdateSerializer
 )
+
+User = get_user_model()
+
+
+def _add_role(user, code: str):
+    Role = user.roles.model
+    role = Role.objects.filter(code=code).first()
+    if not role:
+        raise ValidationError({"account": [f'Role "{code}" not found in DB. Create/seed roles first.']})
+    user.roles.add(role)
 
 
 class Conflict(APIException):
@@ -54,14 +72,69 @@ class CreateUpdateRetrieveAPIView(
 
 class StudentView(CreateUpdateRetrieveAPIView):
     serializer_class = StudentSerializer
-    permission_classes = [HasStudentRole]
+
+    def get_permissions(self):
+        if self.request.method == "POST" and IsAdmin().has_permission(self.request, self):
+            return [IsAdmin()]
+        return [HasStudentRole()]
+
+    def post(self, request, *args, **kwargs):
+        if IsAdmin().has_permission(request, self):
+            payload = AdminStudentCreatePayloadSerializer(data=request.data)
+            payload.is_valid(raise_exception=True)
+            student_data = payload.validated_data["student"]
+            password = payload.validated_data["password"]
+
+            try:
+                validate_password(password)
+            except DjangoValidationError as e:
+                raise ValidationError({"password": list(e.messages)})
+
+            with transaction.atomic():
+                try:
+                    create_user = getattr(User.objects, "create_user", None)
+                    if callable(create_user):
+                        user = create_user(email=student_data["email"], password=password)
+                        user.is_active = student_data["is_active"]
+                        user.save(update_fields=["is_active"])
+                    else:
+                        user = User(email=student_data["email"], is_active=student_data["is_active"])
+                        user.set_password(password)
+                        user.save()
+
+                    _add_role(user, "student")
+
+                except IntegrityError:
+                    raise Conflict({"account": ["Email is already used."]})
+
+                student = Student.objects.create(
+                    account=user,
+                    first_name=student_data["first_name"],
+                    last_name=student_data["last_name"],
+                    date_of_birth=student_data.get("date_of_birth"),
+                    phone=student_data.get("phone", ""),
+                )
+
+            return Response(
+                {
+                    "email": user.email,
+                    "is_active": user.is_active,
+                    "first_name": student.first_name,
+                    "last_name": student.last_name,
+                    "date_of_birth": student.date_of_birth,
+                    "phone": student.phone,
+                    "id": str(student.id),
+                },
+                status=status.HTTP_201_CREATED,
+            )
+
+        return super().post(request, *args, **kwargs)
 
     def perform_create(self, serializer):
         try:
             serializer.save()
         except IntegrityError:
-            raise Conflict({'account': ['Information already provided '
-                                        'for this account.']})
+            raise Conflict({"account": ["Information already provided for this account."]})
 
     def get_object(self):
         return get_object_or_404(Student, account=self.request.user)
@@ -69,14 +142,69 @@ class StudentView(CreateUpdateRetrieveAPIView):
 
 class InstructorView(CreateUpdateRetrieveAPIView):
     serializer_class = InstructorSerializer
-    permission_classes = [HasInstructorRole]
+
+    def get_permissions(self):
+        if self.request.method == "POST" and IsAdmin().has_permission(self.request, self):
+            return [IsAdmin()]
+        return [HasInstructorRole()]
+
+    def post(self, request, *args, **kwargs):
+        if IsAdmin().has_permission(request, self):
+            payload = AdminInstructorCreatePayloadSerializer(data=request.data)
+            payload.is_valid(raise_exception=True)
+            instructor_data = payload.validated_data["instructor"]
+            password = payload.validated_data["password"]
+
+            try:
+                validate_password(password)
+            except DjangoValidationError as e:
+                raise ValidationError({"password": list(e.messages)})
+
+            with transaction.atomic():
+                try:
+                    create_user = getattr(User.objects, "create_user", None)
+                    if callable(create_user):
+                        user = create_user(email=instructor_data["email"], password=password)
+                        user.is_active = instructor_data["is_active"]
+                        user.save(update_fields=["is_active"])
+                    else:
+                        user = User(email=instructor_data["email"], is_active=instructor_data["is_active"])
+                        user.set_password(password)
+                        user.save()
+
+                    _add_role(user, "instructor")
+
+                except IntegrityError:
+                    raise Conflict({"account": ["Email is already used."]})
+
+                inst = Instructor.objects.create(
+                    account=user,
+                    first_name=instructor_data["first_name"],
+                    last_name=instructor_data["last_name"],
+                    short_bio=instructor_data.get("short_bio", ""),
+                    phone=instructor_data.get("phone", ""),
+                )
+
+            return Response(
+                {
+                    "email": user.email,
+                    "is_active": user.is_active,
+                    "first_name": inst.first_name,
+                    "last_name": inst.last_name,
+                    "short_bio": inst.short_bio,
+                    "phone": inst.phone,
+                    "id": str(inst.id),
+                },
+                status=status.HTTP_201_CREATED,
+            )
+
+        return super().post(request, *args, **kwargs)
 
     def perform_create(self, serializer):
         try:
             serializer.save()
         except IntegrityError:
-            raise Conflict({'account': ['Information already provided '
-                                        'for this account.']})
+            raise Conflict({"account": ["Information already provided for this account."]})
 
     def get_object(self):
         return get_object_or_404(Instructor, account=self.request.user)
@@ -259,3 +387,147 @@ class ClassGroupView(viewsets.ModelViewSet):
             qs = qs.annotate(is_enrolled=Value(False,
                                                output_field=BooleanField()))
         return qs
+
+
+class AccountFilter(django_filters.FilterSet):
+    name = django_filters.CharFilter(method="filter_name")
+    surname = django_filters.CharFilter(method="filter_surname")
+
+    accountType = django_filters.CharFilter(method="filter_role")
+    email = django_filters.CharFilter(field_name="email", lookup_expr="icontains")
+
+    isActive = django_filters.BooleanFilter(field_name="is_active")
+
+    class Meta:
+        model = User
+        fields = []
+
+    def filter_name(self, qs, _name, value):
+        if not value:
+            return qs
+        return qs.filter(
+            Q(email__icontains=value)
+            | Q(student__first_name__icontains=value)
+            | Q(student__last_name__icontains=value)
+            | Q(instructor__first_name__icontains=value)
+            | Q(instructor__last_name__icontains=value)
+        ).distinct()
+
+    def filter_surname(self, qs, _name, value):
+        if not value:
+            return qs
+        return qs.filter(
+            Q(student__last_name__icontains=value)
+            | Q(instructor__last_name__icontains=value)
+        ).distinct()
+
+    def filter_role(self, qs, _name, value):
+        if not value:
+            return qs
+        if value == "instruktor":
+            value = "instructor"
+        return qs.filter(roles__code=value).distinct()
+
+
+class AccountViewSet(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    permission_classes = [IsAdmin]
+    serializer_class = AccountViewSerializer
+    pagination_class = StandardPagination
+    filterset_class = AccountFilter
+
+    def get_queryset(self):
+        return (
+            User.objects.all()
+            .select_related("student", "instructor")
+            .prefetch_related("roles")
+        )
+
+    def perform_destroy(self, instance):
+        instance.is_active = False
+        instance.save(update_fields=["is_active"])
+
+
+class StudentAdminDetailView(APIView):
+    permission_classes = [IsAdmin]
+
+    def put(self, request, pk):
+        student = get_object_or_404(
+            Student.objects.select_related("account"),
+            account__pk=pk,
+        )
+
+        data_in = request.data.copy()
+        if data_in.get("date_of_birth") == "":
+            data_in["date_of_birth"] = None
+
+        s = AdminStudentUpdateSerializer(data=data_in)
+        s.is_valid(raise_exception=True)
+        data = s.validated_data
+
+        if student.account:
+            if "email" in data:
+                student.account.email = data["email"]
+            if "is_active" in data:
+                student.account.is_active = data["is_active"]
+            try:
+                student.account.save()
+            except IntegrityError:
+                raise Conflict({"account": ["Email is already used."]})
+
+        for f in ("first_name", "last_name", "date_of_birth", "phone"):
+            if f in data:
+                setattr(student, f, data[f])
+        student.save()
+
+        return Response({
+            "email": student.account.email if student.account else None,
+            "is_active": student.account.is_active if student.account else None,
+            "first_name": student.first_name,
+            "last_name": student.last_name,
+            "date_of_birth": student.date_of_birth,
+            "phone": student.phone,
+            "id": str(student.id),
+        })
+
+
+class InstructorAdminDetailView(APIView):
+    permission_classes = [IsAdmin]
+
+    def put(self, request, pk):
+        inst = get_object_or_404(
+            Instructor.objects.select_related("account"),
+            account__pk=pk,
+        )
+
+        s = AdminInstructorUpdateSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        data = s.validated_data
+
+        if "email" in data:
+            inst.account.email = data["email"]
+        if "is_active" in data:
+            inst.account.is_active = data["is_active"]
+        try:
+            inst.account.save()
+        except IntegrityError:
+            raise Conflict({"account": ["Email is already used."]})
+
+        for f in ("first_name", "last_name", "short_bio", "phone"):
+            if f in data:
+                setattr(inst, f, data[f])
+        inst.save()
+
+        return Response({
+            "email": inst.account.email,
+            "is_active": inst.account.is_active,
+            "first_name": inst.first_name,
+            "last_name": inst.last_name,
+            "short_bio": inst.short_bio,
+            "phone": inst.phone,
+            "id": str(inst.id),
+        })

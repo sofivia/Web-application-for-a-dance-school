@@ -1,70 +1,75 @@
 import { useNavigate } from "react-router-dom";
 import { useState, type FormEvent } from "react";
-import Input from "@/components/forms/Input.tsx";
-import type { InputValues } from "@/components/forms/commons.ts";
-import { handlePost, getErrors } from "@/utils/apiutils.ts";
+import { handlePost2, getErrors } from "@/utils/apiutils.ts";
+import InputWithLabel, { type ClassicInputWithLabelProps } from "./forms/InputWithLabel";
+import SelectWithLabel, { type ClassicSelectWithLabelProps } from "./forms/SelectWithLabel";
+import TextAreaWithLabel, { type ClassicTextAreaWithLabelProps } from "./forms/TextAreaWithLabel"
+import ClassicCheckbox, { type ClassicCheckboxProps } from "./forms/classic/ClassicCheckbox";
+import toast from 'react-hot-toast';
+
 
 import "@/index.css";
-import inputstyles from "@/components/forms/Input.module.css";
 import formstyle from "@/styles/forms.module.css";
-import TextArea from "./forms/TextArea";
+
 
 type Errors = Record<string, string>;
+export type ApiCall<T> = (data: Record<string, any>) => Promise<T>;
 
-export interface BaseField {
-    type: string;
-    key: string;
-    placeholder: string;
-    name?: string;
-}
+export type Field = ClassicInputWithLabelProps
+    | ClassicTextAreaWithLabelProps
+    | ClassicSelectWithLabelProps
+    | ClassicCheckboxProps;
 
-export interface TextAreaField extends BaseField {
-    type: "textarea";
-    rows?: number;
-}
-
-export type ApiCall<T> = (data: Record<string, string>) => Promise<T>;
-
-type Props<T> = {
+export type Props<T> = {
     apiCall: ApiCall<T>;
-    fields: BaseField[];
+    fields: Field[];
     redirect: string;
 };
+
+
+function Element(props: Field) {
+    console.log(props.kind)
+    if (props.kind == "textarea")
+        return <TextAreaWithLabel {...props} />
+    if (props.kind == "select")
+        return <SelectWithLabel {...props} />
+    if (props.kind == "checkbox")
+        return <ClassicCheckbox {...props} />
+    return <InputWithLabel {...props} />
+}
 
 export default function FormTemplate<T>(props: Props<T>) {
     const { apiCall, fields, redirect } = props;
     const navigate = useNavigate();
 
     const [isLoading, setLoading] = useState(false);
-    const [data, setData] = useState(Object.fromEntries(fields.map(field => [field.key, ""])));
     const [errors, setErrors] = useState<Errors>({});
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
-        const msg = await handlePost(() => apiCall(data));
-        if (msg === undefined) navigate(redirect);
-        else setErrors(getErrors(msg));
-        setLoading(false);
+        const formData = new FormData(e.currentTarget);
+        const rawData = Object.fromEntries(formData.entries()) as Record<string, any>;
+        const data = Object.fromEntries(fields.map(f => [f.name, rawData[f.name] ?? false]));
+        toast.promise(handlePost2(() => apiCall(data)), {
+            loading: 'Ładowanie...',
+            success: () => {
+                setLoading(false);
+                setTimeout(() => navigate(redirect), 300);
+                return <b> Sukces </b>;
+            },
+            error: (err) => {
+                setLoading(false);
+                setErrors(getErrors(err));
+                return <b> Błąd </b>
+            }
+        });
     };
-
-    const types = Object.fromEntries(fields.map(f => [f.key, f.type]));
-    const extra = Object.fromEntries(fields.map(f => [f.key, { "name": f.name, "rows": (f as TextAreaField)?.rows }]));
-    const values: Record<string, InputValues> = Object.fromEntries(fields.map(f => [f.key, {
-        value: data[f.key],
-        setValue: e => setData(old => ({ ...old, [f.key]: e.target.value })),
-        placeholder: f.placeholder,
-    }]));
 
     return (
         <form onSubmit={handleSubmit} className={formstyle.form} noValidate>
-            {errors.account && <p className={`${inputstyles.error} mb-1`}>{errors.account}</p>}
-
-            {Object.entries(values).map(([k, v]) => {
-                const Element = types[k] == "textarea" ? TextArea : Input;
-                return <Element type={types[k]} key={k} values={v} error={errors[k]} className="mb-3" {...extra[k]} />
-            })}
-            <div className="mb-2" />
+            {fields.map(f => Element({ ...f, error: errors[f.name], fClassName: "mb-2" }))}
+            <div className="mb-3" />
 
             <button type="submit" className={formstyle.button} disabled={isLoading}>
                 {isLoading ? "Przetwarzanie" : "Zatwierdź"}
