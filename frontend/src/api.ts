@@ -389,3 +389,35 @@ export async function listClassSessions(params?: Record<string, any>): Promise<C
   if (Array.isArray(data)) return data;
   return [];
 }
+
+// TODO:
+// GET  /api/school/classes/{sessionId}/participants/  -> returns participants list + optional session meta + can_edit
+// POST /api/school/classes/{sessionId}/participants/  -> saves attendance records
+
+export type AttendanceStatus = "present" | "absent" | "excused";
+
+export type ClassParticipantRow = {
+  student_id: string;
+  first_name: string;
+  last_name: string;
+  status?: AttendanceStatus;
+};
+
+export type ClassParticipantsResponse = {
+  session?: any;               // TODO: session meta (date/time/type/studio)
+  can_edit?: boolean;          // TODO: when false -> disable editing
+  participants: ClassParticipantRow[];
+};
+
+export async function getClassParticipants(sessionId: number | string) {
+  const resp = await api.get(`/api/school/classes/${sessionId}/participants/`);
+  return resp.data as ClassParticipantsResponse | ClassParticipantRow[] | { results: ClassParticipantRow[] };
+}
+
+export async function saveClassAttendance(
+  sessionId: number | string,
+  records: Array<{ student_id: string; status: AttendanceStatus }>
+) {
+  const resp = await api.post(`/api/school/classes/${sessionId}/participants/`, { records });
+  return resp.data as { ok: boolean };
+}

@@ -9,6 +9,7 @@ import AccountRoutes from "./pages/Account/AccountRoutes.tsx";
 import GroupRoutes from "./pages/GroupRegistration/GroupRoutes.tsx";
 import AdminAccountRoutes from "./pages/AdminPages/Accounts/AccountRoutes.tsx";
 import InstructorClasses from "./pages/Classes/InstructorClasses";
+import InstructorClassParticipants from "./pages/Classes/InstructorClassParticipants";
 import { Toaster } from 'react-hot-toast';
 
 export default function App() {
@@ -32,6 +33,7 @@ export default function App() {
                <Route path="group-reg/*" element={<GroupRoutes />} />
                <Route path="userManage/*" element={<AdminAccountRoutes />} />
                <Route path="classes" element={<InstructorClasses />} />
+               <Route path="/classes/:sessionId/participants" element={<InstructorClassParticipants />} />
             </Route>
          </Routes>
       </>
