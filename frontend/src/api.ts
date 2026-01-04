@@ -359,3 +359,33 @@ export async function editStudent(id: string, student: BaseStudent) {
    const resp = await api.put(`/api/school/students/${id}/`, student); // TODO: implement edit student api
    return resp.data as BaseStudent;
 }
+
+
+// --- Classes / Filters (dla instruktora) ---
+
+export interface Location {
+  id: number;
+  name: string;
+  address?: string;
+}
+
+export interface ClassTypeMini {
+  id: number;
+  name: string;
+  level?: string;
+}
+
+export interface InstructorMini {
+  id: number;
+  first_name: string;
+  last_name: string;
+}
+
+export async function listClassSessions(params?: Record<string, any>): Promise<ClassSessionRow[]> {
+  const response = await api.get("/api/school/classes/", { params });
+  const data = response.data;
+
+  if (data && Array.isArray(data.results)) return data.results;
+  if (Array.isArray(data)) return data;
+  return [];
+}
