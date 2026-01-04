@@ -380,4 +380,32 @@ export class AttendanceRecords {
 export async function getAttendanceRecords(params: { page: number }) { // TODO: implement get attendance records, where status = "Nieobecny"
    const { data } = await api.get("/api/school/attendance/", { params });
    return plainToInstance(AttendanceRecords, data)
+
+// --- Classes / Filters (dla instruktora) ---
+
+export interface Location {
+  id: number;
+  name: string;
+  address?: string;
+}
+
+export interface ClassTypeMini {
+  id: number;
+  name: string;
+  level?: string;
+}
+
+export interface InstructorMini {
+  id: number;
+  first_name: string;
+  last_name: string;
+}
+
+export async function listClassSessions(params?: Record<string, any>): Promise<ClassSessionRow[]> {
+  const response = await api.get("/api/school/classes/", { params });
+  const data = response.data;
+
+  if (data && Array.isArray(data.results)) return data.results;
+  if (Array.isArray(data)) return data;
+  return [];
 }
