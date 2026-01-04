@@ -330,24 +330,24 @@ export type BaseStudent = BaseType<Student>;
 export type BaseInstructor = BaseType<Instructor>;
 
 export async function getAccounts(params: AccountParams) {
-   const resp = await api.get("/api/school/accounts/", { params }); //TODO: implement get accounts by filters api
+   const resp = await api.get("/api/school/accounts/", { params });
    return resp.data as { count: number; results: AccountView[] };
 }
 export async function getAccount(id: string) {
-   const resp = await api.get(`/api/school/accounts/${id}/`); // TODO: implement get account by id
+   const resp = await api.get(`/api/school/accounts/${id}/`);
    return resp.data as AccountView;
 }
 export async function removeAccount(id: string) {
-   const resp = await api.delete(`/api/school/accounts/${id}/`); // TODO: implement remove account api
+   const resp = await api.delete(`/api/school/accounts/${id}/`);
    return resp.data;
 }
 
 export async function createInstructor(password: string, instructor: BaseInstructor) {
-   const resp = await api.post("/api/school/instructors/", { instructor, password }); // TODO: implement create instructor api
+   const resp = await api.post("/api/school/instructors/", { instructor, password });
    return resp.data as BaseInstructor;
 }
 export async function editInstructor(id: string, instructor: BaseInstructor) {
-   const resp = await api.put(`/api/school/instructors/${id}/`, instructor); // TODO: implemet edit instructor api
+   const resp = await api.put(`/api/school/instructors/${id}/`, instructor);
    return resp.data as BaseInstructor;
 }
 
@@ -356,6 +356,6 @@ export async function createStudent(password: string, student: BaseStudent) {
    return resp.data as BaseStudent;
 }
 export async function editStudent(id: string, student: BaseStudent) {
-   const resp = await api.put(`/api/school/students/${id}/`, student); // TODO: implement edit student api
+   const resp = await api.put(`/api/school/students/${id}/`, student);
    return resp.data as BaseStudent;
 }
