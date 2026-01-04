@@ -1,0 +1,29 @@
+.control {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid var(--background2);
+    border-radius: 10px;
+    background-color: var(--background3);
+    color: var(--fnt);
+    font-size: 14px;
+}
+
+select option {
+    background-color: var(--background3);
+    color: var(--fnt);
+}
+
+.control:focus {
+    border-color: var(--main);
+    outline: none;
+    box-shadow: 0 0 8px var(--shadow);
+}
+
+.filterLabel {
+    text-align: left;
+    margin-bottom: 6px;
+}
+
+.filter {
+    text-align: left;
+}

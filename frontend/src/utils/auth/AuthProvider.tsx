@@ -1,15 +1,17 @@
-import { getMe } from "@/api";
+import { getMe, type Role } from "@/api";
 import { type ReactNode, useState, useEffect } from "react";
 import { AuthContext } from "./authContext";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
    const [isLoggedIn, setIsLoggedIn] = useState(false);
    const [loading, setLoading] = useState(true);
+   const [roles, setRole] = useState<Role[]>([]);
+   const [userId, setUserId] = useState<string>("");
 
    const checkAuth = async () => {
       setLoading(true);
       try {
-         await getMe();
+         await getMe().then(user => { setRole(user.roles); setUserId(user.id) });
          setIsLoggedIn(true);
       } catch {
          setIsLoggedIn(false);
@@ -23,6 +25,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
    }, []);
 
    return (
-      <AuthContext.Provider value={{ isLoggedIn, loading, refreshAuth: checkAuth }}>{children}</AuthContext.Provider>
+      <AuthContext.Provider value={
+         { isLoggedIn, loading, roles, refreshAuth: checkAuth, userId: userId }}
+      >{children}</AuthContext.Provider>
    );
 };

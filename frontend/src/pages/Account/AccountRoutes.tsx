@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import Account from './Account.tsx';
-import FinishRegistration from './FinishRegistration.tsx';
+import FinishRegistration from './FinishRegisteration.tsx';
 
 
 export default function AccountRoutes() {

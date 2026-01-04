@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   db:
-    image: postgres:16
+    image: docker.io/library/postgres:16
     container_name: pzsp2-db
     restart: unless-stopped
     networks:
@@ -10,6 +10,7 @@ services:
     environment:
       POSTGRES_DB: szkola
       POSTGRES_USER: app
+      POSTGRES_PASSWORD: RybyZjedza
     volumes:
       - db-data:/var/lib/postgresql/data
     healthcheck:

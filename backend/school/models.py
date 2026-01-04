@@ -8,6 +8,7 @@ class Student(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     account = models.OneToOneField(
         settings.AUTH_USER_MODEL,
+        unique=True,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -37,7 +38,7 @@ class Instructor(models.Model):
     account = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="instructor_profile",
+        related_name="instructor",
     )
 
     first_name = models.CharField(max_length=100)
@@ -77,16 +78,24 @@ class ClassType(models.Model):
         return self.name
 
 
-class ClassGroup(models.Model):
-    class Weekday(models.IntegerChoices):
-        MONDAY = 1, "Monday"
-        TUESDAY = 2, "Tuesday"
-        WEDNESDAY = 3, "Wednesday"
-        THURSDAY = 4, "Thursday"
-        FRIDAY = 5, "Friday"
-        SATURDAY = 6, "Saturday"
-        SUNDAY = 7, "Sunday"
+class Location(models.Model):
+    name = models.CharField(max_length=100, blank=False)
 
+    def __str__(self) -> str:
+        return self.name
+
+
+class Weekday(models.IntegerChoices):
+    MONDAY = 1, "Monday"
+    TUESDAY = 2, "Tuesday"
+    WEDNESDAY = 3, "Wednesday"
+    THURSDAY = 4, "Thursday"
+    FRIDAY = 5, "Friday"
+    SATURDAY = 6, "Saturday"
+    SUNDAY = 7, "Sunday"
+
+
+class ClassGroup(models.Model):
     name = models.CharField(max_length=100)
     class_type = models.ForeignKey(
         ClassType,
@@ -103,7 +112,10 @@ class ClassGroup(models.Model):
     start_time = models.TimeField()
     end_time = models.TimeField()
 
-    location = models.CharField(max_length=100, blank=True)
+    location = models.ForeignKey(
+        Location,
+        on_delete=models.PROTECT,
+        related_name="groups")
 
     capacity = models.PositiveIntegerField(
         null=True,
@@ -123,6 +135,18 @@ class ClassGroup(models.Model):
 
     def __str__(self) -> str:
         return f"{self.name} ({self.class_type})"
+
+    @property
+    def effective_capacity(self):
+        return self.capacity if self.capacity is not None \
+               else self.class_type.default_capacity
+
+    @property
+    def nr_enrolled(self):
+        return self.enrollments.filter(status=Enrollment.Status.ACTIVE).count()
+
+    def is_full(self):
+        return self.nr_enrolled >= self.effective_capacity
 
 
 class ClassSession(models.Model):

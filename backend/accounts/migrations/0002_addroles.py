@@ -10,6 +10,18 @@ DEFAULT_ROLES = [
         "description": "Default student role",
         "is_active": True,
     },
+    {
+        "code": "instructor",
+        "name": "Instruktor",
+        "description": "Default instructor role",
+        "is_active": True,
+    },
+    {
+        "code": "admin",
+        "name": "Admin",
+        "description": "Default admin role",
+        "is_active": True,
+    },
 ]
 
 

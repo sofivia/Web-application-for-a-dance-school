@@ -7,9 +7,10 @@ import global from "@/global.module.css";
 import formstyle from "@/styles/forms.module.css";
 import inputstyles from "@/components/forms/Input.module.css";
 import Input from "@/components/forms/Input.tsx";
-import type { InputValues } from "@/components/forms/Input.tsx";
+import type { InputValues } from "@/components/forms/commons.ts";
 import { handlePost, getErrors } from "@/utils/apiutils.ts";
 import { register } from "@/api.ts";
+import { useAuth } from "@/utils/auth/useAuth";
 
 export default function Register() {
    const [data, setData] = useState<LoginFormData>({
@@ -19,6 +20,7 @@ export default function Register() {
    });
    const [errors, setErrors] = useState<Errors>({});
    const [loading, setLoading] = useState(false);
+   const { refreshAuth } = useAuth();
 
    const navigate = useNavigate();
 
@@ -36,7 +38,10 @@ export default function Register() {
       setErrors((prev) => ({ ...prev, global: undefined }));
 
       const msg = await handlePost(() => register(data.email.trim(), data.password));
-      if (msg === undefined) navigate("/");
+      if (msg === undefined) {
+         refreshAuth();
+         navigate("/");
+      }
       else setErrors((prev) => ({ ...prev, ...getErrors(msg) }));
       setLoading(false);
    };

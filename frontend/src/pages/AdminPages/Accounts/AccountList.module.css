@@ -1,0 +1,100 @@
+@import "tailwindcss";
+@reference "tailwindcss";
+
+.page {
+  width: 100%;
+  max-width: 1200px;
+  grid-row-start: 2;
+}
+
+.filtersBar {
+  display: flex;
+  gap: 14px;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.filterBtn {
+  background: var(--main);
+  color: white;
+}
+
+.addStudent {
+  background: green;
+  color: white;
+  margin-left: 10px;
+}
+
+.addInstructor {
+  background: rgb(59, 59, 169);
+  color: white;
+  margin-left: 10px;
+}
+
+.tableWrap {
+  border: 1px solid var(--gray);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--background3);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.table th,
+.table td {
+  padding: 12px 12px;
+  border-bottom: 1px solid var(--gray);
+  border-right: 1px solid var(--gray);
+}
+
+.table th:last-child,
+.table td:last-child {
+  border-right: none;
+}
+
+.table thead th {
+  font-weight: 700;
+  background: var(--background2);
+}
+
+.emptyRow {
+  text-align: center;
+  opacity: 0.85;
+}
+
+.pagination {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+  margin-top: 14px;
+}
+
+.pageBtnActive {
+  background: var(--main);
+}
+
+@media (max-width: 1000px) {
+  .page {
+    padding: 0 1.2rem;
+  }
+
+  .filtersBar {
+    display: block;
+  }
+
+  .filtersBar>div {
+    @apply mb-3
+  }
+
+  .filter:last-of-type {
+    @apply mb-4;
+  }
+
+  .filterBtn {
+    @apply mt-2;
+  }
+}

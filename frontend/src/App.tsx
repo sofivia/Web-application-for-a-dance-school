@@ -6,6 +6,9 @@ import { setOnLogoutCallback, clearTokens } from "./api";
 import { useEffect } from "react";
 import Register from "./pages/Register/Register";
 import AccountRoutes from "./pages/Account/AccountRoutes.tsx";
+import GroupRoutes from "./pages/GroupRegistration/GroupRoutes.tsx";
+import AdminAccountRoutes from "./pages/AdminPages/Accounts/AccountRoutes.tsx";
+import { Toaster } from 'react-hot-toast';
 
 export default function App() {
    const navigate = useNavigate();
@@ -17,13 +20,18 @@ export default function App() {
       });
    }, [navigate]);
    return (
-      <Routes>
-         <Route path="/" element={<Container />}>
-            <Route path="login" element={<Login />} />
-            <Route path="register" element={<Register />} />
-            <Route index element={<Home />} />
-            <Route path="me/*" element={<AccountRoutes />} />
-         </Route>
-      </Routes>
+      <>
+         <Toaster position="bottom-right" reverseOrder={false} />
+         <Routes>
+            <Route path="/" element={<Container />}>
+               <Route path="login" element={<Login />} />
+               <Route path="register" element={<Register />} />
+               <Route index element={<Home />} />
+               <Route path="me/*" element={<AccountRoutes />} />
+               <Route path="group-reg/*" element={<GroupRoutes />} />
+               <Route path="userManage/*" element={<AdminAccountRoutes />} />
+            </Route>
+         </Routes>
+      </>
    );
 }

@@ -6,9 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
-    replaces = [('school', '0002_alter_student_account'), ('school', '0003_alter_student_account')]
-
     dependencies = [
         ('school', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
@@ -18,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='student',
             name='account',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='student', to=settings.AUTH_USER_MODEL),
+            field=models.OneToOneField(blank=True, null=True, unique=True, on_delete=django.db.models.deletion.SET_NULL, related_name='student', to=settings.AUTH_USER_MODEL),
         ),
     ]
