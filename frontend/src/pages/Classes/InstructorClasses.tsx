@@ -308,9 +308,6 @@ const upcomingList = useMemo(() => {
                         <LinkButton to={`/classes/${id}/participants`} className="">
                           Otwórz listę
                         </LinkButton>
-                        <LinkButton to={`/classes/${id}/attendance`} className="">
-                          Odnotuj obecność
-                        </LinkButton>
                       </div>
                     </td>
                   </tr>
@@ -318,10 +315,6 @@ const upcomingList = useMemo(() => {
               })}
             </tbody>
           </table>
-
-          <div className={styles.muted} style={{ marginTop: 10 }}>
-            (Akcje “Otwórz listę / Odnotuj obecność” są przygotowane jako routing pod kolejne ekrany.)
-          </div>
         </div>
       </div>
     </div>
