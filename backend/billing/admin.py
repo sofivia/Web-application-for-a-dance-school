@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import PassProduct, Purchase, PaymentAllocation
+from .models import PassProduct, Purchase
 
 
 @admin.register(PassProduct)
@@ -24,8 +24,3 @@ class PurchaseAdmin(admin.ModelAdmin):
     search_fields = ("student__first_name", "student__last_name")
 
 
-@admin.register(PaymentAllocation)
-class PaymentAllocationAdmin(admin.ModelAdmin):
-    list_display = ("purchase", "session", "month",
-                    "amount_cents", "created_at")
-    list_filter = ("month", "session__group")
