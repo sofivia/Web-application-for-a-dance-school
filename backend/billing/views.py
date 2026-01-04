@@ -20,7 +20,7 @@ from .serializers import (
     PurchaseMarkPaidSerializer,
     GenerateMonthlyPurchasesSerializer,
 )
-from .services import ensure_student_has_pass_product, generate_monthly_purchases
+from .services import generate_monthly_purchases
 
 
 class PassProductViewSet(viewsets.ModelViewSet):
