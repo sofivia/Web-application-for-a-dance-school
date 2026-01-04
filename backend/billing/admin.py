@@ -22,5 +22,3 @@ class PurchaseAdmin(admin.ModelAdmin):
     )
     list_filter = ("method", "product")
     search_fields = ("student__first_name", "student__last_name")
-
-
