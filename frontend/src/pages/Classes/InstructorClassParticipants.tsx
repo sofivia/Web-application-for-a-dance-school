@@ -103,7 +103,7 @@ export default function InstructorClassParticipants() {
       const resp = await saveClassAttendance(sessionId, records);
       if (resp?.ok) setSavedOk("Zapisano obecność ✅");
       else setSavedOk("Wysłano dane (backend zwrócił ok=false lub inny format).");
-    } catch (e: any) {
+    } catch {
       setErr("Nie udało się zapisać obecności.");
     } finally {
       setSaving(false);
