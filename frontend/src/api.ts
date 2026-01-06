@@ -367,7 +367,7 @@ export type AttendanceRecord = {
    markedAt: string;
 };
 
-export async function getAttendanceRecords(params: { page: number }) {
-   const { data } = await api.get("/api/school/classgroups/", { params });
+export async function getAttendanceRecords(params: { page: number }) { // TODO: implement get attendance records, where status = "Nieobecny"
+   const { data } = await api.get("/api/school/attendance/", { params });
    return data as { count: number; results: AttendanceRecord[] };
 }
