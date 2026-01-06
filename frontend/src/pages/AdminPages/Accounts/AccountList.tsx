@@ -65,7 +65,7 @@ export default function AccountList() {
 
       if (loading || !isLoggedIn) return;
       loadTable(page, applied);
-   }, [loading, isLoggedIn, page, filter, applied]);
+   }, [loading, isLoggedIn, page, filter]);
 
    const optionsAccType: Option[] = [
       {

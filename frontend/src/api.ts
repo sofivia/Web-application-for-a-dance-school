@@ -322,7 +322,7 @@ export type AccountParams = {
 type BaseAccount = {
    email: string;
    is_active: boolean;
-}
+};
 
 export type BaseType<T> = T & BaseAccount;
 
@@ -358,4 +358,16 @@ export async function createStudent(password: string, student: BaseStudent) {
 export async function editStudent(id: string, student: BaseStudent) {
    const resp = await api.put(`/api/school/students/${id}/`, student);
    return resp.data as BaseStudent;
+}
+
+export type AttendanceRecord = {
+   id: string;
+   instructorName: string;
+   classType: string;
+   markedAt: string;
+};
+
+export async function getAttendanceRecords(params: { page: number }) {
+   const { data } = await api.get("/api/school/classgroups/", { params });
+   return data as { count: number; results: AttendanceRecord[] };
 }
