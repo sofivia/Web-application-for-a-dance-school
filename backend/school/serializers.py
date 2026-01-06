@@ -260,3 +260,26 @@ class AttendanceRecordRowSerializer(serializers.ModelSerializer):
         if not inst:
             return ""
         return f"{inst.first_name} {inst.last_name}"
+
+class AttendanceRecordInputSerializer(serializers.Serializer):
+    student_id = serializers.UUIDField()
+    status = serializers.ChoiceField(
+        choices=[
+            AttendanceRecord.Status.PRESENT,
+            AttendanceRecord.Status.ABSENT,
+            AttendanceRecord.Status.EXCUSED,
+        ]
+    )
+
+
+class AttendanceSavePayloadSerializer(serializers.Serializer):
+    records = AttendanceRecordInputSerializer(many=True)
+
+    def validate_records(self, records):
+        seen = set()
+        for r in records:
+            sid = str(r["student_id"])
+            if sid in seen:
+                raise serializers.ValidationError("Duplicate student_id in records.")
+            seen.add(sid)
+        return records
