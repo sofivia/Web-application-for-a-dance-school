@@ -11,7 +11,8 @@ from .views import (
     ClassGroupView,
     EnrollView,
     UnenrollView,
-    AccountViewSet
+    AccountViewSet,
+    StudentAttendanceListView
 )
 
 app_name = "school"
@@ -28,6 +29,7 @@ urlpatterns = [
     path("classes/", ClassSessionListView.as_view(), name="classes"),
     path("enroll/", EnrollView.as_view(), name="enroll"),
     path("unenroll/", UnenrollView.as_view(), name="unenroll"),
+    path("attendance/", StudentAttendanceListView.as_view(), name="attendance")
 ]
 
 urlpatterns += router.urls

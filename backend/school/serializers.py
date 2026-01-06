@@ -8,6 +8,7 @@ from .models import (
     ClassSession,
     ClassGroup,
     Location,
+    AttendanceRecord
 )
 
 User = get_user_model()
@@ -243,3 +244,19 @@ class AdminInstructorUpdateSerializer(serializers.Serializer):
     last_name = serializers.CharField(required=False, max_length=100)
     short_bio = serializers.CharField(required=False, allow_blank=True)
     phone = serializers.CharField(required=False, allow_blank=True, max_length=50)
+
+
+class AttendanceRecordRowSerializer(serializers.ModelSerializer):
+    classType = serializers.CharField(source="session.group.class_type.name", read_only=True)
+    markedAt = serializers.DateTimeField(source="marked_at", read_only=True)
+    instructorName = serializers.SerializerMethodField()
+
+    class Meta:
+        model = AttendanceRecord
+        fields = ("id", "classType", "markedAt", "instructorName")
+
+    def get_instructorName(self, obj: AttendanceRecord) -> str:
+        inst = obj.session.substitute_instructor or obj.session.group.primary_instructor
+        if not inst:
+            return ""
+        return f"{inst.first_name} {inst.last_name}"

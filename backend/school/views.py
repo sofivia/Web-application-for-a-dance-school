@@ -29,7 +29,8 @@ from .models import (
     ClassGroup,
     ClassSession,
     Enrollment,
-    Location)
+    Location,
+    AttendanceRecord)
 from .serializers import (
     StudentSerializer,
     InstructorSerializer,
@@ -43,7 +44,8 @@ from .serializers import (
     AdminStudentCreatePayloadSerializer,
     AdminInstructorCreatePayloadSerializer,
     AdminStudentUpdateSerializer,
-    AdminInstructorUpdateSerializer
+    AdminInstructorUpdateSerializer,
+    AttendanceRecordRowSerializer
 )
 
 User = get_user_model()
@@ -531,3 +533,29 @@ class InstructorAdminDetailView(APIView):
             "phone": inst.phone,
             "id": str(inst.id),
         })
+
+
+class StudentAttendanceListView(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated, IsStudent]
+    serializer_class = AttendanceRecordRowSerializer
+    pagination_class = StandardPagination
+
+    def get_queryset(self):
+        student = self.request.user.student
+
+        qs = (
+            AttendanceRecord.objects
+            .select_related(
+                "session",
+                "session__group",
+                "session__group__class_type",
+                "session__group__primary_instructor",
+                "session__substitute_instructor",
+            )
+            .filter(
+                student=student,
+                status=AttendanceRecord.Status.ABSENT,
+            )
+            .order_by("-marked_at", "-id")
+        )
+        return qs
