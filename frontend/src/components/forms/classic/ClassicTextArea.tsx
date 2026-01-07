@@ -3,14 +3,13 @@ import { useId } from 'react';
 import type { ClassicBaseInputProps } from '../commons';
 
 
-export type ClassicTextAreaProps = ClassicBaseInputProps & {
-    kind: "textarea";
-    placeholder?: string;
-    rows?: number;
-}
+export type ClassicTextAreaProps =
+    ClassicBaseInputProps
+    & React.HTMLAttributes<HTMLTextAreaElement>
+    & { kind: "textarea"; }
 
 export default function TextArea(props: ClassicTextAreaProps) {
-    const { id, error, className, name, placeholder, rows } = props;
+    const { id, error, className, name, ...rest } = props;
     const autoId = useId();
 
     return (
@@ -18,10 +17,9 @@ export default function TextArea(props: ClassicTextAreaProps) {
             <textarea
                 id={id ?? autoId}
                 name={name}
-                placeholder={placeholder}
-                rows={rows}
                 aria-invalid={!!error}
                 className={`${styles.input} mb-1`}
+                {...rest}
             />
             {error && <div className={styles.error}>{error}</div>}
         </div>

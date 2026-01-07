@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import AccountList from "./AccountList.tsx";
 import AccountEdit from "./AccountEdit.tsx";
-import AccountRemove from "./AccountRemove.tsx";
+import AccountDetails from "./AccountDetails.tsx";
 import AccountAdd from "./AccountAdd.tsx";
 
 export default function AdminAccountRoutes() {
@@ -9,7 +9,7 @@ export default function AdminAccountRoutes() {
       <Routes>
          <Route index element={<AccountList />} />
          <Route path="edit/:id" element={<AccountEdit />} />
-         <Route path="remove/:id" element={<AccountRemove />} />
+         <Route path="details/:id" element={<AccountDetails />} />
          <Route path="add/:role" element={<AccountAdd />} />
       </Routes>
    );

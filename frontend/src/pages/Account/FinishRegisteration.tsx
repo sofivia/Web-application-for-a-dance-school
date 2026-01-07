@@ -14,16 +14,16 @@ export default function FinishRegistration() {
     let fields: Field[];
     if (roles.includes("student")) {
         fields = [
-            { name: "first_name", type: "text", label: "Imię" } as ClassicInputWithLabelProps,
-            { name: "last_name", type: "text", label: "Nazwisko" } as ClassicInputWithLabelProps,
-            { name: "date_of_birth", type: "date", label: "Data urodzenia" } as ClassicInputWithLabelProps,
-            { name: "phone", type: "tel", label: "Numer telefonu", placeholder: "111222333" } as ClassicInputWithLabelProps
+            { name: "first_name", type: "text", label: "Imię", kind: "input" } as ClassicInputWithLabelProps,
+            { name: "last_name", type: "text", label: "Nazwisko", kind: "input" } as ClassicInputWithLabelProps,
+            { name: "date_of_birth", type: "date", label: "Data urodzenia", kind: "input" } as ClassicInputWithLabelProps,
+            { name: "phone", type: "tel", label: "Numer telefonu", placeholder: "111222333", kind: "input" } as ClassicInputWithLabelProps
         ];
     } else {
         fields = [
-            { name: "first_name", type: "text", label: "Imię" } as ClassicInputWithLabelProps,
-            { name: "last_name", type: "text", label: "Nazwisko" } as ClassicInputWithLabelProps,
-            { name: "phone", type: "tel", label: "Numer telefonu", placeholder: "111222333" } as ClassicInputWithLabelProps,
+            { name: "first_name", type: "text", label: "Imię", kind: "input" } as ClassicInputWithLabelProps,
+            { name: "last_name", type: "text", label: "Nazwisko", kind: "input" } as ClassicInputWithLabelProps,
+            { name: "phone", type: "tel", label: "Numer telefonu", placeholder: "111222333", kind: "input" } as ClassicInputWithLabelProps,
             { name: "short_bio", kind: "textarea", label: "Krótka biografia", placeholder: "Stepuję od...", rows: 5 } as ClassicTextAreaWithLabelProps,
         ];
     }

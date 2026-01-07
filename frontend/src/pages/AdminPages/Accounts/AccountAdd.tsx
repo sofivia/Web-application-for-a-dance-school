@@ -8,12 +8,12 @@ import type { ClassicTextAreaWithLabelProps } from "@/components/forms/TextAreaW
 
 function StudentAdd() {
    const fields = [
-      { name: "first_name", type: "text", label: "Imię" } as ClassicInputWithLabelProps,
-      { name: "last_name", type: "text", label: "Nazwisko" } as ClassicInputWithLabelProps,
-      { name: "email", type: "email", label: "Email" } as ClassicInputWithLabelProps,
-      { name: "password", type: "password", label: "Tymczasowe hasło" } as ClassicInputWithLabelProps,
-      { name: "phone", type: "tel", label: "Telefon", placeholder: "111222333" } as ClassicInputWithLabelProps,
-      { name: "date_of_birth", type: "date", label: "Data urodzenia" } as ClassicInputWithLabelProps,
+      { name: "first_name", type: "text", label: "Imię", kind: "input" } as ClassicInputWithLabelProps,
+      { name: "last_name", type: "text", label: "Nazwisko", kind: "input" } as ClassicInputWithLabelProps,
+      { name: "email", type: "email", label: "Email", kind: "input" } as ClassicInputWithLabelProps,
+      { name: "password", type: "password", label: "Tymczasowe hasło", kind: "input" } as ClassicInputWithLabelProps,
+      { name: "phone", type: "tel", label: "Telefon", placeholder: "111222333", kind: "input" } as ClassicInputWithLabelProps,
+      { name: "date_of_birth", type: "date", label: "Data urodzenia", kind: "input" } as ClassicInputWithLabelProps,
       { name: "is_active", kind: "checkbox", label: "Czy konto ma być aktywne?", checked: true } as ClassicCheckboxProps
    ];
    return (
@@ -29,11 +29,11 @@ function StudentAdd() {
 
 function InstructorAdd() {
    const fields = [
-      { name: "first_name", type: "text", label: "Imię" } as ClassicInputWithLabelProps,
-      { name: "last_name", type: "text", label: "Nazwisko" } as ClassicInputWithLabelProps,
-      { name: "email", type: "email", label: "Email" } as ClassicInputWithLabelProps,
-      { name: "password", type: "password", label: "Tymczasowe hasło" } as ClassicInputWithLabelProps,
-      { name: "phone", type: "tel", label: "Telefon", placeholder: "111222333" } as ClassicInputWithLabelProps,
+      { name: "first_name", type: "text", label: "Imię", kind: "input" } as ClassicInputWithLabelProps,
+      { name: "last_name", type: "text", label: "Nazwisko", kind: "input" } as ClassicInputWithLabelProps,
+      { name: "email", type: "email", label: "Email", kind: "input" } as ClassicInputWithLabelProps,
+      { name: "password", type: "password", label: "Tymczasowe hasło", kind: "input" } as ClassicInputWithLabelProps,
+      { name: "phone", type: "tel", label: "Telefon", placeholder: "111222333", kind: "input" } as ClassicInputWithLabelProps,
       { name: "short_bio", kind: "textarea", rows: 5, label: "Krótki życiorys", placeholder: "Stepuję od..." } as ClassicTextAreaWithLabelProps,
       { name: "is_active", kind: "checkbox", label: "Czy konto ma być aktywne?", checked: true } as ClassicCheckboxProps
    ];

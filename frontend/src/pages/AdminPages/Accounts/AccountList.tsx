@@ -178,8 +178,6 @@ export default function AccountList() {
                         <th> Imię Nazwisko </th>
                         <th> Typ Konta </th>
                         <th> Email </th>
-                        <th> Jest aktywne </th>
-                        <th> Akcje</th>
                      </tr>
                   </thead>
                   <tbody>
@@ -201,14 +199,9 @@ export default function AccountList() {
                               <tr key={g.pk}>
                                  <td>{name}</td>
                                  <td>{role}</td>
-                                 <td>{g.email}</td>
-                                 <td>{g.isActive ? "tak" : "nie"}</td>
-                                 <td className="flex gap-5 justify-center">
-                                    <Link to={`remove/${g.pk}`} className={formstyles.link}>
-                                       Usuń
-                                    </Link>
-                                    <Link to={`edit/${g.pk}`} className={formstyles.link}>
-                                       Edytuj
+                                 <td>
+                                    <Link to={`details/${g.pk}`} className={formstyles.link}>
+                                       {g.email}
                                     </Link>
                                  </td>
                               </tr>
