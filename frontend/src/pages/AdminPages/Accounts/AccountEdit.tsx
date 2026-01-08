@@ -76,7 +76,7 @@ export default function AccountEdit() {
          date_of_birth: student?.date_of_birth ?? "",
          email: fetchedAccount.email ?? "",
          role: fetchedAccount.role ?? "admin",
-         is_active: fetchedAccount.isActive ?? true,
+         is_active: fetchedAccount.is_active ?? true,
       });
       setLoading(false);
    }, [id]);

@@ -58,7 +58,7 @@ export default function AccountDetails() {
       { key: "pk", fields: ["PK", account.pk] },
       { key: "name", fields: ["Imię i nazwisko", name] },
       { key: "role", fields: ["Rola", role] },
-      { key: "active", fields: ["Czy konto aktywne", account.isActive ? "Tak" : "Nie"] },
+      { key: "active", fields: ["Czy konto aktywne", account.is_active ? "Tak" : "Nie"] },
    ]
 
    return (
@@ -68,7 +68,7 @@ export default function AccountDetails() {
             <Table rows={rows} className={`${tablestyles.simpleTable} mb-3`} style={{ overflowWrap: "anywhere" }} />
             <div className="space-x-3">
                <Button onClick={() => nav(`../edit/${account.pk}`)}> {isLoading ? "Przetwarzanie" : "Edytuj"} </Button>
-               {account.isActive && <Button onClick={handleRemove} className="bg-red-500!"> {isLoading ? "Przetwarzanie" : "Usuń"} </Button>}
+               {account.is_active && <Button onClick={handleRemove} className="bg-red-500!"> {isLoading ? "Przetwarzanie" : "Usuń"} </Button>}
             </div>
          </div>
       </div>

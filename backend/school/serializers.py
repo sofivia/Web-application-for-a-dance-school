@@ -60,7 +60,7 @@ class InstructorInfoSerializer(serializers.ModelSerializer):
 
 class AccountViewSerializer(serializers.ModelSerializer):
     pk = serializers.CharField(read_only=True)
-    isActive = serializers.BooleanField(source="is_active", read_only=True)
+    is_active = serializers.BooleanField(read_only=True)
 
     studentInfo = StudentInfoSerializer(
         source="student", read_only=True, allow_null=True
@@ -76,7 +76,7 @@ class AccountViewSerializer(serializers.ModelSerializer):
         fields = (
             "pk",
             "email",
-            "isActive",
+            "is_active",
             "role",
             "studentInfo",
             "instructorInfo",

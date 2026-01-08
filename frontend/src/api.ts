@@ -307,7 +307,7 @@ export type AccountView = {
    studentInfo?: Student;
    instructorInfo?: Instructor;
    email: string;
-   isActive: boolean;
+   is_active: boolean;
    role: string;
 };
 
@@ -317,7 +317,7 @@ export type AccountParams = {
    surname?: string;
    accountType?: string;
    email?: string;
-   isActive?: boolean;
+   is_active?: boolean;
 };
 
 type BaseAccount = {

@@ -6,23 +6,18 @@ import formstyles from "@/styles/forms.module.css";
 import tablestyles from "@/styles/listTable.module.css";
 import { Link } from "react-router-dom";
 
-import Select from "@/components/forms/SelectWithLabel";
+import type { ReactSelectWithLabelProps } from "@/components/forms/SelectWithLabel";
 import type { Option } from "@/components/forms/Select";
 import styles from "./AccountList.module.css";
-import InputWithLabel from "@/components/forms/InputWithLabel.tsx";
+import type { ReactInputWithLabelProps } from "@/components/forms/InputWithLabel.tsx";
 import { getAccounts, type AccountParams, type AccountView } from "@/api";
 import { roleToPL } from "@/utils/apiutils";
+import { InputList } from "@/components/forms/InputList";
 
 
 export default function AccountList() {
    const [filter, provokeFilters] = useState(false);
-   const [applied, setApplied] = useState({
-      name: "",
-      surname: "",
-      accountType: "",
-      email: "",
-      isActive: "true",
-   });
+   const [applied, setApplied] = useState({ name: "", surname: "", accountType: "", email: "", is_active: "true" });
 
    const applyFilters = () => {
       setPage(1);
@@ -47,7 +42,7 @@ export default function AccountList() {
             params.surname = a.surname?.trim();
             params.accountType = a.accountType;
             params.email = a.email?.trim();
-            params.isActive = a.isActive === "true";
+            params.is_active = a.is_active === "true";
 
             const data = await getAccounts(params);
             setRows(data.results);
@@ -60,36 +55,6 @@ export default function AccountList() {
       loadTable(page, applied);
    }, [page, filter, applied]);
 
-   const optionsAccType: Option[] = [
-      {
-         key: "student",
-         value: "student",
-         label: "Student",
-      },
-      {
-         key: "admin",
-         value: "admin",
-         label: "Admin",
-      },
-      {
-         key: "instructor",
-         value: "instructor",
-         label: "Instruktor",
-      },
-   ];
-   const optionsActive: Option[] = [
-      {
-         key: "true",
-         value: "true",
-         label: "tak",
-      },
-      {
-         key: "false",
-         value: "false",
-         label: "nie",
-      },
-   ];
-
    const accData = rows.map(r => {
       let name = "-";
       if (r.studentInfo)
@@ -98,6 +63,46 @@ export default function AccountList() {
          name = `${r.instructorInfo.first_name} ${r.instructorInfo.last_name}`;
       return { ...r, name, role: roleToPL(r.role) }
    });
+
+   const optionsAccType: Option[] = [
+      { key: "student", value: "student", label: "Student" },
+      { key: "admin", value: "admin", label: "Admin" },
+      { key: "instructor", value: "instructor", label: "Instruktor" },
+   ];
+   const optionsActive: Option[] = [
+      { key: "true", value: "true", label: "tak" },
+      { key: "false", value: "false", label: "nie" },
+   ];
+
+   const fields = [
+      {
+         name: "name", kind: "input-react", type: "text", label: "Imię i Nazwisko",
+         values: {
+            placeholder: "Wpisz imię i nazwisko", value: applied.name,
+            setValue: e => setApplied({ ...applied, name: e.target.value })
+         }
+      } as ReactInputWithLabelProps,
+      {
+         name: "accountType", kind: "select-react", label: "Imię i Nazwisko", prompt: "Wybierz typ konta", options: optionsAccType,
+         values: {
+            value: applied.accountType,
+            setValue: (e) => setApplied({ ...applied, accountType: e.target.value })
+         }
+      } as ReactSelectWithLabelProps,
+      {
+         name: "email", kind: 'input-react', type: "text", label: "Email", values: {
+            placeholder: "Wpisz email", value: applied.email,
+            setValue: (e) => setApplied({ ...applied, email: e.target.value }),
+         }
+      } as ReactInputWithLabelProps,
+      {
+         name: "is_active", kind: "select-react", label: "Czy konto jest aktywne", prompt: "Wybierz opcję", options: optionsActive,
+         values: {
+            value: applied.is_active,
+            setValue: (e) => setApplied({ ...applied, is_active: e.target.value })
+         }
+      } as ReactSelectWithLabelProps,
+   ];
 
    return (
       <div className={global.app_container}>
@@ -112,66 +117,7 @@ export default function AccountList() {
                </Button>
             </div>
             <div className={`${styles.filtersBar} ${formstyles.panel} mb-5`}>
-               <InputWithLabel
-                  name="name"
-                  kind='input-react'
-                  type="text"
-                  label="Imię i Nazwisko"
-                  values={{
-                     placeholder: "Wpisz imię i nazwisko",
-                     value: applied.name,
-                     setValue: (e) =>
-                        setApplied({
-                           ...applied,
-                           name: e.target.value,
-                        }),
-                  }}
-               />
-               <Select
-                  name="role"
-                  kind='select-react'
-                  label="Typ konta"
-                  prompt="Wybierz typ"
-                  options={optionsAccType}
-                  values={{
-                     value: applied.accountType,
-                     setValue: (e) =>
-                        setApplied({
-                           ...applied,
-                           accountType: e.target.value,
-                        }),
-                  }}
-               />
-               <InputWithLabel
-                  name="email"
-                  kind='input-react'
-                  type="text"
-                  label="Email"
-                  values={{
-                     placeholder: "Wpisz email",
-                     value: applied.email,
-                     setValue: (e) =>
-                        setApplied({
-                           ...applied,
-                           email: e.target.value,
-                        }),
-                  }}
-               />
-               <Select
-                  name="is_active"
-                  kind='select-react'
-                  label="Czy jest konto aktywne"
-                  prompt="Wybierz opcje"
-                  options={optionsActive}
-                  values={{
-                     value: applied.isActive,
-                     setValue: (e) =>
-                        setApplied({
-                           ...applied,
-                           isActive: e.target.value,
-                        }),
-                  }}
-               />
+               <InputList fields={fields} />
 
                <Button onClick={applyFilters} className={styles.filterBtn}>
                   Filtruj

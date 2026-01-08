@@ -399,7 +399,7 @@ class AccountFilter(django_filters.FilterSet):
     accountType = django_filters.CharFilter(method="filter_role")
     email = django_filters.CharFilter(field_name="email", lookup_expr="icontains")
 
-    isActive = django_filters.BooleanFilter(field_name="is_active")
+    is_active = django_filters.BooleanFilter(field_name="is_active")
 
     class Meta:
         model = User
