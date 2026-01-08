@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import global from "@/global.module.css";
 import Button from "@/components/Button";
 import formstyles from "@/styles/forms.module.css";
-import { useAuth } from "@/utils/auth/useAuth";
 import { Link } from "react-router-dom";
 
 import Select from "@/components/forms/SelectWithLabel";
@@ -13,7 +12,6 @@ import InputWithLabel from "@/components/forms/InputWithLabel.tsx";
 import { getAccounts, type AccountParams, type AccountView } from "@/api";
 
 export default function AccountList() {
-   const { isLoggedIn, loading } = useAuth();
    const [filter, provokeFilters] = useState(false);
    const [applied, setApplied] = useState({
       name: "",
@@ -42,17 +40,11 @@ export default function AccountList() {
          try {
             const params: AccountParams = { page: p };
 
-            if (a.name?.trim()) params.name = a.name.trim();
-            if (a.surname?.trim()) params.surname = a.surname.trim();
-
-            const t = a.accountType === "instruktor" ? "instructor" : a.accountType;
-            if (t) params.accountType = t;
-
-            if (a.email?.trim()) params.email = a.email.trim();
-
-            if (a.isActive === "true" || a.isActive === "false") {
-               params.isActive = a.isActive === "true";
-            }
+            params.name = a.name?.trim();
+            params.surname = a.surname?.trim();
+            params.accountType = a.accountType;
+            params.email = a.email?.trim();
+            params.isActive = a.isActive === "true";
 
             const data = await getAccounts(params);
             setRows(data.results);
@@ -62,10 +54,8 @@ export default function AccountList() {
          }
       }
 
-
-      if (loading || !isLoggedIn) return;
       loadTable(page, applied);
-   }, [loading, isLoggedIn, page, filter]);
+   }, [page, filter, applied]);
 
    const optionsAccType: Option[] = [
       {
@@ -79,8 +69,8 @@ export default function AccountList() {
          label: "Admin",
       },
       {
-         key: "instruktor",
-         value: "instruktor",
+         key: "instructor",
+         value: "instructor",
          label: "Instruktor",
       },
    ];
@@ -231,7 +221,7 @@ export default function AccountList() {
                {[...Array(pageCount).keys()].map((p) => (
                   <Button
                      key={p + 1}
-                     className={`${styles.filterBtn} ${p + 1 === page ? "!bg-main" : ""}`}
+                     className={`${styles.filterBtn} ${p + 1 === page ? "bg-main!" : ""}`}
                      onClick={() => setPage(p + 1)}
                      disabled={tableLoading}>
                      {p + 1}

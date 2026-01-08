@@ -3,15 +3,3 @@
     padding: 0 10%;
     text-align: left;
 }
-
-.listPane td {
-    padding: 4px 0px;
-}
-.listPane  td:first-of-type {
-    vertical-align: top;
-    padding-right: 20px;
-}
-
-.listPane td:last-of-type {
-    max-width: 400px;
-}

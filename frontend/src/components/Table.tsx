@@ -1,24 +1,30 @@
 import type { ComponentPropsWithoutRef } from 'react';
 
 
-export type TableField = {
+export type TableRow = {
     key: string;
-    label: string;
-    value: string;
+    fields: string[];
 }
 
 export type TableProps = ComponentPropsWithoutRef<'table'> & {
-    fields: TableField[];
+    header?: TableRow;
+    rows: TableRow[];
 }
 
 export default function Table(props: TableProps) {
-    const { fields, ...attrs } = props;
+    const { header, rows, ...attrs } = props;
     return (
         <table {...attrs}>
-            {fields.map(f => (
-                <tr key={f.key}>
-                    <td> {f.label} </td>
-                    <td> {f.value} </td>
-                </tr>))}
+            {header && <thead>
+                <td key={header.key}>
+                    {header.fields.map(f => <th> {f} </th>)}
+                </td>
+            </thead>}
+            <tbody>
+                {rows.map(r =>
+                    <tr key={r.key}>
+                        {r.fields.map(f => <td> {f} </td>)}
+                    </tr>)}
+            </tbody>
         </table>)
 }

@@ -53,7 +53,7 @@
   border-right: 1px solid var(--gray);
 }
 
-td:nth-of-type(2) {
+.table td:nth-of-type(2) {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 0;

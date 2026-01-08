@@ -87,19 +87,29 @@ export default function AccountEdit() {
 
 
    if (!id) return <Navigate to="/" replace />;
-   if (!account) return <Navigate to="/" replace />;
+   if (!isLoading && !account) return <Navigate to="/" replace />;
 
    return (
       <div className={global.app_container}>
          <div className={"flex flex-col gap-3"}>
             <h1 className="mb-3 font-bold text-lg">Edytuj użytkownika</h1>
-            {isLoading ? "Ładowanie..." : <>
-               {formData.role != "student" && formData.role != "instructor" && "Nie można edytować"}
-               {formData.role == "student" && editStudentForm(account.pk, formData)}
-               {formData.role == "instructor" && editInstructorForm(account.pk, formData)}
-            </>
-            }
+            <Content {...{ isLoading, formData, account }} />
          </div>
       </div>
    );
+}
+
+function Content(props: { isLoading: boolean, formData: FormDataT, account: AccountView | null }) {
+   const { isLoading, formData, account } = props;
+   if (!account)
+      return <> Nie ma takiego konta </>
+   if (isLoading)
+      return <> Ładowanie... </>
+   return (
+      <>
+         {formData.role != "student" && formData.role != "instructor" && "Nie można edytować"}
+         {formData.role == "student" && editStudentForm(account.pk, formData)}
+         {formData.role == "instructor" && editInstructorForm(account.pk, formData)}
+      </>
+   )
 }
