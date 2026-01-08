@@ -11,9 +11,9 @@ export type Option = {
 
 export type ClassicSelectProps =
     ClassicBaseInputProps
-    & React.HTMLAttributes<HTMLSelectElement>
+    & React.SelectHTMLAttributes<HTMLSelectElement>
     & {
-        kind: "select";
+        kind: "select-classic";
         prompt: string;
         options: Option[];
     };

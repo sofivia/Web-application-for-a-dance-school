@@ -1,7 +1,7 @@
 import { useId } from 'react';
 import Input from "./Input.tsx";
 import styles from "./Select.module.css";
-import type { InputProps } from './commons.ts';
+import type { ReactInputProps } from './Input.tsx';
 import type { ClassicInputProps } from './classic/ClassicInput.tsx';
 import ClassicInput from './classic/ClassicInput.tsx';
 
@@ -11,15 +11,16 @@ type Props = {
     fClassName?: string;
 }
 
-export type InputWithLabelProps = InputProps & Props & { kind: 'react' };
+export type ReactInputWithLabelProps = ReactInputProps & Props;
 export type ClassicInputWithLabelProps = ClassicInputProps & Props;
+export type InputWithLabelProps = ReactInputWithLabelProps | ClassicInputWithLabelProps
 
 
-export default function InputWithLabel(props: InputWithLabelProps | ClassicInputWithLabelProps) {
+export default function InputWithLabel(props: InputWithLabelProps) {
     const { fClassName, label } = props;
     const id = useId();
     const renderInput = () => {
-        if (props.kind == "react")
+        if (props.kind == "input-react")
             return <Input id={id} {...props} />
         else
             return <ClassicInput id={id} {...props} />

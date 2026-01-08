@@ -1,12 +1,17 @@
 import styles from './Input.module.css';
 import { useId } from 'react';
-import type { InputProps } from "./commons.ts"
+import type { ReactBaseInputProps } from "./commons.ts"
 
 
-export default function TextArea(props: InputProps) {
-    const { values, error, onBlur, className, rows, name } = props;
+export type ReactTextAreaProps = ReactBaseInputProps
+    & React.TextareaHTMLAttributes<HTMLTextAreaElement>
+    & { kind: 'textarea-react' }
+
+export default function TextArea(props: ReactTextAreaProps) {
+    const { values, error, className, name, ...rest } = props;
     const { placeholder, value, setValue } = values;
     const id = useId();
+
 
     return (
         <div className={`${className}`}>
@@ -15,11 +20,10 @@ export default function TextArea(props: InputProps) {
                 id={id}
                 placeholder={placeholder}
                 value={value}
-                onBlur={onBlur}
                 aria-invalid={!!error}
                 onChange={setValue}
                 className={`${styles.input} mb-1`}
-                rows={rows}
+                {...rest}
             />
             {error && <div className={styles.error}>{error}</div>}
         </div>

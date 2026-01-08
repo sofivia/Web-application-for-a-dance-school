@@ -5,10 +5,10 @@ import type { ClassicBaseInputProps } from '../commons';
 
 export type ClassicTextAreaProps =
     ClassicBaseInputProps
-    & React.HTMLAttributes<HTMLTextAreaElement>
-    & { kind: "textarea"; }
+    & React.TextareaHTMLAttributes<HTMLTextAreaElement>
+    & { kind: "textarea-classic"; }
 
-export default function TextArea(props: ClassicTextAreaProps) {
+export default function ClassicTextArea(props: ClassicTextAreaProps) {
     const { id, error, className, name, ...rest } = props;
     const autoId = useId();
 

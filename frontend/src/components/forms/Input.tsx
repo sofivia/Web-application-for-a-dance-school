@@ -1,23 +1,27 @@
 import { useId } from 'react';
 import styles from './Input.module.css';
-import type { InputProps } from "./commons.ts"
+import type { ReactBaseInputProps } from "./commons.ts"
 
-export default function Input(props: InputProps) {
-    const { id, type, values, error, onBlur, className, name } = props;
+export type ReactInputProps =
+    ReactBaseInputProps
+    & React.InputHTMLAttributes<HTMLInputElement>
+    & { kind: "input-react"; }
+
+export default function Input(props: ReactInputProps) {
+    const { id, values, error, name, className, ...other } = props;
     const { placeholder, value, setValue } = values;
     const autoId = useId();
     return (
         <div className={className}>
             <input
                 id={id ?? autoId}
-                type={type}
+                name={name}
                 placeholder={placeholder}
                 value={value}
-                onBlur={onBlur}
                 aria-invalid={!!error}
                 onChange={setValue}
                 className={`${styles.input}`}
-                name={name}
+                {...other}
             />
             {error && <div className={styles.error}>{error}</div>}
         </div>

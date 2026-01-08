@@ -5,8 +5,8 @@ import type { ClassicBaseInputProps } from '../commons';
 
 export type ClassicInputProps =
     ClassicBaseInputProps
-    & React.HTMLAttributes<HTMLInputElement>
-    & { kind: "input"; }
+    & React.InputHTMLAttributes<HTMLInputElement>
+    & { kind: "input-classic"; }
 
 
 export default function ClassicInput(props: ClassicInputProps) {

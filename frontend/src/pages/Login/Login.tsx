@@ -79,8 +79,8 @@ export default function Login() {
             <form onSubmit={handleSubmit} className={formstyle.form} noValidate>
                {errors.global && <p className={`${inputstyles.error} mb-1`}>{errors.global}</p>}
 
-               <Input type="email" values={emailValues} error={errors.email} onBlur={validate} className="mb-3" />
-               <Input type="password" values={passValues} error={errors.password} onBlur={validate} className="mb-5" />
+               <Input name="email" kind="input-react" type="email" values={emailValues} error={errors.email} onBlur={validate} className="mb-3" />
+               <Input name="password" kind="input-react" type="password" values={passValues} error={errors.password} onBlur={validate} className="mb-5" />
 
                <button type="submit" className={formstyle.button} disabled={loading}>
                   {loading ? "Logowanie..." : "Zaloguj się"}

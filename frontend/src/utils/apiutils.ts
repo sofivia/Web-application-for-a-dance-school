@@ -63,3 +63,14 @@ export function getErrors(msg: ErrMsg) {
       return Object.keys(out).reduce((acc, k) => (acc[k] = out[k][0], acc), {} as Record<string, string>)
   }
 }
+
+function toTitleCase(str: string) {
+  return str.replace(
+    /\w\S*/g,
+    text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase()
+  );
+}
+
+export function roleToPL(role: string) {
+  return toTitleCase(role == "instructor" ? "instruktor" : role);
+}

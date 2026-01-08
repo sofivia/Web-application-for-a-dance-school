@@ -115,21 +115,21 @@ export default function ClassReg() {
         <h1 className={`text-base font-bold mb-3`}>Zapis na zajęcia</h1>
 
         <div className={`${styles.filtersBar} ${formstyles.panel} mb-5`}>
-          <Select kind='react' label="Typ zajęć" prompt="Wybierz typ" options={optionsTyp}
+          <Select name="class_type" kind='select-react' label="Typ zajęć" prompt="Wybierz typ" options={optionsTyp}
             values={{ value: "", setValue: e => setClassTypeId(e.target.value) }} />
 
           <div className={selectstyles.filter}>
             <label className="block mb-1"> Czas trwania </label>
             <div className="text-nowrap">
-              <Input kind='react' type="time" label="początek od:" values={dateFromValues} fClassName="inline-block mx-2" />
-              <Input kind='react' type="time" label="koniec do:" values={dateToValues} fClassName="inline-block mx-2" />
+              <Input name="time_from" kind='input-react' type="time" label="początek od:" values={dateFromValues} fClassName="inline-block mx-2" />
+              <Input name="time_to" kind='input-react' type="time" label="koniec do:" values={dateToValues} fClassName="inline-block mx-2" />
             </div>
           </div>
 
-          <Select kind='react' label="Prowadzący" prompt="Wybierz prowadzącego" options={optionsInstructor}
+          <Select name="instructor_id" kind='select-react' label="Prowadzący" prompt="Wybierz prowadzącego" options={optionsInstructor}
             values={{ value: "", setValue: e => setInstructorId(e.target.value) }} />
 
-          <Select kind='react' label="Studia" prompt="Wybierz studio" options={optionsLocation}
+          <Select name="location_id" kind='select-react' label="Studia" prompt="Wybierz studio" options={optionsLocation}
             values={{ value: "", setValue: e => setStudio(e.target.value) }} />
 
           <Button onClick={applyFilters} className={styles.filterBtn} disabled={filtersLoading}>
@@ -187,7 +187,7 @@ export default function ClassReg() {
           {[...Array(pageCount).keys()].map((p) => (
             <Button
               key={p + 1}
-              className={`${styles.filterBtn} ${p + 1 === page ? "!bg-main" : ""}`}
+              className={`${styles.filterBtn} ${p + 1 === page ? "bg-main!" : ""}`}
               onClick={() => setPage(p + 1)}
               disabled={tableLoading}
             >

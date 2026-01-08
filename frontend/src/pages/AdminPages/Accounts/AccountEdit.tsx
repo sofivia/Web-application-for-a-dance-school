@@ -10,12 +10,12 @@ import type { ClassicTextAreaWithLabelProps } from "@/components/forms/TextAreaW
 
 function editStudentForm(pk: string, student: FormDataT) {
    const fields = [
-      { name: "first_name", type: "text", label: "Imię", defaultValue: student.first_name, kind: "input" } as ClassicInputWithLabelProps,
-      { name: "last_name", type: "text", label: "Nazwisko", defaultValue: student.last_name, kind: "input" } as ClassicInputWithLabelProps,
-      { name: "email", type: "email", label: "Email", defaultValue: student.email, kind: "input" } as ClassicInputWithLabelProps,
-      { name: "phone", type: "tel", label: "Telefon", defaultValue: student.phone, kind: "input" } as ClassicInputWithLabelProps,
-      { name: "date_of_birth", type: "date", label: "Data urodzenia", defaultValue: student.date_of_birth, kind: "input" } as ClassicInputWithLabelProps,
-      { name: "is_active", kind: "checkbox", label: "Czy konto ma być aktywne?", checked: student.is_active } as ClassicCheckboxProps
+      { name: "first_name", type: "text", label: "Imię", defaultValue: student.first_name, kind: "input-classic" } as ClassicInputWithLabelProps,
+      { name: "last_name", type: "text", label: "Nazwisko", defaultValue: student.last_name, kind: "input-classic" } as ClassicInputWithLabelProps,
+      { name: "email", type: "email", label: "Email", defaultValue: student.email, kind: "input-classic" } as ClassicInputWithLabelProps,
+      { name: "phone", type: "tel", label: "Telefon", defaultValue: student.phone, kind: "input-classic" } as ClassicInputWithLabelProps,
+      { name: "date_of_birth", type: "date", label: "Data urodzenia", defaultValue: student.date_of_birth, kind: "input-classic" } as ClassicInputWithLabelProps,
+      { name: "is_active", kind: "checkbox-classic", label: "Czy konto ma być aktywne?", defaultChecked: student.is_active } as ClassicCheckboxProps
    ];
    return (
       <FormTemplate<BaseStudent>
@@ -27,12 +27,12 @@ function editStudentForm(pk: string, student: FormDataT) {
 
 function editInstructorForm(pk: string, instructor: FormDataT) {
    const fields = [
-      { name: "first_name", type: "text", label: "Imię", defaultValue: instructor.first_name, kind: "input" } as ClassicInputWithLabelProps,
-      { name: "last_name", type: "text", label: "Nazwisko", defaultValue: instructor.last_name, kind: "input" } as ClassicInputWithLabelProps,
-      { name: "email", type: "email", label: "Email", defaultValue: instructor.email, kind: "input" } as ClassicInputWithLabelProps,
-      { name: "phone", type: "tel", label: "Telefon", defaultValue: instructor.phone, kind: "input" } as ClassicInputWithLabelProps,
-      { name: "short_bio", kind: "textarea", rows: 5, label: "Krótki życiorys", defaultValue: instructor.short_bio } as ClassicTextAreaWithLabelProps,
-      { name: "is_active", kind: "checkbox", label: "Czy konto ma być aktywne?", checked: instructor.is_active } as ClassicCheckboxProps
+      { name: "first_name", type: "text", label: "Imię", defaultValue: instructor.first_name, kind: "input-classic" } as ClassicInputWithLabelProps,
+      { name: "last_name", type: "text", label: "Nazwisko", defaultValue: instructor.last_name, kind: "input-classic" } as ClassicInputWithLabelProps,
+      { name: "email", type: "email", label: "Email", defaultValue: instructor.email, kind: "input-classic" } as ClassicInputWithLabelProps,
+      { name: "phone", type: "tel", label: "Telefon", defaultValue: instructor.phone, kind: "input-classic" } as ClassicInputWithLabelProps,
+      { name: "short_bio", kind: "textarea-classic", rows: 5, label: "Krótki życiorys", defaultValue: instructor.short_bio } as ClassicTextAreaWithLabelProps,
+      { name: "is_active", kind: "checkbox-classic", label: "Czy konto ma być aktywne?", defaultChecked: instructor.is_active } as ClassicCheckboxProps
    ];
    return (
       <FormTemplate<BaseInstructor>

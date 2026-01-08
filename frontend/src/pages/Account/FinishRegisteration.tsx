@@ -1,9 +1,7 @@
 import FormTemplate from "@/components/FormTemplate.tsx";
-import type { Field } from "@/components/FormTemplate.tsx";
+import type { GeneralInput } from "@/components/forms/InputList.tsx";
 import { type Student, type Instructor, registerStudent, registerInstructor } from "@/api.ts";
 import { useAuth } from "@/utils/auth/useAuth";
-import type { ClassicInputWithLabelProps } from "@/components/forms/InputWithLabel";;
-import type { ClassicTextAreaWithLabelProps } from "@/components/forms/TextAreaWithLabel";
 
 import global from "@/global.module.css";
 import formstyle from "@/styles/forms.module.css";
@@ -11,20 +9,20 @@ import formstyle from "@/styles/forms.module.css";
 
 export default function FinishRegistration() {
     const { roles } = useAuth();
-    let fields: Field[];
+    let fields: GeneralInput[];
     if (roles.includes("student")) {
         fields = [
-            { name: "first_name", type: "text", label: "Imię", kind: "input" } as ClassicInputWithLabelProps,
-            { name: "last_name", type: "text", label: "Nazwisko", kind: "input" } as ClassicInputWithLabelProps,
-            { name: "date_of_birth", type: "date", label: "Data urodzenia", kind: "input" } as ClassicInputWithLabelProps,
-            { name: "phone", type: "tel", label: "Numer telefonu", placeholder: "111222333", kind: "input" } as ClassicInputWithLabelProps
+            { name: "first_name", type: "text", label: "Imię", kind: "input-classic" },
+            { name: "last_name", type: "text", label: "Nazwisko", kind: "input-classic" },
+            { name: "date_of_birth", type: "date", label: "Data urodzenia", kind: "input-classic" },
+            { name: "phone", type: "tel", label: "Numer telefonu", placeholder: "111222333", kind: "input-classic" }
         ];
     } else {
         fields = [
-            { name: "first_name", type: "text", label: "Imię", kind: "input" } as ClassicInputWithLabelProps,
-            { name: "last_name", type: "text", label: "Nazwisko", kind: "input" } as ClassicInputWithLabelProps,
-            { name: "phone", type: "tel", label: "Numer telefonu", placeholder: "111222333", kind: "input" } as ClassicInputWithLabelProps,
-            { name: "short_bio", kind: "textarea", label: "Krótka biografia", placeholder: "Stepuję od...", rows: 5 } as ClassicTextAreaWithLabelProps,
+            { name: "first_name", type: "text", label: "Imię", kind: "input-classic" },
+            { name: "last_name", type: "text", label: "Nazwisko", kind: "input-classic" },
+            { name: "phone", type: "tel", label: "Numer telefonu", placeholder: "111222333", kind: "input-classic" },
+            { name: "short_bio", kind: "textarea-classic", label: "Krótka biografia", placeholder: "Stepuję od...", rows: 5 },
         ];
     }
     return (

@@ -3,16 +3,17 @@ import styles from '../Checkbox.module.css';
 import type { ClassicBaseInputProps } from '../commons';
 
 
-export type ClassicCheckboxProps = ClassicBaseInputProps & {
-    kind: "checkbox";
-    checked: boolean;
-    label?: string;
-    fClassName?: string;
-}
+export type ClassicCheckboxProps = ClassicBaseInputProps
+    & React.InputHTMLAttributes<HTMLInputElement>
+    & {
+        kind: "checkbox-classic";
+        label?: string;
+        fClassName?: string;
+    };
 
 
 export default function ClassicCheckbox(props: ClassicCheckboxProps) {
-    const { id, error, className, name, checked, label, fClassName } = props;
+    const { id, error, className, name, label, fClassName, ...rest } = props;
     const autoId = useId();
     return (
         <div className={`${styles.checkbox} ${className} ${fClassName}`}>
@@ -22,7 +23,7 @@ export default function ClassicCheckbox(props: ClassicCheckboxProps) {
                 aria-invalid={!!error}
                 className={`${styles.input}`}
                 name={name}
-                defaultChecked={checked}
+                {...rest}
             />
             <label htmlFor={id ?? autoId}> {label} </label>
             {error && <div className={styles.error}>{error}</div>}

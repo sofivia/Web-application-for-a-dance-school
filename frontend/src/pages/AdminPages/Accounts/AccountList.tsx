@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import global from "@/global.module.css";
 import Button from "@/components/Button";
 import formstyles from "@/styles/forms.module.css";
+import tablestyles from "@/styles/listTable.module.css";
 import { Link } from "react-router-dom";
 
 import Select from "@/components/forms/SelectWithLabel";
@@ -10,6 +11,8 @@ import type { Option } from "@/components/forms/Select";
 import styles from "./AccountList.module.css";
 import InputWithLabel from "@/components/forms/InputWithLabel.tsx";
 import { getAccounts, type AccountParams, type AccountView } from "@/api";
+import { roleToPL } from "@/utils/apiutils";
+
 
 export default function AccountList() {
    const [filter, provokeFilters] = useState(false);
@@ -86,6 +89,16 @@ export default function AccountList() {
          label: "nie",
       },
    ];
+
+   const accData = rows.map(r => {
+      let name = "-";
+      if (r.studentInfo)
+         name = `${r.studentInfo.first_name} ${r.studentInfo.last_name}`;
+      else if (r.instructorInfo)
+         name = `${r.instructorInfo.first_name} ${r.instructorInfo.last_name}`;
+      return { ...r, name, role: roleToPL(r.role) }
+   });
+
    return (
       <div className={global.app_container}>
          <div className={styles.page}>
@@ -100,7 +113,8 @@ export default function AccountList() {
             </div>
             <div className={`${styles.filtersBar} ${formstyles.panel} mb-5`}>
                <InputWithLabel
-                  kind='react'
+                  name="name"
+                  kind='input-react'
                   type="text"
                   label="Imię i Nazwisko"
                   values={{
@@ -114,7 +128,8 @@ export default function AccountList() {
                   }}
                />
                <Select
-                  kind='react'
+                  name="role"
+                  kind='select-react'
                   label="Typ konta"
                   prompt="Wybierz typ"
                   options={optionsAccType}
@@ -128,7 +143,8 @@ export default function AccountList() {
                   }}
                />
                <InputWithLabel
-                  kind='react'
+                  name="email"
+                  kind='input-react'
                   type="text"
                   label="Email"
                   values={{
@@ -142,7 +158,8 @@ export default function AccountList() {
                   }}
                />
                <Select
-                  kind='react'
+                  name="is_active"
+                  kind='select-react'
                   label="Czy jest konto aktywne"
                   prompt="Wybierz opcje"
                   options={optionsActive}
@@ -162,7 +179,7 @@ export default function AccountList() {
             </div>
 
             <div className={styles.tableWrap}>
-               <table className={styles.table}>
+               <table className={`${styles.table} ${tablestyles.listTable}`}>
                   <thead>
                      <tr>
                         <th> Imię Nazwisko </th>
@@ -172,31 +189,17 @@ export default function AccountList() {
                   </thead>
                   <tbody>
                      {!tableLoading &&
-                        rows.map((g) => {
-                           let name = "-";
-                           let role = "-";
-
-                           if (g.studentInfo) {
-                              name = `${g.studentInfo.first_name} ${g.studentInfo.last_name}`;
-                              role = "Student";
-                           } else if (g.instructorInfo) {
-                              name = `${g.instructorInfo.first_name} ${g.instructorInfo.last_name}`;
-                              role = "Instruktor";
-                           } else if (g.role == "admin")
-                              role = "Admin";
-
-                           return (
-                              <tr key={g.pk}>
-                                 <td>{name}</td>
-                                 <td>{role}</td>
-                                 <td>
-                                    <Link to={`details/${g.pk}`} className={formstyles.link}>
-                                       {g.email}
-                                    </Link>
-                                 </td>
-                              </tr>
-                           );
-                        })}
+                        accData.map((g) =>
+                           <tr key={g.pk}>
+                              <td>{g.name}</td>
+                              <td>{g.role}</td>
+                              <td>
+                                 <Link to={`details/${g.pk}`} className={formstyles.link}>
+                                    {g.email}
+                                 </Link>
+                              </td>
+                           </tr>
+                        )}
 
                      {tableLoading && (
                         <tr>

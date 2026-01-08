@@ -66,28 +66,31 @@ export default function Register() {
             <form className={formstyle.form} onSubmit={handleSubmit}>
                {errors.global && <p className={`${inputstyles.error} mb-1`}>{errors.global}</p>}
                <Input
+                  kind="input-react"
+                  name="email"
                   type="email"
                   values={emailValues}
                   error={errors.email}
                   onBlur={validation}
                   className="mb-3"
-                  name="email"
                />
                <Input
+                  kind="input-react"
+                  name="password"
                   type="password"
                   values={passwordValues}
                   error={errors.password}
                   onBlur={validation}
                   className="mb-5"
-                  name="password"
                />
                <Input
+                  kind="input-react"
+                  name="confirmPassword"
                   type="password"
                   values={confPasswordValues}
                   error={errors.confirmPassword}
                   onBlur={validation}
                   className="mb-5"
-                  name="confirmPassword"
                />
 
                <button type="submit" className={formstyle.button} disabled={loading}>
