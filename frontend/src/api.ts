@@ -1,4 +1,5 @@
 import axios, { type AxiosError, type AxiosRequestConfig } from "axios";
+import { Type, plainToInstance } from 'class-transformer';
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 
@@ -360,14 +361,23 @@ export async function editStudent(id: string, student: BaseStudent) {
    return resp.data as BaseStudent;
 }
 
-export type AttendanceRecord = {
-   id: string;
-   instructorName: string;
-   classType: string;
-   markedAt: string;
+export class AttendanceRecord {
+   id!: string;
+   instructorName!: string;
+   classType!: string;
+
+   @Type(() => Date)
+   markedAt!: Date;
 };
+
+export class AttendanceRecords {
+   count!: number;
+
+   @Type(() => AttendanceRecord)
+   results!: AttendanceRecord[];
+}
 
 export async function getAttendanceRecords(params: { page: number }) { // TODO: implement get attendance records, where status = "Nieobecny"
    const { data } = await api.get("/api/school/attendance/", { params });
-   return data as { count: number; results: AttendanceRecord[] };
+   return plainToInstance(AttendanceRecords, data)
 }

@@ -23,9 +23,7 @@ export default function StudentAttendance() {
       async function loadTable(p: number) {
          setTableLoading(true);
          try {
-            const res = await getAttendanceRecords({
-               page: p,
-            });
+            const res = await getAttendanceRecords({ page: p });
             setRows(res.results);
             setCount(res.count);
          } finally {
@@ -56,7 +54,7 @@ export default function StudentAttendance() {
                         rows.map((g) => (
                            <tr key={g.id}>
                               <td> {g.classType} </td>
-                              <td>{g.markedAt.toString()}</td>
+                              <td> {g.markedAt.toDateString()} </td>
                               <td>{g.instructorName}</td>
                            </tr>
                         ))}
