@@ -4,7 +4,7 @@ from .models import PassProduct, Purchase
 
 @admin.register(PassProduct)
 class PassProductAdmin(admin.ModelAdmin):
-    list_display = ("name", "price_cents", "validity_months", "is_active")
+    list_display = ("name", "price_cents", "is_active")
     list_filter = ("is_active",)
     search_fields = ("name",)
 

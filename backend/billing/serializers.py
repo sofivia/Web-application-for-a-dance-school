@@ -14,10 +14,7 @@ class PassProductSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "description",
-            "validity_months",
             "price_cents",
-            "valid_from",
-            "valid_to",
             "is_active",
         )
 

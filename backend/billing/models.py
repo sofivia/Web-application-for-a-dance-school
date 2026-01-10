@@ -9,11 +9,7 @@ class PassProduct(models.Model):
     name = models.CharField(max_length=120)
     description = models.TextField(blank=True)
 
-    validity_months = models.PositiveIntegerField()
     price_cents = models.PositiveIntegerField()
-
-    valid_from = models.DateField(null=True, blank=True)
-    valid_to = models.DateField(null=True, blank=True)
 
     is_active = models.BooleanField(default=True)
 

@@ -22,11 +22,14 @@ from .serializers import (
 )
 from .services import generate_monthly_purchases
 
+from common import utils
+
 
 class PassProductViewSet(viewsets.ModelViewSet):
 
     permission_classes = [IsAdminOrStudentReadOnly]
     serializer_class = PassProductSerializer
+    pagination_class = utils.StandardPagination
     queryset = PassProduct.objects.all()
 
     def get_queryset(self):

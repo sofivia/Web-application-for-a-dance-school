@@ -5,7 +5,7 @@ from .views import PassProductViewSet, PurchaseViewSet
 app_name = "billing"
 
 router = DefaultRouter()
-router.register("pass-products", PassProductViewSet, basename="passproduct")
+router.register("pass-products", PassProductViewSet, basename="pass-product")
 router.register("purchases", PurchaseViewSet, basename="purchase")
 
 urlpatterns = router.urls

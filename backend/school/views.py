@@ -11,7 +11,7 @@ import django_filters
 from rest_framework.exceptions import APIException, ValidationError, PermissionDenied
 from rest_framework import status, generics, permissions, mixins, viewsets
 from rest_framework.generics import get_object_or_404
-from rest_framework.pagination import PageNumberPagination
+from common import utils
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -229,12 +229,6 @@ class ClassFiltersView(APIView):
         )
 
 
-class StandardPagination(PageNumberPagination):
-    page_size = 10
-    page_size_query_param = "page_size"
-    max_page_size = 100
-
-
 class ProductFilter(django_filters.FilterSet):
     date_from = django_filters.DateFilter(field_name="starts_at",
                                           lookup_expr='gte')
@@ -252,7 +246,7 @@ class ProductFilter(django_filters.FilterSet):
 class ClassSessionListView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = ClassSessionRowSerializer
-    pagination_class = StandardPagination
+    pagination_class = utils.StandardPagination
     filterset_class = ProductFilter
 
     def _get_student_or_none(self):
@@ -357,7 +351,7 @@ class ProductFilter2(django_filters.FilterSet):
 class ClassGroupView(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrStudentReadOnly]
     queryset = ClassGroup.objects.all().select_related("location")
-    pagination_class = StandardPagination
+    pagination_class = utils.StandardPagination
     filterset_class = ProductFilter2
 
     def get_serializer_class(self):
@@ -440,7 +434,7 @@ class AccountViewSet(
 ):
     permission_classes = [IsAdmin]
     serializer_class = AccountViewSerializer
-    pagination_class = StandardPagination
+    pagination_class = utils.StandardPagination
     filterset_class = AccountFilter
 
     def get_queryset(self):
@@ -539,7 +533,7 @@ class InstructorAdminDetailView(APIView):
 class StudentAttendanceListView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated, IsStudent]
     serializer_class = AttendanceRecordRowSerializer
-    pagination_class = StandardPagination
+    pagination_class = utils.StandardPagination
 
     def get_queryset(self):
         student = self.request.user.student
