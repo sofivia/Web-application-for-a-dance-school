@@ -475,6 +475,12 @@ export async function getPassProduct(id: string) {
    return resp.data as PassProduct;
 }
 
+export async function createPassProduct(passProduct: PassProduct) {
+   const resp = await api.post(`/api/billing/pass-products/`, passProduct);
+   return resp.data as PassProduct;
+}
+
+
 export async function getPassProducts(params: {page: number}) {
    const { data } = await api.get("/api/billing/pass-products/", { params });
    return data as Page<PassProduct>;

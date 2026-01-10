@@ -32,6 +32,9 @@ export default function AccountsList() {
                                     <Table rows={r} className={`${tablestyles.simpleTable}`} />
                                 </div >)
                             })}
+                            <Link className={`${styles.addPass} block font-semibold text-xl w-full`} to={"./add"}>
+                                Dodaj karnet
+                            </Link>
                         </>
                     }}
                 </Loading>

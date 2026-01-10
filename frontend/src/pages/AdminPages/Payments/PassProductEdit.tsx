@@ -1,7 +1,7 @@
 import Loading from "@/components/Loading";
 import { useState, type FormEvent } from "react";
 import { Navigate, useNavigate, useParams } from "react-router";
-import { editPassProduct, getPassProduct, type PassProduct } from "@/api";
+import { editPassProduct, getPassProduct, createPassProduct, type PassProduct } from "@/api";
 
 import globals from "@/global.module.css"
 import InputWithLabel from "@/components/forms/InputWithLabel";
@@ -20,8 +20,12 @@ export default function PassProductEdit() {
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     const [price, setPrice] = useState<string | null>(null);
-    if (!id)
-        return <Navigate to="/" replace={true} />
+    const example: PassProduct = {
+        name: "Super Karnet", description: "Dla stepujących", price_cents: 10999, is_active: true
+    };
+    const cb = id ? () => getPassProduct(id) : () => Promise.resolve(example);
+    const apicall = (passProduct: PassProduct) => id ? editPassProduct(id, passProduct) : createPassProduct(passProduct);
+    const getExtraProp = (x?: string) => id ? { defaultValue: x } : { placeholder: x }
 
     const filterPrice = (price: string) => {
         if (price == "" || /^\d*\.?\d{0,2}$/.test(price))
@@ -35,7 +39,7 @@ export default function PassProductEdit() {
         const rawData = Object.fromEntries(formData.entries());
         const passProduct = { is_active: false, ...rawData, price_cents: parseFloat(price as string) * 100 } as PassProduct;
         console.log(passProduct)
-        toast.promise(handlePost2(() => editPassProduct(id, passProduct)), {
+        toast.promise(handlePost2(() => apicall(passProduct)), {
             loading: 'Ładowanie...',
             success: () => {
                 setTimeout(() => navigate(`../pass-products`), 300);
@@ -51,7 +55,7 @@ export default function PassProductEdit() {
     return (
         <div className={globals.app_container}>
             <div className="flex flex-col gap-3 w-full max-w-[600px] px-2">
-                <Loading<PassProduct> load={() => getPassProduct(id)}>
+                <Loading<PassProduct> load={cb}>
                     {(data: PassProduct) => {
                         const priceValues: InputValues = {
                             value: price ?? "",
@@ -60,15 +64,16 @@ export default function PassProductEdit() {
                         }
                         return <form onSubmit={handleSubmit} noValidate className="space-y-3">
                             <InputWithLabel name="name" type="text" label="Nazwa"
-                                defaultValue={data.name} error={errors.name} kind="input-classic" />
+                                {...getExtraProp(data.name)} error={errors.name} kind="input-classic" />
                             <InputWithLabel name="price_cents" type="text" label="Cena (zł)"
-                                values={priceValues} error={errors.price_cents} kind="input-react" />
+                                values={priceValues} {...getExtraProp(`${data.price_cents / 100}`)}
+                                error={errors.price_cents} kind="input-react" />
                             <TextAreaWithLabel name="description" label="Nazwa"
-                                defaultValue={data.description} error={errors.description} kind="textarea-classic" />
+                                {...getExtraProp(data.description)} error={errors.description} kind="textarea-classic" />
                             <ClassicCheckbox name="is_active" label="Czy aktywny"
                                 defaultChecked={data.is_active} error={errors.is_active} kind="checkbox-classic" />
 
-                            <button type="submit" className={`${formstyle.button} w - full mt - 5`}>
+                            <button type="submit" className={`${formstyle.button} w-full mt-5`}>
                                 Zatwierdź
                             </button>
                         </form>

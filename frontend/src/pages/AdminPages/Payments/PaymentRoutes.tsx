@@ -10,6 +10,7 @@ export default function AdminAccountRoutes() {
          <Route index element={<Index />} />
          <Route path="pass-products" element={<PassProductsList />} />
          <Route path="pass-products/:id/edit" element={<PassProductEdit />} />
+         <Route path="pass-products/add" element={<PassProductEdit />} />
       </Routes>
    );
 }

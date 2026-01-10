@@ -82,7 +82,7 @@ export default function StudentAttendance() {
                {[...Array(pageCount).keys()].map((p) => (
                   <Button
                      key={p + 1}
-                     className={`${styles.filterBtn} ${p + 1 === page ? "!bg-main" : ""}`}
+                     className={`${styles.filterBtn} ${p + 1 === page ? "bg-main!" : ""}`}
                      onClick={() => setPage(p + 1)}
                      disabled={tableLoading}>
                      {p + 1}
