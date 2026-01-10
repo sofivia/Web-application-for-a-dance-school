@@ -16,7 +16,7 @@ const links: Record<Role, NamedLink[]> = {
    ],
    instructor: [["Grupy zajęciowe", "/classes"]],
    admin: [
-      ["Płatności", "/studPayments"],
+      ["Płatności", "/payments"],
       ["Użytkownicy", "/userManage"],
       ["Zajęcia", "/studSubj"],
    ],

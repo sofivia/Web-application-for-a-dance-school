@@ -392,7 +392,7 @@ export class AttendanceRecords {
    results!: AttendanceRecord[];
 }
 
-export async function getAttendanceRecords(params: { page: number }) { // TODO: implement get attendance records, where status = "Nieobecny"
+export async function getAttendanceRecords(params: { page: number }) {
    const { data } = await api.get("/api/school/attendance/", { params });
    return plainToInstance(AttendanceRecords, data)}
 
@@ -455,4 +455,17 @@ export async function saveClassAttendance(
 ) {
   const resp = await api.post(`/api/school/classes/${sessionId}/participants/`, { records });
   return resp.data as { ok: boolean };
+}
+
+export type PassProduct = {
+   id?: string;
+   name: string;
+   description?: string;
+   price_cents: number;
+   is_active: boolean;
+}
+
+export async function getPassProducts(params: {page: number}) {
+   const { data } = await api.get("/api/billing/pass-products/", { params });
+   return data as PassProduct[];
 }
