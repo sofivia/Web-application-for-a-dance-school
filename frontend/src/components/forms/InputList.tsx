@@ -15,17 +15,16 @@ export type GeneralInput = InputWithLabelProps
     | ClassicCheckboxProps;
 
 
-export function Element(props: GeneralInput) {
-    console.log(props.kind)
+export function Element(props: GeneralInput & { key: number }) {
     if (props.kind == "textarea-classic" || props.kind == "textarea-react")
-        return <TextAreaWithLabel {...props} />
+        return <TextAreaWithLabel {...props} key={props.key} />
     if (props.kind == "select-classic" || props.kind == "select-react")
-        return <SelectWithLabel {...props} />
+        return <SelectWithLabel {...props} key={props.key} />
     if (props.kind == "checkbox-classic")
-        return <ClassicCheckbox {...props} />
-    return <InputWithLabel {...(props as ReactInputWithLabelProps)} />
+        return <ClassicCheckbox {...props} key={props.key} />
+    return <InputWithLabel {...(props as ReactInputWithLabelProps)} key={props.key} />
 }
 
 export function InputList(props: { fields: GeneralInput[], errors?: Errors }) {
-    return <>{props.fields.map(f => Element({ ...f, error: props.errors?.[f.name] }))}</>;
+    return <>{props.fields.map((f, i) => Element({ ...f, error: props.errors?.[f.name], key: i }))}</>;
 }

@@ -26,18 +26,21 @@ export interface AuthUser {
    roles: Role[];
 }
 
-export type Student = {
-   first_name: string;
-   last_name: string;
-   date_of_birth: string;
-   phone?: string;
+export class Student {
+   first_name!: string;
+   last_name!: string;
+
+   @Type(() => Date)
+   date_of_birth!: Date | null;
+
+   phone!: string;
 };
 
-export type Instructor = {
-   first_name: string;
-   last_name: string;
-   short_bio: string;
-   phone: string;
+export class Instructor {
+   first_name!: string;
+   last_name!: string;
+   short_bio!: string;
+   phone!: string;
 };
 
 export function getAccessToken(): string | null {
@@ -213,7 +216,7 @@ export async function getMe(): Promise<AuthUser> {
 
 export async function getStudent() {
    const response = await api.get("/api/school/students/");
-   return response.data as Student;
+   return plainToInstance(Student, response.data);
 }
 
 export async function getInstructor() {
@@ -302,13 +305,18 @@ export async function getClassGroup(id: string) {
    return resp.data as ClassGroup;
 }
 
-export type AccountView = {
-   pk: string;
+export class AccountView {
+   pk!: string;
+
+   @Type(() => Student)
    studentInfo?: Student;
+
+   @Type(() => Instructor)
    instructorInfo?: Instructor;
-   email: string;
-   is_active: boolean;
-   role: string;
+
+   email!: string;
+   is_active!: boolean;
+   role!: Role;
 };
 
 export type AccountParams = {
@@ -330,13 +338,20 @@ export type BaseType<T> = T & BaseAccount;
 export type BaseStudent = BaseType<Student>;
 export type BaseInstructor = BaseType<Instructor>;
 
+class AccountViews {
+   count!: number;
+
+   @Type(() => AccountView)
+   results!: AccountView[];
+}
+
 export async function getAccounts(params: AccountParams) {
    const resp = await api.get("/api/school/accounts/", { params });
-   return resp.data as { count: number; results: AccountView[] };
+   return plainToInstance(AccountViews, resp.data);
 }
 export async function getAccount(id: string) {
    const resp = await api.get(`/api/school/accounts/${id}/`);
-   return resp.data as AccountView;
+   return plainToInstance(AccountView, resp.data);
 }
 export async function removeAccount(id: string) {
    const resp = await api.delete(`/api/school/accounts/${id}/`);

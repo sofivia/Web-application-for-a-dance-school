@@ -6,10 +6,12 @@ import liststyles from "@/styles/list.module.css";
 import { getErrors, handlePost } from "@/utils/apiutils";
 import inputstyles from "@/components/forms/Input.module.css";
 import tablestyles from "@/styles/simpleTable.module.css";
-import { getAccount, removeAccount, type AccountView } from "@/api";
+import { getAccount, removeAccount } from "@/api";
 import { useNavigate } from "react-router-dom";
 import Table from "@/components/Table.tsx";
 import type { TableRow } from "@/components/Table.tsx";
+import { transformAccount, roleToPL, type AccountData } from "@/utils/apiutils";
+
 
 type Errors = Record<string, string>;
 
@@ -17,12 +19,14 @@ export default function AccountDetails() {
    const { id } = useParams();
    const nav = useNavigate();
 
-   const [account, setAccount] = useState<AccountView>();
+   const [account, setAccount] = useState<AccountData>();
    const [errors, setErrors] = useState<Errors>({});
    const [isLoading, setLoading] = useState(false);
 
+   if (!id) return <Navigate to="/" replace />;
+
    const fetchAccount = useCallback(async () => {
-      setAccount(await getAccount(id || ""));
+      setAccount(transformAccount(await getAccount(id)));
    }, [id]);
 
    useEffect(() => {
@@ -31,7 +35,7 @@ export default function AccountDetails() {
 
    const handleRemove = async () => {
       setLoading(true);
-      const msg = await handlePost(() => removeAccount(id || ""));
+      const msg = await handlePost(() => removeAccount(id));
       setLoading(false);
 
       if (msg !== undefined)
@@ -40,26 +44,21 @@ export default function AccountDetails() {
          nav("/userManage");
    };
 
-   if (!id) return <Navigate to="/" replace />;
    if (!account)
       return <> ładowanie </>
 
-   let name = "-";
-   let role = "Admin";
-   if (account.studentInfo) {
-      name = `${account.studentInfo.first_name} ${account.studentInfo.last_name}`;
-      role = "Student";
-   } else if (account.instructorInfo) {
-      name = `${account.instructorInfo.first_name} ${account.instructorInfo.last_name}`;
-      role = "Instruktor";
-   }
-
    const rows: TableRow[] = [
       { key: "pk", fields: ["PK", account.pk] },
-      { key: "name", fields: ["Imię i nazwisko", name] },
-      { key: "role", fields: ["Rola", role] },
+      { key: "email", fields: ["email", account.email] },
+      { key: "name", fields: ["Imię i nazwisko", `${account.first_name} ${account.last_name}`] },
+      { key: "phone", fields: ["Numer telefonu", account?.phone ?? "-"] },
+      { key: "role", fields: ["Rola", roleToPL(account.role)] },
       { key: "active", fields: ["Czy konto aktywne", account.is_active ? "Tak" : "Nie"] },
-   ]
+   ].concat(
+      account.role == "student" ?
+         [{ key: "date_of_birth", fields: ["Data urodzenia", account.date_of_birth?.toDateString() ?? "-"] },]
+         : [{ key: "short_bio", fields: ["Krótka biografia", account.short_bio ?? ""] },]
+   )
 
    return (
       <div className={global.app_container}>

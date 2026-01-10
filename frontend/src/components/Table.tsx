@@ -16,14 +16,14 @@ export default function Table(props: TableProps) {
     return (
         <table {...attrs}>
             {header && <thead>
-                <td key={header.key}>
-                    {header.fields.map(f => <th> {f} </th>)}
-                </td>
+                <tr key={header.key}>
+                    {header.fields.map((f, i) => <th key={i}> {f} </th>)}
+                </tr>
             </thead>}
             <tbody>
                 {rows.map(r =>
                     <tr key={r.key}>
-                        {r.fields.map(f => <td> {f} </td>)}
+                        {r.fields.map((f, i) => <td key={i}> {f} </td>)}
                     </tr>)}
             </tbody>
         </table>)

@@ -30,7 +30,7 @@ async function fetchStudent(): Promise<Attribute[]> {
       ...userAttrs,
       ["Imię", student.first_name],
       ["Nazwisko", student.last_name],
-      ["Data urodzenia", student.date_of_birth],
+      ["Data urodzenia", student.date_of_birth?.toDateString() ?? "—"],
       ["Numer telefonu", student.phone ?? ""]
    ];
 }

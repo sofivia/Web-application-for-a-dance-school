@@ -6,15 +6,16 @@ import type { ClassicInputWithLabelProps } from "@/components/forms/InputWithLab
 import FormTemplate from "@/components/FormTemplate.tsx";
 import type { ClassicCheckboxProps } from "@/components/forms/classic/ClassicCheckbox";
 import type { ClassicTextAreaWithLabelProps } from "@/components/forms/TextAreaWithLabel";
+import { transformAccount, type AccountData } from "@/utils/apiutils";
 
 
-function editStudentForm(pk: string, student: FormDataT) {
+function editStudentForm(pk: string, student: AccountData) {
    const fields = [
       { name: "first_name", type: "text", label: "Imię", defaultValue: student.first_name, kind: "input-classic" } as ClassicInputWithLabelProps,
       { name: "last_name", type: "text", label: "Nazwisko", defaultValue: student.last_name, kind: "input-classic" } as ClassicInputWithLabelProps,
       { name: "email", type: "email", label: "Email", defaultValue: student.email, kind: "input-classic" } as ClassicInputWithLabelProps,
       { name: "phone", type: "tel", label: "Telefon", defaultValue: student.phone, kind: "input-classic" } as ClassicInputWithLabelProps,
-      { name: "date_of_birth", type: "date", label: "Data urodzenia", defaultValue: student.date_of_birth, kind: "input-classic" } as ClassicInputWithLabelProps,
+      { name: "date_of_birth", type: "date", label: "Data urodzenia", defaultValue: student.date_of_birth?.toDateString(), kind: "input-classic" } as ClassicInputWithLabelProps,
       { name: "is_active", kind: "checkbox-classic", label: "Czy konto ma być aktywne?", defaultChecked: student.is_active } as ClassicCheckboxProps
    ];
    return (
@@ -25,7 +26,7 @@ function editStudentForm(pk: string, student: FormDataT) {
    )
 }
 
-function editInstructorForm(pk: string, instructor: FormDataT) {
+function editInstructorForm(pk: string, instructor: AccountData) {
    const fields = [
       { name: "first_name", type: "text", label: "Imię", defaultValue: instructor.first_name, kind: "input-classic" } as ClassicInputWithLabelProps,
       { name: "last_name", type: "text", label: "Nazwisko", defaultValue: instructor.last_name, kind: "input-classic" } as ClassicInputWithLabelProps,
@@ -42,42 +43,18 @@ function editInstructorForm(pk: string, instructor: FormDataT) {
    )
 }
 
-
-type FormDataT = {
-   first_name?: string;
-   last_name?: string;
-   phone?: string;
-   email?: string;
-   role: string;
-   short_bio?: string;
-   is_active: boolean;
-   date_of_birth?: string;
-}
-
 export default function AccountEdit() {
    const { id } = useParams();
 
    const [isLoading, setLoading] = useState(true);
    const [account, setAccount] = useState<AccountView | null>(null);
-   const [formData, setFormData] = useState<FormDataT>({ role: "admin", is_active: true });
+   const [formData, setFormData] = useState<AccountData | null>(null);
 
    const fetchAccount = useCallback(async () => {
       const fetchedAccount = await getAccount(id || "");
       setAccount(fetchedAccount);
 
-      const instructor = fetchedAccount.instructorInfo;
-      const student = fetchedAccount.studentInfo;
-
-      setFormData({
-         first_name: instructor?.first_name ?? student?.first_name ?? "",
-         last_name: instructor?.last_name ?? student?.last_name ?? "",
-         phone: instructor?.phone ?? student?.phone ?? "",
-         short_bio: instructor?.short_bio ?? "",
-         date_of_birth: student?.date_of_birth ?? "",
-         email: fetchedAccount.email ?? "",
-         role: fetchedAccount.role ?? "admin",
-         is_active: fetchedAccount.is_active ?? true,
-      });
+      setFormData(transformAccount(fetchedAccount));
       setLoading(false);
    }, [id]);
 
@@ -99,11 +76,11 @@ export default function AccountEdit() {
    );
 }
 
-function Content(props: { isLoading: boolean, formData: FormDataT, account: AccountView | null }) {
+function Content(props: { isLoading: boolean, formData: AccountData | null, account: AccountView | null }) {
    const { isLoading, formData, account } = props;
    if (!account)
       return <> Nie ma takiego konta </>
-   if (isLoading)
+   if (isLoading || !formData)
       return <> Ładowanie... </>
    return (
       <>

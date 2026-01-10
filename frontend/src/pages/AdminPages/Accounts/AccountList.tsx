@@ -61,7 +61,7 @@ export default function AccountList() {
          name = `${r.studentInfo.first_name} ${r.studentInfo.last_name}`;
       else if (r.instructorInfo)
          name = `${r.instructorInfo.first_name} ${r.instructorInfo.last_name}`;
-      return { ...r, name, role: roleToPL(r.role) }
+      return { ...r, name }
    });
 
    const optionsAccType: Option[] = [
@@ -134,34 +134,7 @@ export default function AccountList() {
                      </tr>
                   </thead>
                   <tbody>
-                     {!tableLoading &&
-                        accData.map((g) =>
-                           <tr key={g.pk}>
-                              <td>{g.name}</td>
-                              <td>{g.role}</td>
-                              <td>
-                                 <Link to={`details/${g.pk}`} className={formstyles.link}>
-                                    {g.email}
-                                 </Link>
-                              </td>
-                           </tr>
-                        )}
-
-                     {tableLoading && (
-                        <tr>
-                           <td colSpan={6} className={styles.emptyRow}>
-                              Ładowanie...
-                           </td>
-                        </tr>
-                     )}
-
-                     {!tableLoading && rows.length === 0 && (
-                        <tr>
-                           <td colSpan={6} className={styles.emptyRow}>
-                              Brak wyników dla wybranych filtrów.
-                           </td>
-                        </tr>
-                     )}
+                     <TBody {...{ tableLoading, isEmpty: rows.length == 0, accData }} />
                   </tbody>
                </table>
             </div>
@@ -180,4 +153,42 @@ export default function AccountList() {
          </div>
       </div>
    );
+}
+
+function TBody(props: { tableLoading: boolean, isEmpty: boolean, accData: (AccountView & { name: string })[] }) {
+   const { tableLoading, isEmpty, accData } = props;
+   return (<>
+      {!tableLoading &&
+         accData.map((g) =>
+            <tr key={g.pk}>
+               <td>{g.name}</td>
+               <td>{roleToPL(g.role)}</td>
+               <td>
+                  <Link to={`details/${g.pk}`} className={formstyles.link}>
+                     {g.email}
+                  </Link>
+               </td>
+            </tr>
+         )
+      }
+
+      {
+         tableLoading && (
+            <tr>
+               <td colSpan={6} className={styles.emptyRow}>
+                  Ładowanie...
+               </td>
+            </tr>
+         )
+      }
+
+      {
+         !tableLoading && isEmpty && (
+            <tr>
+               <td colSpan={6} className={styles.emptyRow}>
+                  Brak wyników dla wybranych filtrów.
+               </td>
+            </tr>
+         )
+      }</>)
 }
