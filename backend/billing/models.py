@@ -17,7 +17,7 @@ class PassProduct(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["name"]
+        ordering = ["-is_active", "created_at", "name"]
 
     def __str__(self) -> str:
         return self.name

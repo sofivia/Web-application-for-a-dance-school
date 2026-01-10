@@ -1,5 +1,6 @@
 .simpleTable td {
     padding: 4px 0px;
+    text-align: left;
 }
 .simpleTable  td:first-of-type {
     vertical-align: top;

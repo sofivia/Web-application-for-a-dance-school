@@ -465,7 +465,22 @@ export type PassProduct = {
    is_active: boolean;
 }
 
+export type Page<T> = {
+   count: number;
+   results: T[];
+}
+
+export async function getPassProduct(id: string) {
+   const resp = await api.get(`/api/billing/pass-products/${id}/`);
+   return resp.data as PassProduct;
+}
+
 export async function getPassProducts(params: {page: number}) {
    const { data } = await api.get("/api/billing/pass-products/", { params });
-   return data as PassProduct[];
+   return data as Page<PassProduct>;
+}
+
+export async function editPassProduct(id: string, passProduct: PassProduct) {
+   const resp = await api.put(`/api/billing/pass-products/${id}/`, passProduct);
+   return resp.data as PassProduct;
 }
