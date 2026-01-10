@@ -472,23 +472,37 @@ export type Page<T> = {
    next: string | null;
 }
 
-export async function getPassProduct(id: string) {
-   const resp = await api.get(`/api/billing/pass-products/${id}/`);
-   return resp.data as PassProduct;
+export class ViewSetAPI<T> {
+   root: string;
+
+   constructor(root: string) {
+      this.root = root;
+   }
+
+   public async get(id: string) {
+      const resp = await api.get(`${this.root}/${id}/`);
+      return resp.data as T;
+   }
+   
+   public async create(x: T) {
+      const resp = await api.post(`${this.root}/`, x);
+      return resp.data as T;
+   }
+   
+   public async getMany(params: {page: number}) {
+      const { data } = await api.get("${this.root}/", { params });
+      return data as Page<T>;
+   }
+   
+   public async edit(id: string, passProduct: T) {
+      const resp = await api.put(`${this.root}/${id}/`, passProduct);
+      return resp.data as T;
+   }
+   
+   public async delete(id: string) {
+      await api.delete(`${this.root}/${id}/`);
+   }
 }
 
-export async function createPassProduct(passProduct: PassProduct) {
-   const resp = await api.post(`/api/billing/pass-products/`, passProduct);
-   return resp.data as PassProduct;
-}
 
-
-export async function getPassProducts(params: {page: number}) {
-   const { data } = await api.get("/api/billing/pass-products/", { params });
-   return data as Page<PassProduct>;
-}
-
-export async function editPassProduct(id: string, passProduct: PassProduct) {
-   const resp = await api.put(`/api/billing/pass-products/${id}/`, passProduct);
-   return resp.data as PassProduct;
-}
+export const passProductAPI = new ViewSetAPI<PassProduct>("/api/billing/pass-products");

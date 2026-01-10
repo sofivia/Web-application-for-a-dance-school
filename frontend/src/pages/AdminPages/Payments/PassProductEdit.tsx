@@ -1,7 +1,7 @@
 import Loading from "@/components/Loading";
 import { useState, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router";
-import { editPassProduct, getPassProduct, createPassProduct, type PassProduct } from "@/api";
+import { passProductAPI, type PassProduct } from "@/api";
 
 import globals from "@/global.module.css"
 import InputWithLabel from "@/components/forms/InputWithLabel";
@@ -23,8 +23,8 @@ export default function PassProductEdit() {
     const example: PassProduct = {
         name: "Super Karnet", description: "Dla stepujących", price_cents: 10999, is_active: true
     };
-    const cb = id ? () => getPassProduct(id) : () => Promise.resolve(example);
-    const apicall = (passProduct: PassProduct) => id ? editPassProduct(id, passProduct) : createPassProduct(passProduct);
+    const cb = id ? () => passProductAPI.get(id) : () => Promise.resolve(example);
+    const apicall = (passProduct: PassProduct) => id ? passProductAPI.edit(id, passProduct) : passProductAPI.create(passProduct);
     const getExtraProp = (x?: string) => id ? { defaultValue: x } : { placeholder: x }
 
     const filterPrice = (price: string) => {
@@ -52,6 +52,11 @@ export default function PassProductEdit() {
         });
     };
 
+    const handleDelete = () => {
+        if (id) passProductAPI.delete(id);
+        navigate("../pass-products");
+    }
+
     return (
         <div className={globals.app_container}>
             <div className="flex flex-col gap-3 w-full max-w-[600px] px-2">
@@ -62,20 +67,26 @@ export default function PassProductEdit() {
                             setValue: e => filterPrice(e.target.value),
                             placeholder: `${data.price_cents / 100}`
                         }
-                        return <form onSubmit={handleSubmit} noValidate className="space-y-3">
-                            <InputWithLabel name="name" type="text" label="Nazwa"
-                                {...getExtraProp(data.name)} error={errors.name} kind="input-classic" />
-                            <InputWithLabel name="price_cents" type="text" label="Cena (zł)"
-                                values={priceValues} error={errors.price_cents} kind="input-react" />
-                            <TextAreaWithLabel name="description" label="Nazwa"
-                                {...getExtraProp(data.description)} error={errors.description} kind="textarea-classic" />
-                            <ClassicCheckbox name="is_active" label="Czy aktywny"
-                                defaultChecked={data.is_active} error={errors.is_active} kind="checkbox-classic" />
+                        return <>
+                            <form onSubmit={handleSubmit} noValidate className="space-y-3">
+                                <InputWithLabel name="name" type="text" label="Nazwa"
+                                    {...getExtraProp(data.name)} error={errors.name} kind="input-classic" />
+                                <InputWithLabel name="price_cents" type="text" label="Cena (zł)"
+                                    values={priceValues} error={errors.price_cents} kind="input-react" />
+                                <TextAreaWithLabel name="description" label="Opis"
+                                    {...getExtraProp(data.description)} error={errors.description} kind="textarea-classic" />
+                                <ClassicCheckbox name="is_active" label="Czy aktywny"
+                                    defaultChecked={data.is_active} error={errors.is_active} kind="checkbox-classic" />
 
-                            <button type="submit" className={`${formstyle.button} w-full mt-5`}>
-                                Zatwierdź
-                            </button>
-                        </form>
+                                <button type="submit" className={`${formstyle.button} w-full mt-5`}>
+                                    Zatwierdź
+                                </button>
+                            </form>
+                            {id && <button onClick={handleDelete}
+                                className={`${formstyle.button} w-full mt-10 bg-red-500!`}>
+                                Usuń
+                            </button>}
+                        </>
                     }}
                 </Loading>
             </div>

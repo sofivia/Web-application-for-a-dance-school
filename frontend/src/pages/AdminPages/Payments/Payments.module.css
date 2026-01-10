@@ -7,11 +7,14 @@
     border-radius: 10px;
 }
 
-a {
+.passName {
     color: var(--acol);
+    display: block;
+    font-weight: 700;
+    font-size: 36px;
 }
 
-a:hover {
+.passName:hover {
     color: var(--ahov);
     text-decoration: underline;
 }

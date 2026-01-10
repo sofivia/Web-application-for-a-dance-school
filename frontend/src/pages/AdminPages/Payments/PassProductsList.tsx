@@ -1,7 +1,5 @@
-import { getPassProducts, type Page, type PassProduct } from "@/api";
-import { useState } from "react";
+import { passProductAPI, type Page, type PassProduct } from "@/api";
 import Loading from "@/components/Loading";
-import globals from "@/global.module.css"
 import Table from "@/components/Table";
 import type { TableRow } from "@/components/Table";
 import tablestyles from "@/styles/simpleTable.module.css"
@@ -15,7 +13,7 @@ export default function AccountsList() {
         <Pager>
             {(page, setPrev, setNext) => {
                 const load = async () => {
-                    const data = await getPassProducts({ page });
+                    const data = await passProductAPI.getMany({ page });
                     setPrev(data.previous != null);
                     setNext(data.next != null);
                     return data;
@@ -34,7 +32,7 @@ export default function AccountsList() {
                                         const passProduct = data.results[i];
                                         return (<div key={i} className="text-left mb-5">
                                             <Link to={`./${passProduct.id}/edit`}
-                                                className={`block font-bold text-4xl mb-1 ${!passProduct.is_active ? styles.inactive : ""}`}>
+                                                className={`mb-1 ${styles.passName} ${!passProduct.is_active ? styles.inactive : ""}`}>
                                                 {passProduct.name}
                                             </Link>
                                             <Table rows={r} className={`${tablestyles.simpleTable}`} />
