@@ -6,3 +6,12 @@
     border: 3px dashed var(--main);
     border-radius: 10px;
 }
+
+a {
+    color: var(--acol);
+}
+
+a:hover {
+    color: var(--ahov);
+    text-decoration: underline;
+}

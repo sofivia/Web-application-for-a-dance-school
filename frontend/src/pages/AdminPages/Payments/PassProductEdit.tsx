@@ -1,6 +1,6 @@
 import Loading from "@/components/Loading";
 import { useState, type FormEvent } from "react";
-import { Navigate, useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { editPassProduct, getPassProduct, createPassProduct, type PassProduct } from "@/api";
 
 import globals from "@/global.module.css"
@@ -66,8 +66,7 @@ export default function PassProductEdit() {
                             <InputWithLabel name="name" type="text" label="Nazwa"
                                 {...getExtraProp(data.name)} error={errors.name} kind="input-classic" />
                             <InputWithLabel name="price_cents" type="text" label="Cena (zł)"
-                                values={priceValues} {...getExtraProp(`${data.price_cents / 100}`)}
-                                error={errors.price_cents} kind="input-react" />
+                                values={priceValues} error={errors.price_cents} kind="input-react" />
                             <TextAreaWithLabel name="description" label="Nazwa"
                                 {...getExtraProp(data.description)} error={errors.description} kind="textarea-classic" />
                             <ClassicCheckbox name="is_active" label="Czy aktywny"

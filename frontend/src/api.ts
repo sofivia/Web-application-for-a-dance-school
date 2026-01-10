@@ -468,6 +468,8 @@ export type PassProduct = {
 export type Page<T> = {
    count: number;
    results: T[];
+   previous: string | null;
+   next: string | null;
 }
 
 export async function getPassProduct(id: string) {
