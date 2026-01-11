@@ -25,11 +25,18 @@ from common import utils
 import django_filters
 
 
+class PassProductFilter(django_filters.FilterSet):
+    class Meta:
+        model = PassProduct
+        fields = ["is_active"]
+
+
 class PassProductViewSet(viewsets.ModelViewSet):
 
     permission_classes = [IsAdminOrStudentReadOnly]
     serializer_class = PassProductSerializer
     pagination_class = utils.StandardPagination
+    filterset_class = PassProductFilter
     queryset = PassProduct.objects.all()
 
     def get_queryset(self):
@@ -94,7 +101,7 @@ class PurchaseViewSet(viewsets.ModelViewSet):
 
         purchase.status = Purchase.Status.PAID
         purchase.paid_at = s.validated_data.get("paid_at") or timezone.now()
-        purchase.method = s.validated_data["method"]
+        purchase.method = getattr(s.validated_data, "method", Purchase.Method.TRANSFER)
         purchase.recorded_by = request.user
         purchase.save(update_fields=["status", "paid_at", "method", "recorded_by", "updated_at"])
 

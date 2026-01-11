@@ -38,7 +38,6 @@ export default function PassProductEdit() {
         const formData = new FormData(e.currentTarget);
         const rawData = Object.fromEntries(formData.entries());
         const passProduct = { is_active: false, ...rawData, price_cents: parseFloat(price as string) * 100 } as PassProduct;
-        console.log(passProduct)
         toast.promise(handlePost2(() => apicall(passProduct)), {
             loading: 'Ładowanie...',
             success: () => {

@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import date
 from rest_framework import serializers
 from .models import PassProduct, Purchase
+from school.models import Student
 
 
 class PassProductSerializer(serializers.ModelSerializer):
@@ -50,6 +51,9 @@ class PurchaseReadSerializer(serializers.ModelSerializer):
 
 
 class PurchaseWriteSerializer(serializers.ModelSerializer):
+    amount_cents = serializers.IntegerField(required=False)
+    student = serializers.CharField()
+
     class Meta:
         model = Purchase
         fields = (
@@ -68,11 +72,18 @@ class PurchaseWriteSerializer(serializers.ModelSerializer):
         pe = attrs.get("period_end")
         if ps and pe and pe < ps:
             raise serializers.ValidationError({"period_end": ["Must be >= period_start."]})
+
+        if not attrs.get('amount_cents'):
+            product = attrs.get('product')
+            attrs['amount_cents'] = product.price_cents
+
+        attrs['student'] = Student.objects.get(account_id=attrs['student'])
+
         return attrs
 
 
 class PurchaseMarkPaidSerializer(serializers.Serializer):
-    method = serializers.ChoiceField(choices=Purchase.Method.choices)
+    method = serializers.ChoiceField(required=False, choices=Purchase.Method.choices)
     paid_at = serializers.DateTimeField(required=False, allow_null=True)
 
 

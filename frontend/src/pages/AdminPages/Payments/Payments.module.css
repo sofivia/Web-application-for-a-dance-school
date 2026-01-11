@@ -22,3 +22,11 @@
     max-width: min(100%, 1200px);
     overflow: hidden;
 }
+
+.tableWrap {
+    border: 1px solid var(--gray);
+    border-radius: 12px;
+    background: var(--background3);
+    width: 100%;
+    overflow-x: auto;
+  }

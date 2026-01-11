@@ -506,7 +506,7 @@ export class ViewSetAPI<T, F> {
 }
 
 
-export const passProductAPI = new ViewSetAPI<PassProduct, undefined>("/api/billing/pass-products");
+export const passProductAPI = new ViewSetAPI<PassProduct, {is_active: boolean}>("/api/billing/pass-products");
 
 export type PaymentStatus = "pending" | "paid" | "void";
 export type PaymentMethod = "cash" | "transfer" | "card";
@@ -519,7 +519,7 @@ export class Payment {
    product_name!: string;
    amount_cents!: number;
    status!: PaymentStatus;
-   @Type(() => Date) paid_at!: Date;
+   @Type(() => Date) paid_at?: Date;
    method!: PaymentMethod;
    @Type(() => Date) period_start!: Date;
    @Type(() => Date) period_end!: Date;
@@ -545,6 +545,22 @@ export function JustDate() {
    }, {toPlainOnly: true});
 }
 
+export class PaymentPost {
+   student_id!: string;
+   product_id!: string;
+   amount_cents?: number;
+   status!: PaymentStatus;
+   method!: PaymentMethod;
+   @JustDate() @SafeDate() period_start!: Date;
+   @JustDate() @SafeDate() period_end!: Date;
+};
+
+export async function createPayment(payment: PaymentPost) {
+   console.log(payment);
+   const resp = await api.post("/api/billing/purchases/", instanceToPlain(payment));
+   return resp.data;
+}
+
 export class PaymentParams {
    student_name?: string;
    product_name?: string;
@@ -553,3 +569,13 @@ export class PaymentParams {
 };
 
 export const paymentAPI = new ViewSetAPI<Payment, PaymentParams>("/api/billing/purchases");
+
+export async function markPaid(id: string) {
+   const resp = await api.post(`/api/billing/purchases/${id}/mark-paid/`, {});
+   return resp.data;
+}
+
+export async function voidPayment(id: string) {
+   const resp = await api.post(`/api/billing/purchases/${id}/void/`, {});
+   return resp.data;
+}

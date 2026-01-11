@@ -1,4 +1,4 @@
-import { Payment, paymentAPI, PaymentParams, type Page } from "@/api";
+import { markPaid, Payment, paymentAPI, PaymentParams, voidPayment, type Page } from "@/api";
 import Loading from "@/components/Loading";
 import { Link } from "react-router";
 import Pager from "@/components/Pager";
@@ -9,10 +9,12 @@ import formstyles from "@/styles/forms.module.css"
 import InputWithLabel from "@/components/forms/InputWithLabel";
 import SelectWithLabel from "@/components/forms/SelectWithLabel";
 import type { Option } from "@/components/forms/Select";
-import { paymentStatusToPL } from "@/utils/apiutils";
+import { getErrors, paymentStatusToPL } from "@/utils/apiutils";
 import { useState, type FormEvent } from "react";
 import { plainToInstance } from 'class-transformer';
 import { dateToMonth } from "@/utils/dateUtils";
+import { handlePost } from "@/utils/apiutils";
+import LinkButton from "@/components/LinkButton";
 
 
 export default function PaymentsList() {
@@ -33,11 +35,8 @@ export default function PaymentsList() {
                     const formData = new FormData(e.currentTarget);
                     const params = plainToInstance(PaymentParams, Object.fromEntries(formData.entries()));
                     console.log(params.period_start?.getDate() ?? 1);
-                    if ((params.period_start?.getDate() ?? 1) != 1) {
-                        setDateError("Musi być pierwszy dzień miesiąca");
-                        return;
-                    }
-                    console.log("ok");
+                    if ((params.period_start?.getDate() ?? 1) != 1)
+                        return setDateError("Musi być pierwszy dzień miesiąca");
                     setDateError(undefined);
                     setFilters(params);
                     setPage(1);
@@ -62,6 +61,10 @@ export default function PaymentsList() {
                         </form>
                         <div className={`${styles.page} mb-5`}>
                             <h1 className="mb-5"> Płatności </h1>
+                            <div className="mb-3 space-x-2 w-fit">
+                                <LinkButton to={`./generate`}> Wygeneruj płatności </LinkButton>
+                                <LinkButton to={`./add`}> Dodaj płatność </LinkButton>
+                            </div>
                             <div className={styles.tableWrap}>
                                 <table className={`${styles.table} ${tablestyles.listTable}`}>
                                     <thead>
@@ -85,9 +88,16 @@ export default function PaymentsList() {
 }
 
 function Table(props: { load: () => Promise<Page<Payment>> }) {
+    const [errors, setErrors] = useState<Record<string, string>>({});
     return (
         <Loading<Page<Payment>> load={props.load} loadingNode={<tr><td>Ładowanie</td></tr>}>
-            {(data: Page<Payment>) => {
+            {(data: Page<Payment>, reload) => {
+                const on = async (cb: () => any) => {
+                    const msg = await handlePost(() => cb());
+                    if (msg !== undefined)
+                        setErrors((prev) => ({ ...prev, ...getErrors(msg) }));
+                    reload()
+                }
                 return <>
                     {data.count == 0 &&
                         <tr>
@@ -95,16 +105,32 @@ function Table(props: { load: () => Promise<Page<Payment>> }) {
                         </tr>}
                     {data.results.map((p, i) => {
                         const pt = plainToInstance(Payment, p);
+                        const color = pt.status == "paid" ? "text-green-500"
+                            : pt.status == "pending" ? "text-yellow-500" : "";
+
                         return (
                             <tr key={i}>
                                 <td> {pt.student_name} </td>
                                 <td> {`${dateToMonth(pt.period_start)}`} </td>
-                                <td> {paymentStatusToPL(pt.status)} </td>
+                                <td className={color}> {paymentStatusToPL(pt.status)} </td>
                                 <td>
-                                    <Link to={`./${pt.id}`} className="link"> Szczegóły </Link>
+                                    <div className="flex justify-between flex-col md:flex-row gap-4 items-center">
+                                        <Button onClick={() => on(() => markPaid(pt.id))} className="link"> Opłać </Button>
+                                        <Button onClick={() => on(() => voidPayment(pt.id))} className="link"> Daruj </Button>
+                                        <Link to={`./${pt.id}`} className="link"> Szczegóły </Link>
+                                    </div>
                                 </td>
                             </tr>)
                     })}
+                    {Object.keys(errors).length != 0 && <tr>
+                        <td className="text-center bg-red-400 font-bold" colSpan={4}> Błędy </td>
+                    </tr>}
+                    {Object.entries(errors).map(p => (
+                        <tr key={p[0]}>
+                            <td> {p[0]} </td>
+                            <td colSpan={3}> {p[1]} </td>
+                        </tr>
+                    ))}
                 </>
             }}
         </Loading>)

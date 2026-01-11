@@ -2,7 +2,9 @@ import { Routes, Route } from "react-router-dom";
 import PassProductsList from "./PassProductsList.tsx";
 import PassProductEdit from "./PassProductEdit.tsx";
 import PaymentsList from "./PaymentsList.tsx";
+import PaymentDetails from "./PaymentDetails.tsx";
 import Index from "./Index.tsx";
+import PaymentAdd from "./PaymentAdd.tsx";
 
 
 export default function AdminAccountRoutes() {
@@ -13,6 +15,9 @@ export default function AdminAccountRoutes() {
          <Route path="pass-products/:id/edit" element={<PassProductEdit />} />
          <Route path="pass-products/add" element={<PassProductEdit />} />
          <Route path="payments" element={<PaymentsList />} />
+         <Route path="payments/:id" element={<PaymentDetails />} />
+         <Route path="payments/generate" element={<PaymentDetails />} />
+         <Route path="payments/add" element={<PaymentAdd />} />
       </Routes>
    );
 }

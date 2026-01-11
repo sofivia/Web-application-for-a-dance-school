@@ -24,3 +24,7 @@ export function dateToMonth(date: Date, locale='pl-PL') {
 export function fromISO(isoDateTime: string) {
     return new Date(Date.parse(isoDateTime));
 }
+
+export function firstOfTheNextMonth(year: number, month: number) {
+    return `${year + Math.floor(month/12)}-${month%12 + 1}-01`;
+}
