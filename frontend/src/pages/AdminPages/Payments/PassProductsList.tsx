@@ -13,7 +13,7 @@ export default function AccountsList() {
         <Pager>
             {(page, setPrev, setNext, _) => {
                 const load = async () => {
-                    const data = await passProductAPI.getMany({ page });
+                    const data = await passProductAPI.getMany(page);
                     setPrev(data.previous != null);
                     setNext(data.next != null);
                     return data;

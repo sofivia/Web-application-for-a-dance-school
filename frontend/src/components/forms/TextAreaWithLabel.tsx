@@ -1,5 +1,4 @@
 import { useId } from 'react';
-import styles from "./Input.module.css";
 import TextArea from './TextArea.tsx';
 import ClassicTextArea from './classic/ClassicTextArea.tsx';
 import type { ClassicTextAreaProps } from './classic/ClassicTextArea.tsx';

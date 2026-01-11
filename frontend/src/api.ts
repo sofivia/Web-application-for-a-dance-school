@@ -1,5 +1,5 @@
 import axios, { type AxiosError, type AxiosRequestConfig } from "axios";
-import { Type, plainToInstance } from 'class-transformer';
+import { Type, plainToInstance, Transform, instanceToPlain } from 'class-transformer';
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 
@@ -457,12 +457,12 @@ export async function saveClassAttendance(
   return resp.data as { ok: boolean };
 }
 
-export type PassProduct = {
+export class PassProduct {
    id?: string;
-   name: string;
+   name!: string;
    description?: string;
-   price_cents: number;
-   is_active: boolean;
+   price_cents!: number;
+   is_active!: boolean;
 }
 
 export type Page<T> = {
@@ -485,17 +485,18 @@ export class ViewSetAPI<T, F> {
    }
    
    public async create(x: T) {
-      const resp = await api.post(`${this.root}/`, x);
+      const resp = await api.post(`${this.root}/`, instanceToPlain(x));
       return resp.data as T;
    }
    
-   public async getMany(params: F) {
-      const { data } = await api.get(`${this.root}/`, { params });
+   public async getMany(page: number, filters?: F) {
+      const params = {page, ...instanceToPlain(filters)};
+      const { data } = await api.get(`${this.root}/`, {params});
       return data as Page<T>;
    }
    
-   public async edit(id: string, passProduct: T) {
-      const resp = await api.put(`${this.root}/${id}/`, passProduct);
+   public async edit(id: string, x: T) {
+      const resp = await api.put(`${this.root}/${id}/`, instanceToPlain(x));
       return resp.data as T;
    }
    
@@ -505,7 +506,7 @@ export class ViewSetAPI<T, F> {
 }
 
 
-export const passProductAPI = new ViewSetAPI<PassProduct, {page: number}>("/api/billing/pass-products");
+export const passProductAPI = new ViewSetAPI<PassProduct, undefined>("/api/billing/pass-products");
 
 export type PaymentStatus = "pending" | "paid" | "void";
 export type PaymentMethod = "cash" | "transfer" | "card";
@@ -526,10 +527,29 @@ export class Payment {
    @Type(() => Date) updated_at!: Date;
 };
 
-export type PaymentParams = {
+export function SafeDate() {
+   return Transform(({ value }) => {
+      if (!value || value === '') return undefined;
+      const d = new Date(value);
+      return isNaN(d.getTime()) ? undefined : d;
+   }, {toClassOnly: true});
+}
+
+export function JustDate() {
+   return Transform(({ value }) => {
+      console.log("hello")
+    if (value instanceof Date) {
+      console.log("hello")
+      return value.toISOString().split('T')[0];
+    }
+   }, {toPlainOnly: true});
+}
+
+export class PaymentParams {
    student_name?: string;
    product_name?: string;
    status?: string;
+   @JustDate() @SafeDate() period_start?: Date;
 };
 
-export const paymentAPI = new ViewSetAPI<Payment, {page: number} & PaymentParams>("/api/billing/purchases");
+export const paymentAPI = new ViewSetAPI<Payment, PaymentParams>("/api/billing/purchases");

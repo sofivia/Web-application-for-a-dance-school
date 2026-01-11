@@ -1,6 +1,5 @@
 import { useId } from 'react';
 import Input from "./Input.tsx";
-import styles from "./Input.module.css";
 import type { ReactInputProps } from './Input.tsx';
 import type { ClassicInputProps } from './classic/ClassicInput.tsx';
 import ClassicInput from './classic/ClassicInput.tsx';

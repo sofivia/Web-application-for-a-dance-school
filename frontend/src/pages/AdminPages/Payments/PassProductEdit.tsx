@@ -59,7 +59,7 @@ export default function PassProductEdit() {
 
     return (
         <div className={globals.app_container}>
-            <div className="flex flex-col gap-3 w-full max-w-[600px] px-2">
+            <div className="flex flex-col gap-3 w-full max-w-150 px-2">
                 <Loading<PassProduct> load={cb}>
                     {(data: PassProduct) => {
                         const priceValues: InputValues = {

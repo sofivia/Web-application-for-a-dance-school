@@ -2,7 +2,6 @@ import { useId } from 'react';
 import Select from "./Select.tsx";
 import type { ReactSelectProps } from "./Select.tsx";
 import type { ClassicSelectProps } from "./classic/ClassicSelect.tsx";
-import styles from "./Input.module.css";
 import ClassicSelect from './classic/ClassicSelect.tsx';
 
 

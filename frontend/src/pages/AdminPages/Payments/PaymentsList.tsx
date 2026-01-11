@@ -1,4 +1,4 @@
-import { paymentAPI, type Page, type Payment, type PaymentParams } from "@/api";
+import { Payment, paymentAPI, PaymentParams, type Page } from "@/api";
 import Loading from "@/components/Loading";
 import { Link } from "react-router";
 import Pager from "@/components/Pager";
@@ -11,10 +11,13 @@ import SelectWithLabel from "@/components/forms/SelectWithLabel";
 import type { Option } from "@/components/forms/Select";
 import { paymentStatusToPL } from "@/utils/apiutils";
 import { useState, type FormEvent } from "react";
+import { plainToInstance } from 'class-transformer';
+import { dateToMonth } from "@/utils/dateUtils";
 
 
 export default function PaymentsList() {
     const [filters, setFilters] = useState<PaymentParams>();
+    const [dateError, setDateError] = useState<string>();
 
     const options: Option[] = [
         { key: "pending", value: "pending", label: "Oczekująca" },
@@ -28,11 +31,19 @@ export default function PaymentsList() {
                 const onFilter = async (e: FormEvent<HTMLFormElement>) => {
                     e.preventDefault();
                     const formData = new FormData(e.currentTarget);
-                    setFilters(Object.fromEntries(formData.entries()) as PaymentParams);
+                    const params = plainToInstance(PaymentParams, Object.fromEntries(formData.entries()));
+                    console.log(params.period_start?.getDate() ?? 1);
+                    if ((params.period_start?.getDate() ?? 1) != 1) {
+                        setDateError("Musi być pierwszy dzień miesiąca");
+                        return;
+                    }
+                    console.log("ok");
+                    setDateError(undefined);
+                    setFilters(params);
                     setPage(1);
                 }
                 const load = async () => {
-                    const data = await paymentAPI.getMany({ ...filters, page });
+                    const data = await paymentAPI.getMany(page, filters);
                     setPrev(data.previous != null);
                     setNext(data.next != null);
                     return data;
@@ -42,6 +53,7 @@ export default function PaymentsList() {
                         <form onSubmit={onFilter} className={`${formstyles.filtersBar} ${formstyles.panel} ${styles.page} mb-5`}>
                             <InputWithLabel name="student_name" label="Nazwisko studenta" kind="input-classic" />
                             <InputWithLabel name="product_name" label="Karnet" kind="input-classic" />
+                            <InputWithLabel name="period_start" type="date" label="Pierwszy dzień miesiąca" error={dateError} kind="input-classic" />
                             <SelectWithLabel name="status" label="Karnet" options={options} prompt="Wybierz status" kind="select-classic" />
 
                             <Button type="submit" className={styles.filterBtn}>
@@ -55,7 +67,7 @@ export default function PaymentsList() {
                                     <thead>
                                         <tr>
                                             <th> Student </th>
-                                            <th> Karnet </th>
+                                            <th> Miesiąc </th>
                                             <th> Status </th>
                                             <th>  </th>
                                         </tr>
@@ -81,16 +93,18 @@ function Table(props: { load: () => Promise<Page<Payment>> }) {
                         <tr>
                             <td className="text-center" colSpan={4}> Brak pasujących wierszy </td>
                         </tr>}
-                    {data.results.map((p, i) => (
-                        <tr key={i}>
-                            <td> {p.student_name} </td>
-                            <td> {p.product_name} </td>
-                            <td> {paymentStatusToPL(p.status)} </td>
-                            <td>
-                                <Link to={`./${p.id}`} className="link"> Szczegóły </Link>
-                            </td>
-                        </tr>
-                    ))}
+                    {data.results.map((p, i) => {
+                        const pt = plainToInstance(Payment, p);
+                        return (
+                            <tr key={i}>
+                                <td> {pt.student_name} </td>
+                                <td> {`${dateToMonth(pt.period_start)}`} </td>
+                                <td> {paymentStatusToPL(pt.status)} </td>
+                                <td>
+                                    <Link to={`./${pt.id}`} className="link"> Szczegóły </Link>
+                                </td>
+                            </tr>)
+                    })}
                 </>
             }}
         </Loading>)

@@ -44,7 +44,7 @@ class PurchaseFilter(django_filters.FilterSet):
 
     class Meta:
         model = Purchase
-        fields = ["student_name", "product_name", "status"]
+        fields = ["student_name", "product_name", "status", "period_start"]
 
     def filter_student_name(self, qs, _name, value):
         if not value:
