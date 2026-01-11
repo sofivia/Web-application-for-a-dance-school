@@ -6,7 +6,6 @@ export interface InputValues {
 
 export type ReactBaseInputProps = {
     name: string;
-    values: InputValues;
     error?: string;
 };
 

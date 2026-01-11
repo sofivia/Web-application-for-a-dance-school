@@ -1,11 +1,11 @@
 import styles from './Input.module.css';
 import { useId } from 'react';
-import type { ReactBaseInputProps } from "./commons.ts"
+import type { InputValues, ReactBaseInputProps } from "./commons.ts"
 
 
 export type ReactTextAreaProps = ReactBaseInputProps
     & React.TextareaHTMLAttributes<HTMLTextAreaElement>
-    & { kind: 'textarea-react' }
+    & { kind: 'textarea-react', values: InputValues }
 
 export default function TextArea(props: ReactTextAreaProps) {
     const { values, error, className, name, ...rest } = props;

@@ -10,12 +10,14 @@ import toast from 'react-hot-toast';
 import formstyle from '@/styles/forms.module.css'
 import SelectWithLabel from "@/components/forms/SelectWithLabel";
 import { firstOfTheNextMonth } from "@/utils/dateUtils";
+import type { ChoiceValue } from "@/components/forms/Select";
 
 
 export default function PaymentAdd() {
     const nav = useNavigate();
 
     const [studentId, setStudentId] = useState<string | null>(null);
+    const [productId, setProductId] = useState<string>("");
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     const getStudentOptions = async (inputValue: string) => {
@@ -64,6 +66,7 @@ export default function PaymentAdd() {
         { key: "2", label: "Przelew", value: "transfer" },
         { key: "3", label: "Karta", value: "card" },
     ];
+    const productValues: ChoiceValue = { value: productId, setValue: (e) => setProductId(e.target.value) }
 
     return (
         <div className={globals.app_container}>
@@ -74,7 +77,7 @@ export default function PaymentAdd() {
                         return (
                             <form onSubmit={handleSubmit} noValidate className="space-y-3">
                                 <SelectWithLabel label="Nazwisko studenta" getOptions={getStudentOptions} onSelect={id => setStudentId(id)} kind="async-select" />
-                                <SelectWithLabel name="product" prompt="Wybierz" options={options} label="Karnet" error={errors["product"]} kind="select-classic" />
+                                <SelectWithLabel name="product" prompt="Wybierz" values={productValues} options={options} label="Karnet" error={errors["product"]} kind="select-react" />
                                 <InputWithLabel name="year" type="number" label="Rok" error={errors["period_start"]} kind="input-classic" />
                                 <InputWithLabel name="month" type="number" label="Miesiąc (liczba)" kind="input-classic" />
                                 <SelectWithLabel name="status" prompt="Wybierz" options={statusOptions} label="Status" error={errors["status"]} kind="select-classic" />

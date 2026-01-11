@@ -1,11 +1,11 @@
 import { useId } from 'react';
 import styles from './Input.module.css';
-import type { ReactBaseInputProps } from "./commons.ts"
+import type { ReactBaseInputProps, InputValues } from "./commons.ts"
 
 export type ReactInputProps =
     ReactBaseInputProps
     & React.InputHTMLAttributes<HTMLInputElement>
-    & { kind: "input-react"; }
+    & { kind: "input-react"; values: InputValues; }
 
 export default function Input(props: ReactInputProps) {
     const { id, values, error, name, className, ...other } = props;
