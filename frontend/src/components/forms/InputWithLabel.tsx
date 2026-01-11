@@ -1,6 +1,6 @@
 import { useId } from 'react';
 import Input from "./Input.tsx";
-import styles from "./Select.module.css";
+import styles from "./Input.module.css";
 import type { ReactInputProps } from './Input.tsx';
 import type { ClassicInputProps } from './classic/ClassicInput.tsx';
 import ClassicInput from './classic/ClassicInput.tsx';
@@ -26,7 +26,7 @@ export default function InputWithLabel(props: InputWithLabelProps) {
             return <ClassicInput id={id} {...props} />
     }
     return (
-        <div className={`${styles.filter} ${fClassName ?? ""}`} >
+        <div className={`text-left ${fClassName ?? ""}`} >
             {label && <label htmlFor={id} className="block mb-1"> {label} </label>}
             {renderInput()}
         </ div >

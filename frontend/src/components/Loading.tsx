@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 export type Props<T> = {
     children: (data: T) => React.ReactNode;
     load: () => Promise<T>;
-    loadingNode: React.ReactNode;
+    loadingNode?: React.ReactNode;
 }
 
 export default function Loading<T>(props: Props<T>) {

@@ -1,5 +1,5 @@
 import { useId } from 'react';
-import styles from "./Select.module.css";
+import styles from "./Input.module.css";
 import TextArea from './TextArea.tsx';
 import ClassicTextArea from './classic/ClassicTextArea.tsx';
 import type { ClassicTextAreaProps } from './classic/ClassicTextArea.tsx';
@@ -27,7 +27,7 @@ export default function TextAreaWithLabel(props: TextAreaWithLabelProps) {
     }
 
     return (
-        <div className={`${styles.filter} ${fClassName ?? ""}`} >
+        <div className={`text-left ${fClassName ?? ""}`} >
             {label && <label htmlFor={id} className="block mb-1"> {label} </label>}
             {renderInput()}
         </ div >

@@ -2,7 +2,7 @@ import { useId } from 'react';
 import Select from "./Select.tsx";
 import type { ReactSelectProps } from "./Select.tsx";
 import type { ClassicSelectProps } from "./classic/ClassicSelect.tsx";
-import styles from "./Select.module.css";
+import styles from "./Input.module.css";
 import ClassicSelect from './classic/ClassicSelect.tsx';
 
 
@@ -25,7 +25,7 @@ export default function SelectWithLabel(props: SelectWithLabelProps) {
             return <ClassicSelect id={id} {...props} />
     }
     return (
-        <div className={`${styles.filter} ${fClassName ?? ""}`} >
+        <div className={`text-left ${fClassName ?? ""}`} >
             {label && <label htmlFor={id} className="block mb-1"> {label} </label>}
             {renderInput()}
         </ div >

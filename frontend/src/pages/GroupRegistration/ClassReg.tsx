@@ -12,7 +12,6 @@ import Select from "@/components/forms/SelectWithLabel";
 import type { Option } from "@/components/forms/Select";
 import Input from "@/components/forms/InputWithLabel.tsx";
 import type { InputValues } from "@/components/forms/commons";
-import selectstyles from "@/components/forms/Select.module.css"
 import styles from "./ClassReg.module.css";
 
 
@@ -118,7 +117,7 @@ export default function ClassReg() {
           <Select name="class_type" kind='select-react' label="Typ zajęć" prompt="Wybierz typ" options={optionsTyp}
             values={{ value: "", setValue: e => setClassTypeId(e.target.value) }} />
 
-          <div className={selectstyles.filter}>
+          <div className="text-left">
             <label className="block mb-1"> Czas trwania </label>
             <div className="text-nowrap">
               <Input name="time_from" kind='input-react' type="time" label="początek od:" values={dateFromValues} fClassName="inline-block mx-2" />
