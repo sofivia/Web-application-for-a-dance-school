@@ -11,7 +11,9 @@ export interface Option {
 
 export type Props = {
     kind: "async-select"
+    name: string;
     id?: string;
+    error?: string;
     onSelect: (id: string | null) => void;
     getOptions: (inputValue: string) => Promise<Option[]>;
 }

@@ -76,7 +76,7 @@ export default function PaymentAdd() {
                         const options = data.results.map(p => ({ key: p.id as string, label: p.name, value: p.id as string }))
                         return (
                             <form onSubmit={handleSubmit} noValidate className="space-y-3">
-                                <SelectWithLabel label="Nazwisko studenta" getOptions={getStudentOptions} onSelect={id => setStudentId(id)} kind="async-select" />
+                                <SelectWithLabel name="last_name" label="Nazwisko studenta" getOptions={getStudentOptions} onSelect={id => setStudentId(id)} kind="async-select" />
                                 <SelectWithLabel name="product" prompt="Wybierz" values={productValues} options={options} label="Karnet" error={errors["product"]} kind="select-react" />
                                 <InputWithLabel name="year" type="number" label="Rok" error={errors["period_start"]} kind="input-classic" />
                                 <InputWithLabel name="month" type="number" label="Miesiąc (liczba)" kind="input-classic" />

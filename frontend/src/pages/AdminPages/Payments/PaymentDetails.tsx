@@ -1,7 +1,7 @@
 import global from "@/global.module.css";
 import Table, { type TableRow } from "@/components/Table";
 import Button from "@/components/Button";
-import { Navigate, useNavigate, useParams } from "react-router";
+import { Navigate, useParams } from "react-router";
 import Loading from "@/components/Loading";
 import liststyles from "@/styles/list.module.css"
 import tablestyles from "@/styles/simpleTable.module.css"
@@ -13,15 +13,9 @@ import { paymentStatusToPL } from "@/utils/apiutils";
 
 export default function PaymentDetails() {
     const { id } = useParams();
-    const nav = useNavigate();
 
     if (!id)
         return <Navigate to="../payments" />
-
-    const handleRemove = () => {
-        paymentAPI.delete(id);
-        nav("../payments");
-    };
 
     return (
         <div className={global.app_container}>
