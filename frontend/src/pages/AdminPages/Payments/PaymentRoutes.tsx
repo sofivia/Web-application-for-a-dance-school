@@ -5,6 +5,7 @@ import PaymentsList from "./PaymentsList.tsx";
 import PaymentDetails from "./PaymentDetails.tsx";
 import Index from "./Index.tsx";
 import PaymentAdd from "./PaymentAdd.tsx";
+import GeneratePayments from "./GeneratePayments.tsx";
 
 
 export default function AdminAccountRoutes() {
@@ -16,7 +17,7 @@ export default function AdminAccountRoutes() {
          <Route path="pass-products/add" element={<PassProductEdit />} />
          <Route path="payments" element={<PaymentsList />} />
          <Route path="payments/:id" element={<PaymentDetails />} />
-         <Route path="payments/generate" element={<PaymentDetails />} />
+         <Route path="payments/generate" element={<GeneratePayments />} />
          <Route path="payments/add" element={<PaymentAdd />} />
       </Routes>
    );

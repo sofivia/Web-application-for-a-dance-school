@@ -579,3 +579,8 @@ export async function voidPayment(id: string) {
    const resp = await api.post(`/api/billing/purchases/${id}/void/`, {});
    return resp.data;
 }
+
+export async function generatePayments(month: string) {
+   const resp = await api.post(`/api/billing/purchases/generate-monthly/`, {month});
+   return resp.data;
+}
