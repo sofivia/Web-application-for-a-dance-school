@@ -22,6 +22,7 @@ class PassProductSerializer(serializers.ModelSerializer):
 class PurchaseReadSerializer(serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)
     student_id = serializers.CharField(source="student.id", read_only=True)
+    student_name = serializers.SerializerMethodField()
     product_id = serializers.CharField(source="product.id", read_only=True)
     product_name = serializers.CharField(source="product.name", read_only=True)
 
@@ -30,6 +31,7 @@ class PurchaseReadSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "student_id",
+            "student_name",
             "product_id",
             "product_name",
             "amount_cents",
@@ -42,6 +44,9 @@ class PurchaseReadSerializer(serializers.ModelSerializer):
             "updated_at",
         )
         read_only_fields = fields
+
+    def get_student_name(self, obj):
+        return f"{obj.student.first_name} {obj.student.last_name}"
 
 
 class PurchaseWriteSerializer(serializers.ModelSerializer):

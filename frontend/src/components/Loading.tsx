@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 
-export default function Loading<T>(props: { children: (data: T) => React.ReactNode; load: () => Promise<T> }) {
-    const { children, load } = props;
+export type Props<T> = {
+    children: (data: T) => React.ReactNode;
+    load: () => Promise<T>;
+    loadingNode: React.ReactNode;
+}
+
+export default function Loading<T>(props: Props<T>) {
+    const { children, load, loadingNode } = props;
     const [data, setData] = useState<T | null>(null);
 
     useEffect(() => {
@@ -12,7 +18,7 @@ export default function Loading<T>(props: { children: (data: T) => React.ReactNo
     }, [load])
 
     if (!data)
-        return <> Ładowanie </>
+        return loadingNode ?? <> Ładowanie </>;
     else
         return children(data);
 }

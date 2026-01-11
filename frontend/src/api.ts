@@ -472,7 +472,7 @@ export type Page<T> = {
    next: string | null;
 }
 
-export class ViewSetAPI<T> {
+export class ViewSetAPI<T, F> {
    root: string;
 
    constructor(root: string) {
@@ -489,8 +489,8 @@ export class ViewSetAPI<T> {
       return resp.data as T;
    }
    
-   public async getMany(params: {page: number}) {
-      const { data } = await api.get("${this.root}/", { params });
+   public async getMany(params: F) {
+      const { data } = await api.get(`${this.root}/`, { params });
       return data as Page<T>;
    }
    
@@ -505,4 +505,31 @@ export class ViewSetAPI<T> {
 }
 
 
-export const passProductAPI = new ViewSetAPI<PassProduct>("/api/billing/pass-products");
+export const passProductAPI = new ViewSetAPI<PassProduct, {page: number}>("/api/billing/pass-products");
+
+export type PaymentStatus = "pending" | "paid" | "void";
+export type PaymentMethod = "cash" | "transfer" | "card";
+
+export class Payment {
+   id!: string;
+   student_id!: string;
+   student_name!: string;
+   product_id!: string;
+   product_name!: string;
+   amount_cents!: number;
+   status!: PaymentStatus;
+   @Type(() => Date) paid_at!: Date;
+   method!: PaymentMethod;
+   @Type(() => Date) period_start!: Date;
+   @Type(() => Date) period_end!: Date;
+   @Type(() => Date) created_at!: Date;
+   @Type(() => Date) updated_at!: Date;
+};
+
+export type PaymentParams = {
+   student_name?: string;
+   product_name?: string;
+   status?: string;
+};
+
+export const paymentAPI = new ViewSetAPI<Payment, {page: number} & PaymentParams>("/api/billing/purchases");

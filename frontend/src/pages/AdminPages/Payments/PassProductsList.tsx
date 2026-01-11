@@ -11,7 +11,7 @@ import Pager from "@/components/Pager";
 export default function AccountsList() {
     return (
         <Pager>
-            {(page, setPrev, setNext) => {
+            {(page, setPrev, setNext, _) => {
                 const load = async () => {
                     const data = await passProductAPI.getMany({ page });
                     setPrev(data.previous != null);
@@ -32,7 +32,7 @@ export default function AccountsList() {
                                         const passProduct = data.results[i];
                                         return (<div key={i} className="text-left mb-5">
                                             <Link to={`./${passProduct.id}/edit`}
-                                                className={`mb-1 ${styles.passName} ${!passProduct.is_active ? styles.inactive : ""}`}>
+                                                className={`mb-1 link ${styles.passName} ${!passProduct.is_active ? styles.inactive : ""}`}>
                                                 {passProduct.name}
                                             </Link>
                                             <Table rows={r} className={`${tablestyles.simpleTable}`} />

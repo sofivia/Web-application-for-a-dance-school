@@ -8,13 +8,17 @@
 }
 
 .passName {
-    color: var(--acol);
     display: block;
     font-weight: 700;
     font-size: 36px;
 }
 
 .passName:hover {
-    color: var(--ahov);
     text-decoration: underline;
+}
+
+.page {
+    width: 100%;
+    max-width: min(100%, 1200px);
+    overflow: hidden;
 }

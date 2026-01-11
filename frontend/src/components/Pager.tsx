@@ -5,7 +5,8 @@ import Button from "./Button";
 type Children = (
     page: number,
     prev: React.Dispatch<React.SetStateAction<boolean>>,
-    next: React.Dispatch<React.SetStateAction<boolean>>
+    next: React.Dispatch<React.SetStateAction<boolean>>,
+    setPage: React.Dispatch<React.SetStateAction<number>>
 ) => React.ReactNode;
 
 export default function Pager(props: { children: Children }) {
@@ -16,7 +17,7 @@ export default function Pager(props: { children: Children }) {
 
     return (
         <div className={globals.app_container}>
-            {children(page, setPrev, setNext)}
+            {children(page, setPrev, setNext, setPage)}
             <div className="row-3">
                 {prev && <Button onClick={() => setPage(page - 1)}>
                     poprzednie

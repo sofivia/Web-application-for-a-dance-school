@@ -78,6 +78,12 @@ export function roleToPL(role: string) {
   return toTitleCase(role == "instructor" ? "instruktor" : role);
 }
 
+export function paymentStatusToPL(status: string) {
+  return status == "pending" ? "Oczekujące"
+    : status == "paid" ? "Opłacone" : "Darowane"
+}
+
+
 export type AccountData = {
   pk: string;
   first_name?: string;

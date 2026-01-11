@@ -9,7 +9,7 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError, PermissionDenied
 from rest_framework.response import Response
-
+from django.db.models import Q
 from school.permissions import IsAdmin, IsAdminOrStudentReadOnly
 
 from .models import PassProduct, Purchase
@@ -21,8 +21,8 @@ from .serializers import (
     GenerateMonthlyPurchasesSerializer,
 )
 from .services import generate_monthly_purchases
-
 from common import utils
+import django_filters
 
 
 class PassProductViewSet(viewsets.ModelViewSet):
@@ -38,9 +38,27 @@ class PassProductViewSet(viewsets.ModelViewSet):
         return PassProduct.objects.filter(is_active=True)
 
 
+class PurchaseFilter(django_filters.FilterSet):
+    student_name = django_filters.CharFilter(method="filter_student_name")
+    product_name = django_filters.CharFilter(field_name='product__name', lookup_expr='icontains')
+
+    class Meta:
+        model = Purchase
+        fields = ["student_name", "product_name", "status"]
+
+    def filter_student_name(self, qs, _name, value):
+        if not value:
+            return qs
+        return qs.filter(
+            Q(student__last_name__icontains=value)
+            | Q(student__first_name__icontains=value)).distinct()
+
+
 class PurchaseViewSet(viewsets.ModelViewSet):
 
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = utils.StandardPagination
+    filterset_class = PurchaseFilter
 
     def get_queryset(self):
         qs = Purchase.objects.select_related("student", "product")
