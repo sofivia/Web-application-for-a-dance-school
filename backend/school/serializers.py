@@ -8,6 +8,7 @@ from .models import (
     ClassSession,
     ClassGroup,
     Location,
+    AttendanceRecord
 )
 
 User = get_user_model()
@@ -243,3 +244,27 @@ class AdminInstructorUpdateSerializer(serializers.Serializer):
     last_name = serializers.CharField(required=False, max_length=100)
     short_bio = serializers.CharField(required=False, allow_blank=True)
     phone = serializers.CharField(required=False, allow_blank=True, max_length=50)
+
+
+class AttendanceRecordInputSerializer(serializers.Serializer):
+    student_id = serializers.UUIDField()
+    status = serializers.ChoiceField(
+        choices=[
+            AttendanceRecord.Status.PRESENT,
+            AttendanceRecord.Status.ABSENT,
+            AttendanceRecord.Status.EXCUSED,
+        ]
+    )
+
+
+class AttendanceSavePayloadSerializer(serializers.Serializer):
+    records = AttendanceRecordInputSerializer(many=True)
+
+    def validate_records(self, records):
+        seen = set()
+        for r in records:
+            sid = str(r["student_id"])
+            if sid in seen:
+                raise serializers.ValidationError("Duplicate student_id in records.")
+            seen.add(sid)
+        return records
