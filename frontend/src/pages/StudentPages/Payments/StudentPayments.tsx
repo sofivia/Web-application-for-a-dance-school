@@ -3,15 +3,15 @@ import { useEffect, useState } from "react";
 
 import global from "@/global.module.css";
 import Button from "@/components/Button";
-import { getAttendanceRecords, type AttendanceRecord } from "@/api";
+import { Payment, paymentAPI } from "@/api";
 import { useAuth } from "@/utils/auth/useAuth";
 import styles from "../GroupRegistration/ClassReg.module.css";
 
-export default function StudentAttendance() {
+export default function StudentPayments() {
    const { isLoggedIn, loading } = useAuth();
 
    const [tableLoading, setTableLoading] = useState(false);
-   const [rows, setRows] = useState<AttendanceRecord[]>([]);
+   const [rows, setRows] = useState<Payment[]>([]);
    const [count, setCount] = useState(0);
 
    const pageSize = 10;
@@ -23,7 +23,7 @@ export default function StudentAttendance() {
       async function loadTable(p: number) {
          setTableLoading(true);
          try {
-            const res = await getAttendanceRecords({ page: p });
+            const res = await paymentAPI.getMany(p, { status: "pending" });
             setRows(res.results);
             setCount(res.count);
          } finally {
@@ -38,27 +38,27 @@ export default function StudentAttendance() {
    return (
       <div className={global.app_container}>
          <div className={styles.page}>
-            <h1 className={`text-base font-bold mb-5`}>Zajęcia na których masz wpisaną nieobecność</h1>
+            <h1 className={`text-base font-bold mb-5  `}>Załegle płatności</h1>
 
             <div className={styles.tableWrap}>
                <table className={styles.table}>
                   <thead>
                      <tr>
-                        <th> Typ zajęć </th>
-                        <th> Data wpisanej nieobecności </th>
-                        <th> Instruktor </th>
+                        <th> Data załegłości </th>
+                        <th> Kwota </th>
+                        <th> Karnet </th>
                      </tr>
                   </thead>
                   <tbody>
                      {!tableLoading &&
                         rows.map((g) => (
                            <tr key={g.id}>
-                              <td> {g.classType} </td>
-                              <td> {g.markedAt.toDateString()} </td>
-                              <td>{g.instructorName}</td>
+                              {/* @ts-ignore */}
+                              <td> {g.period_start} </td>
+                              <td> {g.amount_cents} zł </td>
+                              <td>{g.product_name}</td>
                            </tr>
                         ))}
-
                      {tableLoading && (
                         <tr>
                            <td colSpan={6} className={styles.emptyRow}>
@@ -66,11 +66,10 @@ export default function StudentAttendance() {
                            </td>
                         </tr>
                      )}
-
                      {!tableLoading && rows.length === 0 && (
                         <tr>
                            <td colSpan={6} className={styles.emptyRow}>
-                              Brak wyników dla wybranych filtrów.
+                              Brak załegłości.
                            </td>
                         </tr>
                      )}
