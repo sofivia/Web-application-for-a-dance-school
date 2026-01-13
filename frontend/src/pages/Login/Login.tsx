@@ -69,7 +69,7 @@ export default function Login() {
    };
 
    return (
-      <div className={`${global.app_container} ${formstyle.container}`}>
+      <div className={`${global.app_container} ${formstyle.form_container}`}>
          <div className={global.header}></div>
 
          <div className={formstyle.card}>
@@ -89,7 +89,7 @@ export default function Login() {
 
             <p className={formstyle.footer}>
                Nie masz konta?{" "}
-               <Link to="/register" className={formstyle.link}>
+               <Link to="/register" className="link">
                   Zarejestruj się
                </Link>
             </p>

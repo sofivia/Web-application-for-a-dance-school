@@ -57,7 +57,7 @@ export default function Register() {
    const validation = () => validator.validate();
 
    return (
-      <div className={`${global.app_container} ${formstyle.container}`}>
+      <div className={`${global.app_container} ${formstyle.form_container}`}>
          <div className={global.header}></div>
          <div className={formstyle.card}>
             <h2 className={formstyle.title}>Szkoła Tańca</h2>
@@ -100,7 +100,7 @@ export default function Register() {
 
             <p className={formstyle.footer}>
                Masz już konto?{" "}
-               <Link to={"/login"} className={formstyle.link}>
+               <Link to={"/login"} className="link">
                   Zaloguj się
                </Link>
             </p>

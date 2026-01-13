@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @reference "tailwindcss";
 
-.container {
+.form_container {
     background: linear-gradient(135deg, var(--background) 0%, var(--background2) 100%);
     font-family: 'Poppins', sans-serif;
 }
