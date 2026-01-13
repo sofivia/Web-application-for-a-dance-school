@@ -379,7 +379,7 @@ export class AttendanceRecords {
 
 export async function getAttendanceRecords(params: { page: number }) { // TODO: implement get attendance records, where status = "Nieobecny"
    const { data } = await api.get("/api/school/attendance/", { params });
-   return plainToInstance(AttendanceRecords, data)
+   return plainToInstance(AttendanceRecords, data)}
 
 // --- Classes / Filters (dla instruktora) ---
 
