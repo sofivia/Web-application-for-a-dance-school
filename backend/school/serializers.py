@@ -261,6 +261,7 @@ class AttendanceRecordRowSerializer(serializers.ModelSerializer):
             return ""
         return f"{inst.first_name} {inst.last_name}"
 
+
 class AttendanceRecordInputSerializer(serializers.Serializer):
     student_id = serializers.UUIDField()
     status = serializers.ChoiceField(
