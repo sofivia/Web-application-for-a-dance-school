@@ -16,7 +16,7 @@ export default function GeneratePayments() {
     const format = (x: Data) => new Date(x.year, x.month - 1, 1, 12).toISOString().split('T')[0];   // TODO
     return (
         <div className={global.app_container}>
-            <FormTemplate<Data> redirect=".." apiCall={data => generatePayments(format(data as Data))} fields={fields} />
+            <FormTemplate<Data> redirect="../payments" apiCall={data => generatePayments(format(data as Data))} fields={fields} />
         </div>
     )
 }
