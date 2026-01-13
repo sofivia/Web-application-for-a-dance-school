@@ -164,7 +164,15 @@ function TBody(props: { tableLoading: boolean, isEmpty: boolean, accData: (Accou
                <td>{g.name}</td>
                <td>{roleToPL(g.role)}</td>
                <td>
-                  <Link to={`details/${g.pk}`} className={formstyles.link}>
+                  <Link
+                     to={`details/${g.pk}`}
+                     className="
+                        text-blue-500
+                        hover:text-blue-700
+                        hover:underline
+                        transition-colors
+                        duration-150
+                     ">
                      {g.email}
                   </Link>
                </td>

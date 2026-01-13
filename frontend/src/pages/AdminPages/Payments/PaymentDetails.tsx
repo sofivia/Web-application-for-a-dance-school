@@ -1,7 +1,7 @@
 import global from "@/global.module.css";
 import Table, { type TableRow } from "@/components/Table";
 import Button from "@/components/Button";
-import { Navigate, useParams } from "react-router";
+import { Navigate, useNavigate, useParams } from "react-router";
 import Loading from "@/components/Loading";
 import liststyles from "@/styles/list.module.css"
 import tablestyles from "@/styles/simpleTable.module.css"
@@ -12,10 +12,16 @@ import { paymentStatusToPL } from "@/utils/apiutils";
 
 
 export default function PaymentDetails() {
+    const nav = useNavigate();
     const { id } = useParams();
 
     if (!id)
         return <Navigate to="../payments" />
+
+    const deletePayment = async () => {
+        await paymentAPI.delete(id);
+        nav(`../payments`);
+    }
 
     return (
         <div className={global.app_container}>
@@ -33,7 +39,7 @@ export default function PaymentDetails() {
                         return (<>
                             <Table rows={rows} className={`${tablestyles.simpleTable} mb-3`} style={{ overflowWrap: "anywhere" }} />
                             <div className="space-x-3">
-                                <Button onClick={() => paymentAPI.delete(id)} className="bg-red-500!"> Usuń </Button>
+                                <Button onClick={deletePayment} className="bg-red-500!"> Usuń </Button>
                             </div>
                         </>
                         )
