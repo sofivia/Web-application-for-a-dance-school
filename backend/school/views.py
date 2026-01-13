@@ -560,6 +560,8 @@ class StudentAttendanceListView(generics.ListAPIView):
             .order_by("-marked_at", "-id")
         )
         return qs
+
+
 class ClassSessionParticipantsView(APIView):
     permission_classes = [permissions.IsAuthenticated, HasInstructorRole]
 
