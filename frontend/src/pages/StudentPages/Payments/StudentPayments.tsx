@@ -53,7 +53,7 @@ export default function StudentPayments() {
                      {!tableLoading &&
                         rows.map((g) => (
                            <tr key={g.id}>
-                              {/* @ts-ignore */}
+                              {/* @ts-expect-error */}
                               <td> {g.period_start} </td>
                               <td> {g.amount_cents} zł </td>
                               <td>{g.product_name}</td>
