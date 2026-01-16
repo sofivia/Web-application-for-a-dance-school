@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-
+import 'reflect-metadata';
 import React from "react";
 import { expect, test, vi, afterEach } from "vitest";
 import { render } from "@testing-library/react";

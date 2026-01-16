@@ -8,10 +8,10 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 import django_filters
 
-from rest_framework.exceptions import APIException, ValidationError
+from rest_framework.exceptions import APIException, ValidationError, PermissionDenied
 from rest_framework import status, generics, permissions, mixins, viewsets
 from rest_framework.generics import get_object_or_404
-from rest_framework.pagination import PageNumberPagination
+from common import utils
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -29,7 +29,8 @@ from .models import (
     ClassGroup,
     ClassSession,
     Enrollment,
-    Location)
+    Location,
+    AttendanceRecord)
 from .serializers import (
     StudentSerializer,
     InstructorSerializer,
@@ -43,7 +44,9 @@ from .serializers import (
     AdminStudentCreatePayloadSerializer,
     AdminInstructorCreatePayloadSerializer,
     AdminStudentUpdateSerializer,
-    AdminInstructorUpdateSerializer
+    AdminInstructorUpdateSerializer,
+    AttendanceRecordRowSerializer,
+    AttendanceSavePayloadSerializer
 )
 
 User = get_user_model()
@@ -226,12 +229,6 @@ class ClassFiltersView(APIView):
         )
 
 
-class StandardPagination(PageNumberPagination):
-    page_size = 10
-    page_size_query_param = "page_size"
-    max_page_size = 100
-
-
 class ProductFilter(django_filters.FilterSet):
     date_from = django_filters.DateFilter(field_name="starts_at",
                                           lookup_expr='gte')
@@ -249,7 +246,7 @@ class ProductFilter(django_filters.FilterSet):
 class ClassSessionListView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = ClassSessionRowSerializer
-    pagination_class = StandardPagination
+    pagination_class = utils.StandardPagination
     filterset_class = ProductFilter
 
     def _get_student_or_none(self):
@@ -354,7 +351,7 @@ class ProductFilter2(django_filters.FilterSet):
 class ClassGroupView(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrStudentReadOnly]
     queryset = ClassGroup.objects.all().select_related("location")
-    pagination_class = StandardPagination
+    pagination_class = utils.StandardPagination
     filterset_class = ProductFilter2
 
     def get_serializer_class(self):
@@ -396,7 +393,7 @@ class AccountFilter(django_filters.FilterSet):
     accountType = django_filters.CharFilter(method="filter_role")
     email = django_filters.CharFilter(field_name="email", lookup_expr="icontains")
 
-    isActive = django_filters.BooleanFilter(field_name="is_active")
+    is_active = django_filters.BooleanFilter(field_name="is_active")
 
     class Meta:
         model = User
@@ -437,7 +434,7 @@ class AccountViewSet(
 ):
     permission_classes = [IsAdmin]
     serializer_class = AccountViewSerializer
-    pagination_class = StandardPagination
+    pagination_class = utils.StandardPagination
     filterset_class = AccountFilter
 
     def get_queryset(self):
@@ -531,3 +528,139 @@ class InstructorAdminDetailView(APIView):
             "phone": inst.phone,
             "id": str(inst.id),
         })
+
+
+class StudentAttendanceListView(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated, IsStudent]
+    serializer_class = AttendanceRecordRowSerializer
+    pagination_class = utils.StandardPagination
+
+    def get_queryset(self):
+        student = self.request.user.student
+
+        qs = (
+            AttendanceRecord.objects
+            .select_related(
+                "session",
+                "session__group",
+                "session__group__class_type",
+                "session__group__primary_instructor",
+                "session__substitute_instructor",
+            )
+            .filter(
+                student=student,
+                status=AttendanceRecord.Status.ABSENT,
+            )
+            .order_by("-marked_at", "-id")
+        )
+        return qs
+
+
+class ClassSessionParticipantsView(APIView):
+    permission_classes = [permissions.IsAuthenticated, HasInstructorRole]
+
+    def _get_session_for_instructor(self, session_id):
+        session = get_object_or_404(
+            ClassSession.objects.select_related(
+                "group",
+                "group__class_type",
+                "group__location",
+                "group__primary_instructor",
+                "substitute_instructor",
+            ),
+            pk=session_id,
+        )
+
+        inst = getattr(self.request.user, "instructor", None)
+        if inst is None:
+            raise PermissionDenied("Instructor account required.")
+
+        is_assigned = (
+            session.group.primary_instructor_id == inst.id
+            or session.substitute_instructor_id == inst.id
+        )
+        if not is_assigned:
+            raise PermissionDenied("You are not assigned to this session.")
+
+        return session
+
+    def get(self, request, session_id: str):
+        session = self._get_session_for_instructor(session_id)
+
+        enrollments = (
+            Enrollment.objects
+            .filter(group=session.group, status=Enrollment.Status.ACTIVE)
+            .select_related("student")
+            .order_by("student__last_name", "student__first_name")
+        )
+        student_ids = [e.student_id for e in enrollments]
+
+        records = AttendanceRecord.objects.filter(session=session, student_id__in=student_ids)
+        status_by_student = {r.student_id: r.status for r in records}
+
+        participants = []
+        for e in enrollments:
+            st = e.student
+            st_status = status_by_student.get(st.id)
+
+            if st_status == AttendanceRecord.Status.MAKEUP:
+                st_status = AttendanceRecord.Status.EXCUSED
+
+            participants.append({
+                "student_id": str(st.id),
+                "first_name": st.first_name,
+                "last_name": st.last_name,
+                "status": st_status or AttendanceRecord.Status.ABSENT,
+            })
+
+        can_edit = (session.status != ClassSession.Status.CANCELLED)
+
+        return Response({
+            "session": {
+                "id": str(session.id),
+                "starts_at": session.starts_at,
+                "ends_at": session.ends_at,
+                "class_type": {
+                    "id": str(session.group.class_type_id),
+                    "name": session.group.class_type.name,
+                },
+                "location": {
+                    "pk": str(session.group.location_id),
+                    "name": session.group.location.name,
+                },
+            },
+            "can_edit": can_edit,
+            "participants": participants,
+        })
+
+    def post(self, request, session_id: str):
+        session = self._get_session_for_instructor(session_id)
+
+        if session.status == ClassSession.Status.CANCELLED:
+            raise PermissionDenied("Attendance is locked for cancelled sessions.")
+
+        s = AttendanceSavePayloadSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        records_in = s.validated_data["records"]
+
+        active_student_ids = set(
+            Enrollment.objects.filter(group=session.group, status=Enrollment.Status.ACTIVE)
+            .values_list("student_id", flat=True)
+        )
+
+        for r in records_in:
+            if r["student_id"] not in active_student_ids:
+                raise ValidationError({"records": [f"Student {r['student_id']} is not enrolled in this group."]})
+
+        with transaction.atomic():
+            for r in records_in:
+                AttendanceRecord.objects.update_or_create(
+                    session=session,
+                    student_id=r["student_id"],
+                    defaults={
+                        "status": r["status"],
+                        "marked_by": request.user,
+                    },
+                )
+
+        return Response({"ok": True}, status=status.HTTP_200_OK)

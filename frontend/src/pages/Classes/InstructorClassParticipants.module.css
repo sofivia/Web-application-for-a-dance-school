@@ -1,0 +1,89 @@
+.container {
+  width: 100%;
+  padding: 0 10%;
+  text-align: left;
+}
+
+.titleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+
+.rightActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.h1 {
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.muted {
+  opacity: 0.75;
+  font-size: 14px;
+}
+
+.card {
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 18px;
+  padding: 18px 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+}
+
+.th {
+  text-align: left;
+  font-weight: 700;
+  padding: 12px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.td {
+  padding: 12px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.select {
+  width: 220px;
+  max-width: 100%;
+  border-radius: 14px;
+  padding: 10px 12px;
+  background: rgba(45, 118, 145, 0.45);
+  border: 1px solid rgba(255,255,255,0.14);
+  outline: none;
+}
+
+.select:disabled {
+  opacity: 0.6;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.error {
+  color: #ff6b6b;
+  margin-bottom: 10px;
+}
+
+.ok {
+  color: #63e6be;
+  margin-bottom: 10px;
+}

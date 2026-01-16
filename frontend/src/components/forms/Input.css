@@ -1,0 +1,10 @@
+.mySelect__control,
+.mySelect__option ,
+.mySelect__menu  {
+    background-color: var(--background3) !important;
+}
+
+.mySelect__input-container,
+.mySelect__single-value {
+    color: var(--color-fnt) !important;
+}

@@ -3,25 +3,21 @@ import { useEffect, useState } from "react";
 import global from "@/global.module.css";
 import Button from "@/components/Button";
 import formstyles from "@/styles/forms.module.css";
-import { useAuth } from "@/utils/auth/useAuth";
+import tablestyles from "@/styles/listTable.module.css";
 import { Link } from "react-router-dom";
 
-import Select from "@/components/forms/SelectWithLabel";
+import type { ReactSelectWithLabelProps } from "@/components/forms/SelectWithLabel";
 import type { Option } from "@/components/forms/Select";
 import styles from "./AccountList.module.css";
-import InputWithLabel from "@/components/forms/InputWithLabel.tsx";
+import type { ReactInputWithLabelProps } from "@/components/forms/InputWithLabel.tsx";
 import { getAccounts, type AccountParams, type AccountView } from "@/api";
+import { roleToPL } from "@/utils/apiutils";
+import { InputList } from "@/components/forms/InputList";
+
 
 export default function AccountList() {
-   const { isLoggedIn, loading } = useAuth();
    const [filter, provokeFilters] = useState(false);
-   const [applied, setApplied] = useState({
-      name: "",
-      surname: "",
-      accountType: "",
-      email: "",
-      isActive: "true",
-   });
+   const [applied, setApplied] = useState({ name: "", surname: "", accountType: "", email: "", is_active: "true" });
 
    const applyFilters = () => {
       setPage(1);
@@ -42,17 +38,11 @@ export default function AccountList() {
          try {
             const params: AccountParams = { page: p };
 
-            if (a.name?.trim()) params.name = a.name.trim();
-            if (a.surname?.trim()) params.surname = a.surname.trim();
-
-            const t = a.accountType === "instruktor" ? "instructor" : a.accountType;
-            if (t) params.accountType = t;
-
-            if (a.email?.trim()) params.email = a.email.trim();
-
-            if (a.isActive === "true" || a.isActive === "false") {
-               params.isActive = a.isActive === "true";
-            }
+            params.name = a.name?.trim();
+            params.surname = a.surname?.trim();
+            params.accountType = a.accountType;
+            params.email = a.email?.trim();
+            params.is_active = a.is_active === "true";
 
             const data = await getAccounts(params);
             setRows(data.results);
@@ -62,40 +52,58 @@ export default function AccountList() {
          }
       }
 
-
-      if (loading || !isLoggedIn) return;
       loadTable(page, applied);
-   }, [loading, isLoggedIn, page, filter, applied]);
+   }, [page, filter, applied]);
+
+   const accData = rows.map(r => {
+      let name = "-";
+      if (r.studentInfo)
+         name = `${r.studentInfo.first_name} ${r.studentInfo.last_name}`;
+      else if (r.instructorInfo)
+         name = `${r.instructorInfo.first_name} ${r.instructorInfo.last_name}`;
+      return { ...r, name }
+   });
 
    const optionsAccType: Option[] = [
-      {
-         key: "student",
-         value: "student",
-         label: "Student",
-      },
-      {
-         key: "admin",
-         value: "admin",
-         label: "Admin",
-      },
-      {
-         key: "instruktor",
-         value: "instruktor",
-         label: "Instruktor",
-      },
+      { key: "student", value: "student", label: "Student" },
+      { key: "admin", value: "admin", label: "Admin" },
+      { key: "instructor", value: "instructor", label: "Instruktor" },
    ];
    const optionsActive: Option[] = [
-      {
-         key: "true",
-         value: "true",
-         label: "tak",
-      },
-      {
-         key: "false",
-         value: "false",
-         label: "nie",
-      },
+      { key: "true", value: "true", label: "tak" },
+      { key: "false", value: "false", label: "nie" },
    ];
+
+   const fields = [
+      {
+         name: "name", kind: "input-react", type: "text", label: "Imię i Nazwisko",
+         values: {
+            placeholder: "Wpisz imię i nazwisko", value: applied.name,
+            setValue: e => setApplied({ ...applied, name: e.target.value })
+         }
+      } as ReactInputWithLabelProps,
+      {
+         name: "accountType", kind: "select-react", label: "Imię i Nazwisko", prompt: "Wybierz typ konta", options: optionsAccType,
+         values: {
+            value: applied.accountType,
+            setValue: (e) => setApplied({ ...applied, accountType: e.target.value })
+         }
+      } as ReactSelectWithLabelProps,
+      {
+         name: "email", kind: 'input-react', type: "text", label: "Email", values: {
+            placeholder: "Wpisz email", value: applied.email,
+            setValue: (e) => setApplied({ ...applied, email: e.target.value }),
+         }
+      } as ReactInputWithLabelProps,
+      {
+         name: "is_active", kind: "select-react", label: "Czy konto jest aktywne", prompt: "Wybierz opcję", options: optionsActive,
+         values: {
+            value: applied.is_active,
+            setValue: (e) => setApplied({ ...applied, is_active: e.target.value })
+         }
+      } as ReactSelectWithLabelProps,
+   ];
+
    return (
       <div className={global.app_container}>
          <div className={styles.page}>
@@ -109,62 +117,7 @@ export default function AccountList() {
                </Button>
             </div>
             <div className={`${styles.filtersBar} ${formstyles.panel} mb-5`}>
-               <InputWithLabel
-                  kind='react'
-                  type="text"
-                  label="Imię i Nazwisko"
-                  values={{
-                     placeholder: "Wpisz imię i nazwisko",
-                     value: applied.name,
-                     setValue: (e) =>
-                        setApplied({
-                           ...applied,
-                           name: e.target.value,
-                        }),
-                  }}
-               />
-               <Select
-                  kind='react'
-                  label="Typ konta"
-                  prompt="Wybierz typ"
-                  options={optionsAccType}
-                  values={{
-                     value: applied.accountType,
-                     setValue: (e) =>
-                        setApplied({
-                           ...applied,
-                           accountType: e.target.value,
-                        }),
-                  }}
-               />
-               <InputWithLabel
-                  kind='react'
-                  type="text"
-                  label="Email"
-                  values={{
-                     placeholder: "Wpisz email",
-                     value: applied.email,
-                     setValue: (e) =>
-                        setApplied({
-                           ...applied,
-                           email: e.target.value,
-                        }),
-                  }}
-               />
-               <Select
-                  kind='react'
-                  label="Czy jest konto aktywne"
-                  prompt="Wybierz opcje"
-                  options={optionsActive}
-                  values={{
-                     value: applied.isActive,
-                     setValue: (e) =>
-                        setApplied({
-                           ...applied,
-                           isActive: e.target.value,
-                        }),
-                  }}
-               />
+               <InputList fields={fields} />
 
                <Button onClick={applyFilters} className={styles.filterBtn}>
                   Filtruj
@@ -172,64 +125,16 @@ export default function AccountList() {
             </div>
 
             <div className={styles.tableWrap}>
-               <table className={styles.table}>
+               <table className={`${styles.table} ${tablestyles.listTable}`}>
                   <thead>
                      <tr>
                         <th> Imię Nazwisko </th>
                         <th> Typ Konta </th>
                         <th> Email </th>
-                        <th> Jest aktywne </th>
-                        <th> Akcje</th>
                      </tr>
                   </thead>
                   <tbody>
-                     {!tableLoading &&
-                        rows.map((g) => {
-                           let name = "-";
-                           let role = "-";
-
-                           if (g.studentInfo) {
-                              name = `${g.studentInfo.first_name} ${g.studentInfo.last_name}`;
-                              role = "Student";
-                           } else if (g.instructorInfo) {
-                              name = `${g.instructorInfo.first_name} ${g.instructorInfo.last_name}`;
-                              role = "Instruktor";
-                           } else if (g.role == "admin")
-                              role = "Admin";
-
-                           return (
-                              <tr key={g.pk}>
-                                 <td>{name}</td>
-                                 <td>{role}</td>
-                                 <td>{g.email}</td>
-                                 <td>{g.isActive ? "tak" : "nie"}</td>
-                                 <td className="flex gap-5 justify-center">
-                                    <Link to={`remove/${g.pk}`} className={formstyles.link}>
-                                       Usuń
-                                    </Link>
-                                    <Link to={`edit/${g.pk}`} className={formstyles.link}>
-                                       Edytuj
-                                    </Link>
-                                 </td>
-                              </tr>
-                           );
-                        })}
-
-                     {tableLoading && (
-                        <tr>
-                           <td colSpan={6} className={styles.emptyRow}>
-                              Ładowanie...
-                           </td>
-                        </tr>
-                     )}
-
-                     {!tableLoading && rows.length === 0 && (
-                        <tr>
-                           <td colSpan={6} className={styles.emptyRow}>
-                              Brak wyników dla wybranych filtrów.
-                           </td>
-                        </tr>
-                     )}
+                     <TBody {...{ tableLoading, isEmpty: rows.length == 0, accData }} />
                   </tbody>
                </table>
             </div>
@@ -238,7 +143,7 @@ export default function AccountList() {
                {[...Array(pageCount).keys()].map((p) => (
                   <Button
                      key={p + 1}
-                     className={`${styles.filterBtn} ${p + 1 === page ? "!bg-main" : ""}`}
+                     className={`${styles.filterBtn} ${p + 1 === page ? "bg-main!" : ""}`}
                      onClick={() => setPage(p + 1)}
                      disabled={tableLoading}>
                      {p + 1}
@@ -248,4 +153,50 @@ export default function AccountList() {
          </div>
       </div>
    );
+}
+
+function TBody(props: { tableLoading: boolean, isEmpty: boolean, accData: (AccountView & { name: string })[] }) {
+   const { tableLoading, isEmpty, accData } = props;
+   return (<>
+      {!tableLoading &&
+         accData.map((g) =>
+            <tr key={g.pk}>
+               <td>{g.name}</td>
+               <td>{roleToPL(g.role)}</td>
+               <td>
+                  <Link
+                     to={`details/${g.pk}`}
+                     className="
+                        text-blue-500
+                        hover:text-blue-700
+                        hover:underline
+                        transition-colors
+                        duration-150
+                     ">
+                     {g.email}
+                  </Link>
+               </td>
+            </tr>
+         )
+      }
+
+      {
+         tableLoading && (
+            <tr>
+               <td colSpan={6} className={styles.emptyRow}>
+                  Ładowanie...
+               </td>
+            </tr>
+         )
+      }
+
+      {
+         !tableLoading && isEmpty && (
+            <tr>
+               <td colSpan={6} className={styles.emptyRow}>
+                  Brak wyników dla wybranych filtrów.
+               </td>
+            </tr>
+         )
+      }</>)
 }

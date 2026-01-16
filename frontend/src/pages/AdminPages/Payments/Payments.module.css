@@ -1,0 +1,32 @@
+.inactive {
+    color: var(--text);
+}
+
+.addPass {
+    border: 3px dashed var(--main);
+    border-radius: 10px;
+}
+
+.passName {
+    display: block;
+    font-weight: 700;
+    font-size: 36px;
+}
+
+.passName:hover {
+    text-decoration: underline;
+}
+
+.page {
+    width: 100%;
+    max-width: min(100%, 1200px);
+    overflow: hidden;
+}
+
+.tableWrap {
+    border: 1px solid var(--gray);
+    border-radius: 12px;
+    background: var(--background3);
+    width: 100%;
+    overflow-x: auto;
+  }

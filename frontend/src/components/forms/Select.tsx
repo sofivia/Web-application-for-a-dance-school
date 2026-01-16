@@ -1,5 +1,6 @@
 import { useId } from "react";
-import styles from './Select.module.css';
+import styles from './Input.module.css';
+import type { ReactBaseInputProps } from "./commons";
 
 export interface ChoiceValue {
     value: string;
@@ -12,17 +13,17 @@ export type Option = {
     label: string;
 }
 
-export type SelectProps = {
-    values: ChoiceValue;
-    className?: string;
-    id?: string;
-    prompt: string;
-    options: Option[];
-};
+export type ReactSelectProps = ReactBaseInputProps
+    & React.SelectHTMLAttributes<HTMLSelectElement> & {
+        kind: 'select-react';
+        values: ChoiceValue;
+        prompt: string;
+        options: Option[];
+    };
 
 
-export default function Select(props: SelectProps) {
-    const { values, className, prompt, options, id } = props;
+export default function Select(props: ReactSelectProps) {
+    const { values, className, prompt, options, id, ...rest } = props;
     const { value, setValue } = values;
     const autoId = useId();
     return (
@@ -31,6 +32,7 @@ export default function Select(props: SelectProps) {
             className={`${styles.control} ${className ?? ""}`}
             value={value}
             onChange={setValue}
+            {...rest}
         >
             <option value=""> {prompt} </option>
             {options.map((t) => (

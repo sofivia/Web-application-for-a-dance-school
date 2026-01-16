@@ -1,3 +1,6 @@
+import { AccountView } from "@/api";
+
+
 export type SpecificErr = {
     response?: {
         data?: Record<string, string[]>
@@ -62,4 +65,48 @@ export function getErrors(msg: ErrMsg) {
       dfs(msg as Record<string, any>);
       return Object.keys(out).reduce((acc, k) => (acc[k] = out[k][0], acc), {} as Record<string, string>)
   }
+}
+
+function toTitleCase(str: string) {
+  return str.replace(
+    /\w\S*/g,
+    text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase()
+  );
+}
+
+export function roleToPL(role: string) {
+  return toTitleCase(role == "instructor" ? "instruktor" : role);
+}
+
+export function paymentStatusToPL(status: string) {
+  return status == "pending" ? "Oczekujące"
+    : status == "paid" ? "Opłacone" : "Darowane"
+}
+
+
+export type AccountData = {
+  pk: string;
+  first_name?: string;
+  last_name?: string;
+  phone?: string;
+  email: string;
+  role: string;
+  short_bio?: string;
+  is_active: boolean;
+  date_of_birth: Date | null;
+}
+
+export function transformAccount(account: AccountView) {
+  const [instructor, student] = [account.instructorInfo, account.studentInfo];
+  return {
+    pk: account.pk,
+    first_name: instructor?.first_name ?? student?.first_name ?? "",
+    last_name: instructor?.last_name ?? student?.last_name ?? "",
+    phone: instructor?.phone ?? student?.phone ?? "",
+    email: account.email,
+    role: account.role,
+    short_bio: instructor?.short_bio ?? "",
+    is_active: account.is_active,
+    date_of_birth: student?.date_of_birth ?? null
+  } as AccountData;
 }

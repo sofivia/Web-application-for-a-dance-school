@@ -21,6 +21,13 @@ class Student(models.Model):
     phone = models.CharField(max_length=50, blank=True)
     notes = models.TextField(blank=True)
 
+    pass_product = models.OneToOneField(
+        "billing.PassProduct",
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+    )
+
     is_active = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)

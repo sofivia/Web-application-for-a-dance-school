@@ -57,7 +57,7 @@ export default function Register() {
    const validation = () => validator.validate();
 
    return (
-      <div className={`${global.app_container} ${formstyle.container}`}>
+      <div className={`${global.app_container} ${formstyle.form_container}`}>
          <div className={global.header}></div>
          <div className={formstyle.card}>
             <h2 className={formstyle.title}>Szkoła Tańca</h2>
@@ -66,28 +66,31 @@ export default function Register() {
             <form className={formstyle.form} onSubmit={handleSubmit}>
                {errors.global && <p className={`${inputstyles.error} mb-1`}>{errors.global}</p>}
                <Input
+                  kind="input-react"
+                  name="email"
                   type="email"
                   values={emailValues}
                   error={errors.email}
                   onBlur={validation}
                   className="mb-3"
-                  name="email"
                />
                <Input
+                  kind="input-react"
+                  name="password"
                   type="password"
                   values={passwordValues}
                   error={errors.password}
                   onBlur={validation}
                   className="mb-5"
-                  name="password"
                />
                <Input
+                  kind="input-react"
+                  name="confirmPassword"
                   type="password"
                   values={confPasswordValues}
                   error={errors.confirmPassword}
                   onBlur={validation}
                   className="mb-5"
-                  name="confirmPassword"
                />
 
                <button type="submit" className={formstyle.button} disabled={loading}>
@@ -97,7 +100,7 @@ export default function Register() {
 
             <p className={formstyle.footer}>
                Masz już konto?{" "}
-               <Link to={"/login"} className={formstyle.link}>
+               <Link to={"/login"} className="link">
                   Zaloguj się
                </Link>
             </p>

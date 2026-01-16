@@ -1,4 +1,4 @@
-.input {
+.input, .control {
     padding: 12px 15px;
     border: 2px solid #2c3e50;
     border-radius: 12px;
@@ -38,4 +38,15 @@
     color: var(--error);
     font-size: 14px;
     text-align: left;
+}
+
+.control option {
+    background-color: var(--background3);
+    color: var(--fnt);
+}
+
+.control:focus {
+    border-color: var(--main);
+    outline: none;
+    box-shadow: 0 0 8px var(--shadow);
 }

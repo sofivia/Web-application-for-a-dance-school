@@ -4,21 +4,14 @@ export interface InputValues {
     placeholder?: string;
 };
 
-export type InputProps = {
-    id?: string;
-    type: string;
-    values: InputValues;
-    error?: string;
-    onBlur?: () => void;
-    className?: string;
-    name?: string;
-    rows?: number;
-};
-
-
-export type ClassicBaseInputProps = {
-    id?: string;
+export type ReactBaseInputProps = {
     name: string;
     error?: string;
-    className?: string;
 };
+
+export type ClassicBaseInputProps = {
+    name: string;
+    error?: string;
+};
+
+export type Errors = Record<string, string>;

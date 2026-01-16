@@ -3,8 +3,9 @@
 
 .page {
   width: 100%;
-  max-width: 1200px;
+  max-width: min(100%, 1200px);
   grid-row-start: 2;
+  overflow: hidden;
 }
 
 .filtersBar {
@@ -34,36 +35,20 @@
 .tableWrap {
   border: 1px solid var(--gray);
   border-radius: 12px;
-  overflow: hidden;
   background: var(--background3);
-}
-
-.table {
   width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-}
-
-.table th,
-.table td {
-  padding: 12px 12px;
-  border-bottom: 1px solid var(--gray);
-  border-right: 1px solid var(--gray);
-}
-
-.table th:last-child,
-.table td:last-child {
-  border-right: none;
-}
-
-.table thead th {
-  font-weight: 700;
-  background: var(--background2);
+  overflow-x: auto;
 }
 
 .emptyRow {
   text-align: center;
   opacity: 0.85;
+}
+
+.table td:nth-of-type(2) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 0;
 }
 
 .pagination {

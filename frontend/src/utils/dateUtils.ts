@@ -17,6 +17,14 @@ export function formatDate(date: Date, locale='pl-PL') {
     return new Intl.DateTimeFormat(locale, {day: '2-digit', month: '2-digit', year: 'numeric'}).format(date);
 }
 
+export function dateToMonth(date: Date, locale='pl-PL') {
+    return new Intl.DateTimeFormat(locale, {month: 'long', year: 'numeric'}).format(date);
+}
+
 export function fromISO(isoDateTime: string) {
     return new Date(Date.parse(isoDateTime));
+}
+
+export function firstOfTheNextMonth(year: number, month: number) {
+    return `${year + Math.floor(month/12)}-${month%12 + 1}-01`;
 }

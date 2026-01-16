@@ -1,4 +1,7 @@
-.container {
+@import "tailwindcss";
+@reference "tailwindcss";
+
+.form_container {
     background: linear-gradient(135deg, var(--background) 0%, var(--background2) 100%);
     font-family: 'Poppins', sans-serif;
 }
@@ -62,12 +65,34 @@
     box-shadow: 0 4px 12px var(--shadow);
 }
 
-.link {
-    color: var(--main);
-    text-decoration: none;
-    font-weight: 600;
+.filtersBar {
+    display: flex;
+    gap: 14px;
+    align-items: flex-end;
+    justify-content: space-between;
 }
 
-.link:hover {
-    text-decoration: underline;
+.filterBtn {
+    background: var(--main);
+    color: white;
+}
+
+@media (max-width: 1000px) {
+    .page { padding: 0 1.2rem; }
+
+    .filtersBar {
+        display: block;
+    }
+
+    .filtersBar > div {
+        @apply mb-3
+    }
+
+    .filter:last-of-type {
+        @apply mb-4;
+    }
+
+    .filterBtn {
+        @apply mt-2;
+    }
 }

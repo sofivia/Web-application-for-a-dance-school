@@ -1,0 +1,12 @@
+.simpleTable td {
+    padding: 4px 0px;
+    text-align: left;
+}
+.simpleTable  td:first-of-type {
+    vertical-align: top;
+    padding-right: 20px;
+}
+
+.simpleTable td:last-of-type {
+    max-width: 400px;
+}
