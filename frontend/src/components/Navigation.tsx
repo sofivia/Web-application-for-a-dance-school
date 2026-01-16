@@ -32,17 +32,20 @@ export default function Navigation() {
          </Link>
 
          {isLoggedIn && (
-            <nav className={styles.nav}>
-               {roles.length == 0 ? (
-                  <></>
-               ) : (
-                  links[roles[0]].map((link, i) => (
-                     <NavLink key={i} to={link[1]} className={styl}>
-                        {link[0]}
-                     </NavLink>
-                  ))
-               )}
-            </nav>
+         <nav className={styles.nav}>
+            {(() => {
+               const rolePriority: Role[] = ["admin", "instructor", "student"];
+               const primaryRole = rolePriority.find((r) => roles.includes(r));
+
+               if (!primaryRole) return null;
+
+               return links[primaryRole].map((link, i) => (
+               <NavLink key={i} to={link[1]} className={styl}>
+                  {link[0]}
+               </NavLink>
+               ));
+            })()}
+         </nav>
          )}
 
          <div className={styles.right}>
