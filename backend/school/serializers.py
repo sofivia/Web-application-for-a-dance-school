@@ -284,3 +284,42 @@ class AttendanceSavePayloadSerializer(serializers.Serializer):
                 raise serializers.ValidationError("Duplicate student_id in records.")
             seen.add(sid)
         return records
+
+
+class ClassSessionAdminReadSerializer(serializers.ModelSerializer):
+    class_type = serializers.SerializerMethodField()
+    instructor = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ClassSession
+        fields = ("id", "group_id", "starts_at", "ends_at", "status", "notes", "class_type", "instructor", "location")
+
+    def get_class_type(self, obj):
+        ct = obj.group.class_type
+        return {"id": str(ct.id), "name": ct.name, "level": ct.level, "duration_minutes": ct.duration_minutes}
+
+    def get_instructor(self, obj):
+        inst = obj.substitute_instructor or obj.group.primary_instructor
+        if not inst:
+            return None
+        return {"id": str(inst.id), "first_name": inst.first_name, "last_name": inst.last_name}
+
+    def get_location(self, obj):
+        loc = obj.group.location
+        return {"pk": str(loc.pk), "name": loc.name}
+
+
+class ClassSessionAdminWriteSerializer(serializers.Serializer):
+    class_type = serializers.IntegerField()
+    instructor = serializers.UUIDField()
+    location = serializers.IntegerField()
+    date = serializers.DateField()
+    start_time = serializers.TimeField()
+    end_time = serializers.TimeField()
+    notes = serializers.CharField(required=False, allow_blank=True)
+
+    def validate(self, data):
+        if data["end_time"] <= data["start_time"]:
+            raise serializers.ValidationError({"end_time": "Godzina zakończenia musi być po rozpoczęciu."})
+        return data
