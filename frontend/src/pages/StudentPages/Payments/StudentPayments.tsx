@@ -53,7 +53,7 @@ export default function StudentPayments() {
                      {!tableLoading &&
                         rows.map((g) => (
                            <tr key={g.id}>
-                              {/* @ts-expect-error */}
+                              {/* @ts-expect-error date to string doesn't work, bcs it is string*/}
                               <td> {g.period_start} </td>
                               <td> {g.amount_cents} zł </td>
                               <td>{g.product_name}</td>
