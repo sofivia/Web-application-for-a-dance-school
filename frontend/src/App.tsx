@@ -13,6 +13,7 @@ import InstructorClassParticipants from "./pages/Classes/InstructorClassParticip
 import AdminPaymentRoutes from "./pages/AdminPages/Payments/PaymentRoutes.tsx";
 import { Toaster } from 'react-hot-toast';
 import StudentAttendance from "./pages/Attendance/StudentAttendance.tsx";
+import AdminClassRoutes from "./pages/AdminPages/Classes/ClassRoutes.tsx";
 
 export default function App() {
    const navigate = useNavigate();
@@ -38,6 +39,7 @@ export default function App() {
                <Route path="classes" element={<InstructorClasses />} />
                <Route path="/classes/:sessionId/participants" element={<InstructorClassParticipants />} />
                <Route path="payments/*" element={<AdminPaymentRoutes />} />
+               <Route path="studSubj/*" element={<AdminClassRoutes />} />
             </Route>
          </Routes>
       </>

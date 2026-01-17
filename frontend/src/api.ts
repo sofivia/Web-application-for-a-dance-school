@@ -483,23 +483,23 @@ export class ViewSetAPI<T, F> {
       const resp = await api.get(`${this.root}/${id}/`);
       return resp.data as T;
    }
-   
+
    public async create(x: T) {
       const resp = await api.post(`${this.root}/`, instanceToPlain(x));
       return resp.data as T;
    }
-   
+
    public async getMany(page: number, filters?: F) {
       const params = {page, ...instanceToPlain(filters)};
       const { data } = await api.get(`${this.root}/`, {params});
       return data as Page<T>;
    }
-   
+
    public async edit(id: string, x: T) {
       const resp = await api.put(`${this.root}/${id}/`, instanceToPlain(x));
       return resp.data as T;
    }
-   
+
    public async delete(id: string) {
       await api.delete(`${this.root}/${id}/`);
    }
@@ -583,4 +583,33 @@ export async function voidPayment(id: string) {
 export async function generatePayments(month: string) {
    const resp = await api.post(`/api/billing/purchases/generate-monthly/`, {month});
    return resp.data;
+}
+
+export type AdminSessionPayload = {
+  class_type: number;
+  instructor: string;
+  location: number;
+  date: string;
+  start_time: string;
+  end_time: string;   
+  notes?: string;
+};
+
+export async function createAdminSession(payload: AdminSessionPayload) {
+  const { data } = await api.post("/api/school/admin-sessions/", payload);
+  return data;
+}
+
+export async function updateAdminSession(id: string, payload: AdminSessionPayload) {
+  const { data } = await api.put(`/api/school/admin-sessions/${id}/`, payload);
+  return data;
+}
+
+export async function deleteAdminSession(id: string) {
+  await api.delete(`/api/school/admin-sessions/${id}/`);
+}
+
+export async function getAdminSession(id: string) {
+  const { data } = await api.get(`/api/school/admin-sessions/${id}/`);
+  return data;
 }

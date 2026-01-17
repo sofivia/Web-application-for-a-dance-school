@@ -1,0 +1,217 @@
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+
+import global from "@/global.module.css";
+import formstyles from "@/styles/forms.module.css";
+
+import Button from "@/components/Button";
+import { InputList } from "@/components/forms/InputList";
+import type { Option } from "@/components/forms/Select";
+import type { ReactInputWithLabelProps } from "@/components/forms/InputWithLabel";
+import type { ReactSelectWithLabelProps } from "@/components/forms/SelectWithLabel";
+
+import { getClassFilters, getAdminSession, updateAdminSession } from "@/api";
+
+type FormState = {
+  class_type: string;
+  instructor: string;
+  location: string;
+  date: string;
+  start_time: string;
+  end_time: string;
+  notes: string;
+};
+
+function toDateYYYYMMDD(iso: string): string {
+  if (!iso) return "";
+  return iso.slice(0, 10);
+}
+
+function toHHMM(iso: string): string {
+  if (!iso) return "";
+  const m = iso.match(/T(\d{2}):(\d{2})/);
+  if (!m) return "";
+  return `${m[1]}:${m[2]}`;
+}
+
+
+export default function ClassEdit() {
+  const nav = useNavigate();
+  const { id } = useParams<{ id: string }>();
+
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  const [opts, setOpts] = useState<{
+    classTypes: Option[];
+    instructors: Option[];
+    locations: Option[];
+  }>({
+    classTypes: [],
+    instructors: [],
+    locations: [],
+  });
+
+  const [v, setV] = useState<FormState>({
+    class_type: "",
+    instructor: "",
+    location: "",
+    date: "",
+    start_time: "",
+    end_time: "",
+    notes: "",
+  });
+
+  useEffect(() => {
+    (async () => {
+      if (!id) return;
+
+      setLoading(true);
+      try {
+        const [filters, session] = await Promise.all([getClassFilters(), getAdminSession(id)]);
+
+        setOpts({
+          classTypes: [
+            { key: "", value: "", label: "Wybierz typ" },
+            ...filters.class_types.map((ct: any) => ({ key: String(ct.id), value: String(ct.id), label: ct.name })),
+          ],
+          instructors: [
+            { key: "", value: "", label: "Wybierz instruktora" },
+            ...filters.instructors.map((i: any) => ({
+              key: String(i.id),
+              value: String(i.id),
+              label: `${i.first_name} ${i.last_name}`,
+            })),
+          ],
+          locations: [
+            { key: "", value: "", label: "Wybierz studio" },
+            ...filters.locations.map((l: any) => ({ key: String(l.pk), value: String(l.pk), label: l.name })),
+          ],
+        });
+
+        setV({
+          class_type: String(session.class_type?.id ?? ""),
+          instructor: String(session.instructor?.id ?? ""),
+          location: String(session.location?.pk ?? ""),
+          date: toDateYYYYMMDD(session.starts_at),
+          start_time: toHHMM(session.starts_at),
+          end_time: toHHMM(session.ends_at),
+          notes: session.notes ?? "",
+        });
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [id]);
+
+  const fields = useMemo(() => {
+    return [
+      {
+        name: "class_type",
+        kind: "select-react",
+        label: "Temat zajęć",
+        prompt: "Wybierz typ",
+        options: opts.classTypes,
+        values: { value: v.class_type, setValue: (e: any) => setV((p) => ({ ...p, class_type: e.target.value })) },
+      } as ReactSelectWithLabelProps,
+      {
+        name: "date",
+        kind: "input-react",
+        type: "date",
+        label: "Data",
+        values: { value: v.date, setValue: (e: any) => setV((p) => ({ ...p, date: e.target.value })) },
+      } as ReactInputWithLabelProps,
+      {
+        name: "start_time",
+        kind: "input-react",
+        type: "time",
+        label: "Godzina od",
+        values: { value: v.start_time, setValue: (e: any) => setV((p) => ({ ...p, start_time: e.target.value })) },
+      } as ReactInputWithLabelProps,
+      {
+        name: "end_time",
+        kind: "input-react",
+        type: "time",
+        label: "Godzina do",
+        values: { value: v.end_time, setValue: (e: any) => setV((p) => ({ ...p, end_time: e.target.value })) },
+      } as ReactInputWithLabelProps,
+      {
+        name: "location",
+        kind: "select-react",
+        label: "Studio",
+        prompt: "Wybierz studio",
+        options: opts.locations,
+        values: { value: v.location, setValue: (e: any) => setV((p) => ({ ...p, location: e.target.value })) },
+      } as ReactSelectWithLabelProps,
+      {
+        name: "instructor",
+        kind: "select-react",
+        label: "Instruktor",
+        prompt: "Wybierz instruktora",
+        options: opts.instructors,
+        values: { value: v.instructor, setValue: (e: any) => setV((p) => ({ ...p, instructor: e.target.value })) },
+      } as ReactSelectWithLabelProps,
+      {
+        name: "notes",
+        kind: "input-react",
+        type: "text",
+        label: "Opis (opcjonalnie)",
+        values: { value: v.notes, setValue: (e: any) => setV((p) => ({ ...p, notes: e.target.value })) },
+      } as ReactInputWithLabelProps,
+    ];
+  }, [opts, v]);
+
+  const onSubmit = async () => {
+    if (!id) return;
+
+    if (!v.class_type || !v.instructor || !v.location || !v.date || !v.start_time || !v.end_time) {
+      alert("Uzupełnij wszystkie wymagane pola.");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      await updateAdminSession(id, {
+        class_type: Number(v.class_type),
+        instructor: v.instructor,
+        location: Number(v.location),
+        date: v.date,
+        start_time: v.start_time,
+        end_time: v.end_time,
+        notes: v.notes,
+      });
+      nav("/studSubj");
+    } catch (e) {
+      alert("Nie udało się zapisać zmian.");
+      console.error(e);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className={global.app_container}>
+        <div className={formstyles.panel}>Ładowanie…</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={global.app_container}>
+        <div className={formstyles.panel} style={{ maxWidth: 980, width: "100%" }}>
+            <h1 className="text-base font-bold mb-4">Edytuj zajęcie</h1>
+
+            <div className="grid gap-6" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
+                <InputList fields={fields.slice(0, 3)} />
+                <InputList fields={fields.slice(3)} />
+            </div>
+
+            <div className="mt-5 flex gap-2 justify-end">
+                <Button onClick={onSubmit} disabled={saving}>Zapisz</Button>
+                <Button onClick={() => nav("/studSubj")} disabled={saving}>Anuluj</Button>
+            </div>
+        </div>
+    </div>
+  );
+}
