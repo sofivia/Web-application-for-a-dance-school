@@ -17,7 +17,7 @@
         \today\\\vspace{1em}
         Semestr 25Z%
     }
-    
+
     \vspace{5em}
     {\large
         Zespół nr 2 w składzie:\\\vspace{0.5em}
@@ -174,15 +174,15 @@ lecz oczywiste jest, że aby je zrealizować, trzeba spełnić kilka wymagań ni
 \przypadek{PB1}{Rejestracja ucznia}
 \begin{enumerate}
     \item Uczeń wypełnia formularz rejestracyjny.
-    \item System wysyła e-mail weryfikacyjny. 
-    \item Uczeń potwierdza adres e-mail. 
-    \item System aktywuje konto i potwierdza rejestrację. 
+    \item System wysyła e-mail weryfikacyjny.
+    \item Uczeń potwierdza adres e-mail.
+    \item System aktywuje konto i potwierdza rejestrację.
 \end{enumerate}
 
 \przypadek{PB2}{Zapisanie się na zajęcia}
 \begin{enumerate}
     \item Uczeń przegląda dostępne terminy zajęć.
-    \item Uczeń wybiera termin. 
+    \item Uczeń wybiera termin.
     \item Uczeń potwierdza zapis.
     \item System sprawdza, czy miejsce jest wolne.
     \begin{enumerate}
@@ -197,11 +197,11 @@ lecz oczywiste jest, że aby je zrealizować, trzeba spełnić kilka wymagań ni
     \item Wyświetla się ogólna informacja o koncie: imię, nazwisko itp.
     \item Menu zawiera następujące zakładki:
     \begin{enumerate}
-        \item Lista zajęć, na które uczeń jest zapisany 
+        \item Lista zajęć, na które uczeń jest zapisany
         \item Dziennik obecności, gdzie uczeń może widzieć historię zajęć.
-        \item Zakładka „Płatności” z informacjami o płatnościach 
+        \item Zakładka „Płatności” z informacjami o płatnościach
     \end{enumerate}
-    \item Uczeń klika na jeden z przycisków, aby obejrzeć interesującą go informację. 
+    \item Uczeń klika na jeden z przycisków, aby obejrzeć interesującą go informację.
 \end{enumerate}
 
 \przypadek{PB4}{Odrabianie nieobecności}
@@ -254,7 +254,7 @@ lecz oczywiste jest, że aby je zrealizować, trzeba spełnić kilka wymagań ni
 
 \przypadek{PB8}{Modyfikacja zajęć}
 \begin{enumerate}
-    \item Na stronie zarządzania zajęciami jest wyświetlana lista wszystkich zajęć. 
+    \item Na stronie zarządzania zajęciami jest wyświetlana lista wszystkich zajęć.
     \item Administrator modyfikuje wybrany termin zajęć lub usuwa go.
     \item Jeśli zajęcia są usuwane, system wypisuje uczniów i instruktora z tych zajęć.
 \end{enumerate}
@@ -271,6 +271,184 @@ lecz oczywiste jest, że aby je zrealizować, trzeba spełnić kilka wymagań ni
 \subsection{Potwierdzenie zgodności wymagań}
 \includegraphics[width=\textwidth]{resources/zatwierdzenie.png}
 
+\section{Definicja architektury}
+
+\subsection{Warstwy i komponenty systemu}
+
+System ma architekturę trójwarstwową:
+\begin{itemize}
+  \item warstwa prezentacji: aplikacja SPA (React + TypeScript),
+  \item warstwa logiki biznesowej: backend Django + DRF (REST API),
+  \item warstwa danych: relacyjna baza PostgreSQL.
+\end{itemize}
+
+W architekturze wdrożeniowej punkt wejścia stanowi Nginx. Pełni on dwie role:
+\begin{itemize}
+  \item serwuje pliki statyczne aplikacji SPA,
+  \item przekazuje zapytania do backendu pod ścieżką \texttt{/api/*}.
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\linewidth]{resources/architektura_systemu.png}
+\end{figure}
+
+\subsection{Podział backendu na moduły}
+
+Backend jest monolitem modularnym, podzielonym na trzy aplikacje domenowe:
+\begin{itemize}
+  \item \texttt{accounts} – konta użytkowników, role, logowanie i tokeny JWT,
+  \item \texttt{school} – grupy i typy zajęć, sesje zajęć, zapisy, obecności,
+  \item \texttt{billing} – produkty, należności miesięczne (\texttt{Purchase}), ręczne oznaczanie wpłat jako opłaconych.
+\end{itemize}
+
+Dodatkowe elementy:
+\begin{itemize}
+  \item SMTP – wysyłka e-mail (np. potwierdzenia/przypomnienia),
+  \item zadania cykliczne – np. generacja rozliczeń i/lub przypomnienia.
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\linewidth]{resources/podzial_na_moduly.png}
+\end{figure}
+
+\subsection{Zastosowane szablony architektoniczne}
+
+W projekcie zastosowano:
+\begin{itemize}
+  \item architekturę client--server (SPA jako klient, Django API jako serwer),
+  \item komunikację REST/JSON pomiędzy SPA i backendem,
+  \item monolit modularny po stronie backendu (moduły domenowe jako Django apps),
+  \item podejście MVC/MVT: modele w ORM, logika w endpointach DRF (ViewSety/serwisy), prezentacja w SPA.
+\end{itemize}
+
+\subsection{Interfejsy kluczowych elementów oraz interakcje}
+
+Komunikacja i interfejsy:
+\begin{itemize}
+  \item HTTPS: przeglądarka $\leftrightarrow$ Nginx,
+  \item REST/JSON: SPA $\leftrightarrow$ backend (ścieżka \texttt{/api/*}),
+  \item JWT: nagłówek \texttt{Authorization: Bearer <token>},
+  \item SQL/ORM: backend $\leftrightarrow$ PostgreSQL,
+  \item (plan) SMTP: backend $\leftrightarrow$ serwer pocztowy.
+\end{itemize}
+
+Najważniejsze scenariusze interakcji:
+\begin{itemize}
+  \item logowanie użytkownika i autoryzacja żądań przez JWT,
+  \item generacja rozliczeń miesięcznych i ręczne oznaczenie wpłaty jako opłaconej.
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\linewidth]{resources/sekwencja_logowanie_autoryzacja.png}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\linewidth]{resources/rozliczenia.png}
+\end{figure}
+
+\subsection{Perspektywa logiczna/funkcjonalna}
+
+Zakres funkcjonalny systemu obejmuje:
+\begin{itemize}
+  \item konta użytkowników i role,
+  \item planowanie oraz obsługę zajęć (sesje, zapisy, obecność),
+  \item rozliczenia miesięczne oraz statusy opłat.
+\end{itemize}
+
+Warstwa UI znajduje się w SPA. Backend realizuje logikę biznesową, walidacje oraz kontrolę dostępu.
+
+\subsection{Perspektywa sprzętowa (deployment) i środowisko uruchomieniowe}
+
+Docelowe uruchomienie zakłada serwer z systemem Linux (np. Ubuntu/Debian) oraz konteneryzację (Docker Compose).
+Wystawiony na zewnątrz jest wyłącznie Nginx, natomiast backend i baza danych działają w sieci prywatnej.
+
+Elementy środowiska uruchomieniowego:
+\begin{itemize}
+  \item Nginx – reverse proxy oraz serwowanie plików SPA,
+  \item Django API (WSGI, np. Gunicorn) – obsługa endpointów REST,
+  \item PostgreSQL – baza danych uruchomiona wewnątrz sieci prywatnej.
+\end{itemize}
+
+\subsection{System bazy danych i mechanizmy utrwalania danych}
+
+Utrwalanie danych realizowane jest w PostgreSQL (dane kont, zajęć, zapisów, obecności i rozliczeń).
+Dostęp do danych realizuje ORM Django.
+
+Operacje utrzymaniowe:
+\begin{itemize}
+  \item migracje schematu bazy (narzędzia Django),
+  \item trwałe przechowywanie danych (wolumen DB),
+  \item kopie zapasowe (zakres wdrożeniowy/operacyjny).
+\end{itemize}
+
+\subsection{Raportowanie oraz analityka/BI}
+
+Raportowanie operacyjne opiera się na danych rozliczeniowych:
+\begin{itemize}
+  \item generacja miesięcznych należności (\texttt{Purchase}),
+  \item podgląd statusów opłat (np. lista zaległości na dany miesiąc).
+\end{itemize}
+
+Analityka/BI może zostać rozszerzona przez:
+\begin{itemize}
+  \item eksport danych (np. CSV),
+  \item dedykowane endpointy raportowe w panelu administracyjnym.
+\end{itemize}
+
+\subsection{Mechanizmy zarządzania}
+
+Zarządzanie projektem i wdrożeniem obejmuje:
+\begin{itemize}
+  \item CI (lint/test/build),
+  \item proces wdrożeniowy wraz z migracjami bazy,
+  \item logowanie operacyjne (logi aplikacji i kontenerów).
+\end{itemize}
+
+\subsection{Mechanizmy bezpieczeństwa}
+
+Bezpieczeństwo systemu zapewniają:
+\begin{itemize}
+  \item szyfrowanie komunikacji przez HTTPS (terminacja TLS na Nginx),
+  \item autoryzacja przez JWT (access/refresh),
+  \item kontrola dostępu oparta o role i uprawnienia (RBAC, permissions),
+  \item walidacja danych wejściowych (serializery DRF) i ograniczenia modeli,
+  \item izolacja komponentów: API i PostgreSQL w sieci prywatnej (brak bezpośredniej ekspozycji).
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\linewidth]{resources/bezpieczenstwo.png}
+\end{figure}
+
+\section{Dane trwałe}
+\subsection{Model logiczny danych}
+
+Model danych został zaprojektowany w podejściu relacyjnym i obejmuje trzy główne obszary:
+konta i role użytkowników, obsługę zajęć (grupy, sesje, zapisy, obecności) oraz rozliczenia.
+Diagram ER przedstawia zależności pomiędzy encjami oraz kluczowe ograniczenia spójności (m.in. relacje
+wiele-do-jednego oraz ograniczenia unikalności).
+
+Ze względu na rozmiar diagramu, w treści pracy zamieszczono link, pod którym znajduje się pełna wersja diagramu.(zaleca się pobrać, bo przy podglądzie może być gorszej jakośći)
+
+\href{https://drive.google.com/file/d/1GeEPdo2H1-CJX1YiavW60V5RUC897051/view?usp=sharing}{\textbf{Pobierz pełny diagram ER (PDF)}}
+
+\subsection{Przetwarzanie i przechowywanie danych}
+
+Dane systemu są przechowywane w relacyjnej bazie PostgreSQL. Dostęp do danych realizuje backend Django
+z wykorzystaniem ORM, co zapewnia spójne mapowanie modeli domenowych na tabele oraz ułatwia utrzymanie schematu.
+
+Operacje na danych są wykonywane poprzez REST API (Django REST Framework). Walidacja danych wejściowych odbywa się
+na poziomie serializerów DRF oraz ograniczeń modeli, a kontrola dostępu do operacji jest realizowana przez JWT
+(access/refresh) oraz uprawnienia zależne od ról użytkownika.
+
+Zmiany schematu bazy danych są wprowadzane poprzez migracje Django, wersjonowane w repozytorium. W bazie stosowane
+są indeksy i ograniczenia unikalności wspierające integralność danych (np. brak duplikatów zapisów na grupę
+dla tego samego ucznia). Nie zakłada się programowania logiki biznesowej bezpośrednio w bazie danych (np. wyzwalaczy);
+logika pozostaje po stronie backendu, co upraszcza rozwój i testowanie aplikacji.
 
 \section{Specyfikacja testów}
 Aplikację testowaliśmy zgodnie ze scenariuszami, które wyniknęły z~przypadków użycia.
