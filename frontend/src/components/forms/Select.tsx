@@ -23,23 +23,28 @@ export type ReactSelectProps = ReactBaseInputProps
 
 
 export default function Select(props: ReactSelectProps) {
-    const { values, className, prompt, options, id, ...rest } = props;
+    const { values, error, name, className, prompt, options, id, ...rest } = props;
     const { value, setValue } = values;
     const autoId = useId();
     return (
-        <select
-            id={id ?? autoId}
-            className={`${styles.control} ${className ?? ""}`}
-            value={value}
-            onChange={setValue}
-            {...rest}
-        >
-            <option value=""> {prompt} </option>
-            {options.map((t) => (
-                <option key={t.key} value={t.value}>
-                    {t.label}
-                </option>
-            ))}
-        </select>
+        <div className={className}>
+            <select
+                id={id ?? autoId}
+                name={name}
+                aria-invalid={!!error}
+                className={`${styles.control}`}
+                value={value}
+                onChange={setValue}
+                {...rest}
+            >
+                <option value=""> {prompt} </option>
+                {options.map((t) => (
+                    <option key={t.key} value={t.value}>
+                        {t.label}
+                    </option>
+                ))}
+            </select>
+            {error && <div className={styles.error}>{error}</div>}
+        </div>
     );
 }

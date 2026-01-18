@@ -13,13 +13,15 @@ from .views import (
     UnenrollView,
     AccountViewSet,
     StudentAttendanceListView,
-    ClassSessionParticipantsView
+    ClassSessionParticipantsView,
+    AdminClassSessionViewSet
 )
 
 app_name = "school"
 router = DefaultRouter()
 router.register('classgroups', ClassGroupView, basename='classgroup')
 router.register('accounts', AccountViewSet, basename='account')
+router.register("admin-sessions", AdminClassSessionViewSet, basename="admin-sessions")
 
 urlpatterns = [
     path("students/", StudentView.as_view(), name="students"),
@@ -31,7 +33,6 @@ urlpatterns = [
     path("enroll/", EnrollView.as_view(), name="enroll"),
     path("unenroll/", UnenrollView.as_view(), name="unenroll"),
     path("attendance/", StudentAttendanceListView.as_view(), name="attendance"),
-    path("classes/", ClassSessionListView.as_view(), name="classes"),
     path("classes/<str:session_id>/participants/", ClassSessionParticipantsView.as_view(),
          name="class_session_participants"),
 ]

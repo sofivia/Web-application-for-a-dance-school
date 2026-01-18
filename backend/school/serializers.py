@@ -1,5 +1,8 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+import datetime
+from django.utils import timezone
+from django.db.models import Q
 
 from .models import (
     Student,
@@ -284,3 +287,92 @@ class AttendanceSavePayloadSerializer(serializers.Serializer):
                 raise serializers.ValidationError("Duplicate student_id in records.")
             seen.add(sid)
         return records
+
+
+class ClassSessionAdminReadSerializer(serializers.ModelSerializer):
+    class_type = serializers.SerializerMethodField()
+    instructor = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ClassSession
+        fields = ("id", "group_id", "starts_at", "ends_at", "status", "notes", "class_type", "instructor", "location")
+
+    def get_class_type(self, obj):
+        ct = obj.group.class_type
+        return {"id": str(ct.id), "name": ct.name, "level": ct.level, "duration_minutes": ct.duration_minutes}
+
+    def get_instructor(self, obj):
+        inst = obj.substitute_instructor or obj.group.primary_instructor
+        if not inst:
+            return None
+        return {"id": str(inst.id), "first_name": inst.first_name, "last_name": inst.last_name}
+
+    def get_location(self, obj):
+        loc = obj.group.location
+        return {"pk": str(loc.pk), "name": loc.name}
+
+
+class ClassSessionAdminWriteSerializer(serializers.Serializer):
+    class_type = serializers.IntegerField()
+    instructor = serializers.UUIDField()
+    location = serializers.IntegerField()
+    date = serializers.DateField()
+    start_time = serializers.TimeField()
+    end_time = serializers.TimeField()
+    notes = serializers.CharField(required=False, allow_blank=True)
+
+    def validate(self, data):
+        if data["end_time"] <= data["start_time"]:
+            raise serializers.ValidationError({
+                "end_time": ["Godzina zakończenia musi być po rozpoczęciu."]
+            })
+
+        tz = timezone.get_current_timezone()
+        starts_at = timezone.make_aware(
+            datetime.datetime.combine(data["date"], data["start_time"]),
+            tz
+        )
+        ends_at = timezone.make_aware(
+            datetime.datetime.combine(data["date"], data["end_time"]),
+            tz
+        )
+
+        now = timezone.now()
+        if starts_at < now:
+            raise serializers.ValidationError({
+                "date": ["Nie można dodać zajęć w przeszłości."]
+            })
+
+        qs = ClassSession.objects.select_related("group").all()
+
+        session_id = self.context.get("session_id")
+        if session_id:
+            qs = qs.exclude(pk=session_id)
+
+        overlap = Q(starts_at__lt=ends_at) & Q(ends_at__gt=starts_at)
+
+        if qs.filter(
+            overlap,
+            group__class_type_id=data["class_type"],
+            group__primary_instructor_id=data["instructor"],
+            group__location_id=data["location"],
+        ).exists():
+            raise serializers.ValidationError({
+                "date": ["Takie same zajęcia w tym terminie już istnieją."]
+            })
+
+        if qs.filter(overlap, group__location_id=data["location"]).exists():
+            raise serializers.ValidationError({
+                "location": ["Studio jest zajęte w tym terminie."]
+            })
+
+        if qs.filter(overlap).filter(
+            Q(group__primary_instructor_id=data["instructor"]) |
+            Q(substitute_instructor_id=data["instructor"])
+        ).exists():
+            raise serializers.ValidationError({
+                "instructor": ["Instruktor ma już inne zajęcia w tym terminie."]
+            })
+
+        return data
