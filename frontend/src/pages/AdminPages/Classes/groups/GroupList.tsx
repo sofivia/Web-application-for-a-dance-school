@@ -8,7 +8,7 @@ import { Link } from "react-router";
 import Pager from "@/components/Pager";
 
 
-export default function Groups() {
+export default function GroupList() {
     return (
         <Pager>
             {(page, setPrev, setNext, _) => {
@@ -24,6 +24,8 @@ export default function Groups() {
                             {(data: Page<ClassGroupRead>) => {
                                 const rows: TableRow[][] = data.results.map(p => [
                                     { key: "pk", fields: ["PK", p.pk] },
+                                    { key: "instructor", fields: ["Instruktor", p.primary_instructor.getName()] },
+                                    { key: "fill", fields: ["Zapełnienie", `${p.nr_enrolled} / ${p.effective_capacity}`] },
 
                                 ]);
                                 return <>
@@ -38,7 +40,7 @@ export default function Groups() {
                                         </div >)
                                     })}
                                     <Link className={`${styles.addItem} block font-semibold text-xl w-full`} to={"./add"}>
-                                        Dodaj karnet
+                                        Dodaj grupę
                                     </Link>
                                 </>
                             }}

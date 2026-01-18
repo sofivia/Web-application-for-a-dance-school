@@ -288,6 +288,10 @@ export class InstructorMini {
    id!: string;
    first_name!: string;
    last_name!: string;
+
+   public getName() {
+      return `${this.first_name} ${this.last_name}`;
+   }
 }
 
 export class Location {
