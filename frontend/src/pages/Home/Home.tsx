@@ -56,16 +56,13 @@ export default function Home() {
 
    if (roles.includes("admin")) {
       return (
-         <div className={global.app_container}>
             <div className={global.app_container}>
                <div className={styles.app_panel}>
-                  <h1 className="opacity-80">Witamy na stronie administrowania!</h1>
+                  <Logo className={`${styles.logo} mb-3`} aria-label="Logo TipTap" />
                </div>
-               <div className={styles.footer}></div>
             </div>
-         </div>
-      );
-   }
+         );
+      }
 
    return (
       <div className={global.app_container}>

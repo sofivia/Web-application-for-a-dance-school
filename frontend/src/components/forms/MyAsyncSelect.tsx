@@ -2,6 +2,7 @@ import AsyncSelect from 'react-select/async';
 import type { SingleValue } from 'react-select';
 import "./Input.css";
 import { useId } from 'react';
+import styles from './Input.module.css';
 
 
 export interface Option {
@@ -31,7 +32,7 @@ export default function MyAsyncSelect(props: Props) {
     const autoId = useId();
 
     return (
-        <>
+        <div>
             <AsyncSelect
                 id={props.id ?? autoId}
                 cacheOptions
@@ -43,6 +44,7 @@ export default function MyAsyncSelect(props: Props) {
                 noOptionsMessage={() => "Brak opcji"}
                 isClearable
             />
-        </>
+            {props.error && <div className={styles.error}>{props.error}</div>}
+        </div>
     );
 };

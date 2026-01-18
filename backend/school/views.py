@@ -14,13 +14,16 @@ from rest_framework.generics import get_object_or_404
 from common import utils
 from rest_framework.response import Response
 from rest_framework.views import APIView
+import datetime
+from django_filters.rest_framework import DjangoFilterBackend
 
 from .permissions import (
     IsStudent,
     IsAdmin,
     IsAdminOrStudentReadOnly,
     HasStudentRole,
-    HasInstructorRole)
+    HasInstructorRole,
+    IsAdminOrInstructorRole)
 
 from .models import (
     Student,
@@ -46,7 +49,9 @@ from .serializers import (
     AdminStudentUpdateSerializer,
     AdminInstructorUpdateSerializer,
     AttendanceRecordRowSerializer,
-    AttendanceSavePayloadSerializer
+    AttendanceSavePayloadSerializer,
+    ClassSessionAdminReadSerializer,
+    ClassSessionAdminWriteSerializer,
 )
 
 User = get_user_model()
@@ -236,7 +241,7 @@ class ProductFilter(django_filters.FilterSet):
                                         lookup_expr='lte')
     location = django_filters.NumberFilter(field_name="group__location")
     primary_instructor = django_filters.NumberFilter(field_name="group__primary_instructor")
-    class_type = django_filters.NumberFilter(field_name="group_class_type")
+    class_type = django_filters.NumberFilter(field_name="group__class_type")
 
     class Meta:
         model = ClassSession
@@ -248,6 +253,7 @@ class ClassSessionListView(generics.ListAPIView):
     serializer_class = ClassSessionRowSerializer
     pagination_class = utils.StandardPagination
     filterset_class = ProductFilter
+    filter_backends = [DjangoFilterBackend]
 
     def _get_student_or_none(self):
         try:
@@ -264,8 +270,10 @@ class ClassSessionListView(generics.ListAPIView):
                 "group__primary_instructor",
                 "substitute_instructor",
             )
-            .filter(status=ClassSession.Status.PLANNED)
         )
+
+        if not IsAdmin().has_permission(self.request, self):
+            qs = qs.filter(status=ClassSession.Status.PLANNED)
 
         enrolled_subq = (
             Enrollment.objects
@@ -557,9 +565,9 @@ class StudentAttendanceListView(generics.ListAPIView):
 
 
 class ClassSessionParticipantsView(APIView):
-    permission_classes = [permissions.IsAuthenticated, HasInstructorRole]
+    permission_classes = [permissions.IsAuthenticated, IsAdminOrInstructorRole]
 
-    def _get_session_for_instructor(self, session_id):
+    def _get_session_for_user(self, session_id):
         session = get_object_or_404(
             ClassSession.objects.select_related(
                 "group",
@@ -570,6 +578,9 @@ class ClassSessionParticipantsView(APIView):
             ),
             pk=session_id,
         )
+
+        if IsAdmin().has_permission(self.request, self):
+            return session
 
         inst = getattr(self.request.user, "instructor", None)
         if inst is None:
@@ -585,7 +596,7 @@ class ClassSessionParticipantsView(APIView):
         return session
 
     def get(self, request, session_id: str):
-        session = self._get_session_for_instructor(session_id)
+        session = self._get_session_for_user(session_id)
 
         enrollments = (
             Enrollment.objects
@@ -634,7 +645,7 @@ class ClassSessionParticipantsView(APIView):
         })
 
     def post(self, request, session_id: str):
-        session = self._get_session_for_instructor(session_id)
+        session = self._get_session_for_user(session_id)
 
         if session.status == ClassSession.Status.CANCELLED:
             raise PermissionDenied("Attendance is locked for cancelled sessions.")
@@ -664,3 +675,94 @@ class ClassSessionParticipantsView(APIView):
                 )
 
         return Response({"ok": True}, status=status.HTTP_200_OK)
+
+
+class AdminClassSessionViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAdmin]
+    queryset = ClassSession.objects.select_related(
+        "group",
+        "group__class_type",
+        "group__location",
+        "group__primary_instructor",
+        "substitute_instructor",
+    ).all()
+
+    def get_serializer_class(self):
+        if self.action in ("create", "update", "partial_update"):
+            return ClassSessionAdminWriteSerializer
+        return ClassSessionAdminReadSerializer
+
+    def _get_or_create_group(self, class_type, instructor, location, date, start_time, end_time):
+        weekday = int(date.isoweekday())
+        group = (
+            ClassGroup.objects.filter(
+                class_type=class_type,
+                primary_instructor=instructor,
+                location=location,
+                weekday=weekday,
+                start_time=start_time,
+                end_time=end_time,
+                start_date=date,
+                end_date=date,
+            )
+            .order_by("-created_at")
+            .first()
+        )
+        if group:
+            return group
+
+        return ClassGroup.objects.create(
+            name=f"{class_type.name}",
+            class_type=class_type,
+            primary_instructor=instructor,
+            weekday=weekday,
+            start_time=start_time,
+            end_time=end_time,
+            location=location,
+            start_date=date,
+            end_date=date,
+            is_active=True,
+        )
+
+    def create(self, request, *args, **kwargs):
+        s = ClassSessionAdminWriteSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        d = s.validated_data
+
+        class_type = ClassType.objects.get(pk=d["class_type"])
+        instructor = Instructor.objects.get(pk=d["instructor"])
+        location = Location.objects.get(pk=d["location"])
+
+        group = self._get_or_create_group(class_type, instructor, location, d["date"], d["start_time"], d["end_time"])
+
+        starts_at = timezone.make_aware(datetime.datetime.combine(d["date"], d["start_time"]))
+        ends_at = timezone.make_aware(datetime.datetime.combine(d["date"], d["end_time"]))
+
+        session = ClassSession.objects.create(
+            group=group,
+            starts_at=starts_at,
+            ends_at=ends_at,
+            status=ClassSession.Status.PLANNED,
+            notes=d.get("notes", ""),
+        )
+        return Response(ClassSessionAdminReadSerializer(session).data, status=status.HTTP_201_CREATED)
+
+    def update(self, request, *args, **kwargs):
+        session = self.get_object()
+        s = ClassSessionAdminWriteSerializer(data=request.data, context={"session_id": session.pk})
+        s.is_valid(raise_exception=True)
+        d = s.validated_data
+
+        class_type = ClassType.objects.get(pk=d["class_type"])
+        instructor = Instructor.objects.get(pk=d["instructor"])
+        location = Location.objects.get(pk=d["location"])
+
+        group = self._get_or_create_group(class_type, instructor, location, d["date"], d["start_time"], d["end_time"])
+
+        session.group = group
+        session.starts_at = timezone.make_aware(datetime.datetime.combine(d["date"], d["start_time"]))
+        session.ends_at = timezone.make_aware(datetime.datetime.combine(d["date"], d["end_time"]))
+        session.notes = d.get("notes", "")
+        session.save()
+
+        return Response(ClassSessionAdminReadSerializer(session).data, status=status.HTTP_200_OK)

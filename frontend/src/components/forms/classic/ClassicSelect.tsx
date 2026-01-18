@@ -20,22 +20,27 @@ export type ClassicSelectProps =
 
 
 export default function ClassicSelect(props: ClassicSelectProps) {
-    const { className, prompt, options, id, ...rest } = props;
+    const { className, prompt, options, id, error, name, ...rest } = props;
     const autoId = useId();
     return (
-        <select
-            id={id ?? autoId}
-            className={`${styles.control} ${className ?? ""}`}
-            {...rest}
-        >
-            <option value=""> {prompt} </option>
-            {
-                options.map((t) => (
-                    <option key={t.key} value={t.value}>
-                        {t.label}
-                    </option>
-                ))
-            }
-        </select >
+        <div className={className}>
+            <select
+                id={id ?? autoId}
+                name={name}
+                aria-invalid={!!error}
+                className={`${styles.control}`}
+                {...rest}
+            >
+                <option value=""> {prompt} </option>
+                {
+                    options.map((t) => (
+                        <option key={t.key} value={t.value}>
+                            {t.label}
+                        </option>
+                    ))
+                }
+            </select>
+            {error && <div className={styles.error}>{error}</div>}
+        </div>
     );
 }

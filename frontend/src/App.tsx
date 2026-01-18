@@ -13,6 +13,8 @@ import InstructorClassParticipants from "./pages/Classes/InstructorClassParticip
 import AdminPaymentRoutes from "./pages/AdminPages/Payments/PaymentRoutes.tsx";
 import { Toaster } from 'react-hot-toast';
 import StudentAttendance from "./pages/Attendance/StudentAttendance.tsx";
+import AdminClassRoutes from "./pages/AdminPages/Classes/ClassRoutes.tsx";
+import RequireRole from "./utils/auth/RequireRole";
 
 export default function App() {
    const navigate = useNavigate();
@@ -34,10 +36,32 @@ export default function App() {
                <Route path="attendance" element={<StudentAttendance />} />
                <Route path="me/*" element={<AccountRoutes />} />
                <Route path="group-reg/*" element={<GroupRoutes />} />
-               <Route path="userManage/*" element={<AdminAccountRoutes />} />
+               <Route
+                  path="userManage/*"
+                     element={
+                        <RequireRole role="admin">
+                           <AdminAccountRoutes />
+                     </RequireRole>
+                  }
+               />
                <Route path="classes" element={<InstructorClasses />} />
                <Route path="/classes/:sessionId/participants" element={<InstructorClassParticipants />} />
-               <Route path="payments/*" element={<AdminPaymentRoutes />} />
+               <Route
+                  path="payments/*"
+                  element={
+                     <RequireRole role="admin">
+                        <AdminPaymentRoutes />
+                     </RequireRole>
+                  }
+               />
+               <Route
+                  path="studSubj/*"
+                  element={
+                     <RequireRole role="admin">
+                        <AdminClassRoutes />
+                     </RequireRole>
+                  }
+               />
             </Route>
          </Routes>
       </>
