@@ -38,7 +38,38 @@ export default function StudentPayments() {
    return (
       <div className={global.app_container}>
          <div className={styles.page}>
-            <h1 className={`text-base font-bold mb-5  `}>Załegle płatności</h1>
+            <div className="mb-8 p-6 rounded-lg border border-[var(--gray)] bg-bckg text-fnt ">
+               <h2 className="text-4xl font-bold mb-3 text-[var(--main)]">Forma płatności</h2>
+
+               <p className="text-base mb-3 text-xl">
+                  Wszystkich płatności należy dokonywać w formie przelewu{" "}
+                  <span className="font-semibold  text-red-500"> do 5 dnia każdego miesiąca</span>.
+               </p>
+
+               <div className="text-base space-y-1 text-xl">
+                  <p className="font-semibold">Dane do przelewu:</p>
+
+                  <p>
+                     Anna Kołakowska-Kubicka Tip Tap
+                     <br />
+                     ul. Niewielka 29A/59
+                     <br />
+                     00-713 Warszawa
+                  </p>
+
+                  <p className="pt-2">
+                     <span className="font-semibold">Nr konta:</span>{" "}
+                     <span className="tracking-wide font-semibold">09 1160 2202 0000 0005 8644 0138</span>
+                  </p>
+
+                  <p className="pt-2">
+                     <span className="font-semibold">Tytuł przelewu:</span> Imię i nazwisko / miesiąc, za który wnoszona
+                     jest opłata
+                  </p>
+               </div>
+            </div>
+
+            <h2 className={`text-3xl  font-bold mb-5  `}>Załegle płatności</h2>
 
             <div className={styles.tableWrap}>
                <table className={styles.table}>
@@ -55,7 +86,13 @@ export default function StudentPayments() {
                            <tr key={g.id}>
                               {/* @ts-expect-error date to string doesn't work, bcs it is string*/}
                               <td> {g.period_start} </td>
-                              <td> {g.amount_cents} zł </td>
+                              <td>
+                                 {new Intl.NumberFormat("pl-PL", {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                 }).format(g.amount_cents / 100)}{" "}
+                                 zł
+                              </td>
                               <td>{g.product_name}</td>
                            </tr>
                         ))}
