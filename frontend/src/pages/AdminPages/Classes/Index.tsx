@@ -6,11 +6,11 @@ export default function Index() {
     return (
         <div className={global.app_container}>
             <div className={`flex ${styles.tiles}`}>
-                <LinkButton to="./pass-products" className={styles.tile}>
-                    Karnety
+                <LinkButton to="./groups" className={styles.tile}>
+                    Grupy
                 </LinkButton>
-                <LinkButton to="./payments" className={styles.tile}>
-                    Płatności
+                <LinkButton to="./sessions" className={styles.tile}>
+                    Sesje
                 </LinkButton>
             </div>
         </div>);

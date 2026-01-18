@@ -241,12 +241,12 @@ export default function ClassesList() {
                       </td>
                       <td>
                         <div className={styles.actions}>
-                            <Button className="link" onClick={() => navigate(`/studSubj/edit/${r.id}`)}>
+                          <Button className="link" onClick={() => navigate(`./edit/${r.id}`)}>
                             Edytuj
-                            </Button>
-                            <Button className="link" onClick={() => onDelete(r.id)}>
+                          </Button>
+                          <Button className="link" onClick={() => onDelete(r.id)}>
                             Usuń
-                            </Button>
+                          </Button>
                         </div>
                       </td>
                     </tr>
@@ -286,9 +286,9 @@ export default function ClassesList() {
 
           <div className="flex-1" />
 
-            <Button onClick={() => navigate("/studSubj/new")}>
+          <Button onClick={() => navigate("./new")}>
             Dodaj nowe zajęcie
-            </Button>
+          </Button>
         </div>
       </div>
     </div>

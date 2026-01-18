@@ -74,11 +74,9 @@ export default function ClassEdit() {
 
         setOpts({
           classTypes: [
-            { key: "", value: "", label: "Wybierz typ" },
             ...filters.class_types.map((ct: any) => ({ key: String(ct.id), value: String(ct.id), label: ct.name })),
           ],
           instructors: [
-            { key: "", value: "", label: "Wybierz instruktora" },
             ...filters.instructors.map((i: any) => ({
               key: String(i.id),
               value: String(i.id),
@@ -86,7 +84,6 @@ export default function ClassEdit() {
             })),
           ],
           locations: [
-            { key: "", value: "", label: "Wybierz studio" },
             ...filters.locations.map((l: any) => ({ key: String(l.pk), value: String(l.pk), label: l.name })),
           ],
         });
