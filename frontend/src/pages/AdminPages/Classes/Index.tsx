@@ -5,12 +5,15 @@ import global from "@/global.module.css";
 export default function Index() {
     return (
         <div className={global.app_container}>
-            <div className={`flex ${styles.tiles}`}>
+            <div className={`${styles.tiles}`}>
                 <LinkButton to="./groups" className={styles.tile}>
                     Grupy
                 </LinkButton>
                 <LinkButton to="./sessions" className={styles.tile}>
                     Sesje
+                </LinkButton>
+                <LinkButton to="./types" className={styles.tile}>
+                    Typy
                 </LinkButton>
             </div>
         </div>);

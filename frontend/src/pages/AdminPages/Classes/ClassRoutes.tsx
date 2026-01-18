@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
-import ClassesList from "./ClassesList";
-import ClassAdd from "./ClassAdd";
-import ClassEdit from "./ClassEdit";
+import ClassesList from "./sessions/ClassesList.tsx";
+import ClassAdd from "./sessions/ClassAdd.tsx";
+import ClassEdit from "./sessions/ClassEdit.tsx";
 import Index from "./Index.tsx";
 
 export default function AdminClassRoutes() {
