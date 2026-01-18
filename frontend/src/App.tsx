@@ -11,10 +11,11 @@ import AdminAccountRoutes from "./pages/AdminPages/Accounts/AccountRoutes.tsx";
 import InstructorClasses from "./pages/Classes/InstructorClasses.tsx";
 import InstructorClassParticipants from "./pages/Classes/InstructorClassParticipants.tsx";
 import AdminPaymentRoutes from "./pages/AdminPages/Payments/PaymentRoutes.tsx";
-import { Toaster } from 'react-hot-toast';
-import StudentAttendance from "./pages/Attendance/StudentAttendance.tsx";
+import { Toaster } from "react-hot-toast";
 import AdminClassRoutes from "./pages/AdminPages/Classes/ClassRoutes.tsx";
 import RequireRole from "./utils/auth/RequireRole";
+import StudentPayments from "./pages/StudentPages/Payments/StudentPayments.tsx";
+import StudentAttendance from "./pages/StudentPages/Attendance/StudentAttendance.tsx";
 
 export default function App() {
    const navigate = useNavigate();
@@ -39,9 +40,9 @@ export default function App() {
                <Route path="group-reg/*" element={<GroupRoutes />} />
                <Route
                   path="userManage/*"
-                     element={
-                        <RequireRole role="admin">
-                           <AdminAccountRoutes />
+                  element={
+                     <RequireRole role="admin">
+                        <AdminAccountRoutes />
                      </RequireRole>
                   }
                />
