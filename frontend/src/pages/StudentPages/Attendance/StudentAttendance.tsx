@@ -70,7 +70,7 @@ export default function StudentAttendance() {
                      {!tableLoading && rows.length === 0 && (
                         <tr>
                            <td colSpan={6} className={styles.emptyRow}>
-                              Brak wyników dla wybranych filtrów.
+                              Brak nieobecności.
                            </td>
                         </tr>
                      )}

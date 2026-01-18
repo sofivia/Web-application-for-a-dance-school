@@ -11,7 +11,7 @@ type NamedLink = [string, string];
 const links: Record<Role, NamedLink[]> = {
    student: [
       ["Dziennik obecności", "/attendance"],
-      ["Płatności", "/payments"],
+      ["Płatności", "/studPayments"],
       ["Zapisy na zajęcia", "/group-reg"],
    ],
    instructor: [["Grupy zajęciowe", "/classes"]],
