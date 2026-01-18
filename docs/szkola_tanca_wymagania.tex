@@ -123,7 +123,7 @@ Powyższe wymagania pociągają za sobą poniższe wymagania użytkownika.
 \wymaganie{U6}{Uczeń \textbf{musi} widzieć status swoich płatności}
 \wymaganie{U7}{Uczeń \textbf{musi} widzieć ile przysługuje mu odrobień.}
 \wymaganie{U8}{Dwaj uczniowie \textbf{muszą} móc mieć ten sam e-mail.}
-\wymaganie{U9}{Uczeń \textbf{musi} może usunąć swoje konto, prosząc o usunięcie jego danych z~systemu.}
+\wymaganie{U9}{Uczeń \textbf{musi} móc usunąć swoje konto, prosząc o usunięcie jego danych z~systemu.}
 
 \vspace{1em}
 \wymaganie{I1}{Instruktor \textbf{musi} móc odnotować obecność ucznia na zajęciach.}
@@ -270,5 +270,85 @@ lecz oczywiste jest, że aby je zrealizować, trzeba spełnić kilka wymagań ni
 
 \subsection{Potwierdzenie zgodności wymagań}
 \includegraphics[width=\textwidth]{resources/zatwierdzenie.png}
+
+
+\section{Specyfikacja testów}
+Aplikację testowaliśmy zgodnie ze scenariuszami, które wyniknęły z~przypadków użycia.
+Te testy były manualne i wykonywał je recenzent przed dopuszczeniem nowej
+zmiany do gałęzi głównej repozytorium. Przed prezentacją aplikacji ponownie
+upewniliśmy się, że wszystko działa.
+
+\subsection{Standardy jakości}
+Oprócz weryfikacji poprawności aplikacji w sensie logiki biznesowej powinnością
+recenzenta było, pilnowanie zgodności aplikacji z pewnymi standardami. Potrzebę
+spełnienia tych standardów narzucają wymagania \textbf{N1} i~\textbf{N3}.
+
+\paragraph{Urządzenia mobilne} Interfejs powinien działać również na wąskich ekranach.
+\paragraph{Dostępność} Interfejs nie powinien generować błędów związanych z~dostępnością,
+    np. niski kontrast, niepodpisane przyciski.
+
+
+\subsection{Testy jednostkowe}
+Aby wcześnie wykrywać nowopowstałe błędy oraz przyspieszyć proces testowania,
+oraz polepszyć strukturę kodu korzystaliśmy z testów jednostkowych.
+
+Użyliśmy ich zarówno na frontendzie, jak i na backendzie. Na backendzie testowaliśmy
+zachowanie endpointów. Przykładowo, poprawna prośba o zapisanie ucznia do grupy
+zajęciowej powinna skutkować pozytywną odpowiedzią serwera oraz utworzeniem
+odpowiednich wpisów w bazie danych.
+
+\subsubsection{Sytuacje wyjątkowe}
+Testy jednostkowe pozwalają również sprawdzić to, czego nie da się sprawdzić poprzez
+interfejs. W szczególności reakcję serwera na zapytanie złośliwie spreparowane
+z pominięciem interfejsu. Próba zarejestrowania do nieistniejącej grupy powinna
+skutkować komunikatem o niepowodzeniu, a nie błędem serwera.
+
+\subsubsection{Obsługa sytuacji wyjątkowych}
+Gdy zostanie wykryta sytuacja wyjątkowa, np. dane ucznia nie zawierają daty urodzenia,
+kod to wykrywa i zgłasza wyjątek. Serwer jest tak skonfigurowany, że ten błąd
+przekształca na odpowiedź, która mówi, co jest źle w którym polu formularza.
+
+Taki komunikat wyświetlamy na czerwono pod odpowiednim polem formularza.
+
+\subsubsection{Automatyczne testy interfejsu}
+Pisząc niektóre komponenty interfejsu, wspomogliśmy się testami jednostkowymi.
+Przetestowaliśmy między innymi czy motyw kolorystyczny interfejsu zapisuje się
+między sesjami oraz, czy przy pierwszej wizycie dostosowuje się do preferencji
+zapisanych w przeglądarce.
+
+\subsubsection{Miary jakości testów}
+Nie korzystaliśmy z miary pokrycia kodu testami. Uznaliśmy, że biorąc pod uwagę
+nasze niskie doświadczenie, mogłoby to doprowadzić do pisania testów „pod” pokrycie,
+a nie takich, które są użyteczne.
+
+
+\section{Wirtualizacja / konteneryzacja}
+Użyliśmy kontenerów dockerowych, które symulują środowisko wdrożeniowe, przybliżając
+je do programisty. Jednocześnie wymusza to, aby cała konfiguracja istotna z punktu
+widzenia wdrożenia była zawarta w repozytorium. Niweluje to szansę wystąpienia
+sytuacji, w~której to, że aplikacja działa, jest efektem jakiejś niejawnej
+specyfiki/konfiguracji komputera programisty.
+
+\section{Bezpieczeństwo}
+Bezpieczeństwo danych oparte jest na identyfikatorach sesji, które są
+tak zwanymi „secure cookies”. Serwer korzysta wyłącznie z połączeń szyfrowanych.
+Z tych powodów, poufność identyfikatora jest odporna na ataki XSS
+oraz man-in-the-middle. W praktyce pozostaje bezpieczeństwo hasła oraz
+złośliwe oprogramowanie, które mogło zainfekować przeglądarkę, ale to
+leży w gestii użytkownika.
+
+\subsection{Uprawnienia użytkowników}
+Każdy użytkownik ma przypisaną jedną z trzech ról: uczeń, instruktor albo admin.
+Jest jeszcze superadmin, ale może się on zalogować tylko z sieci prywatnej między
+kontenerami.
+
+Role są przydzielane do kont, a konto jest związane z identyfikatorem sesji, który
+otrzymuje użytkownik po zalogowaniu się, i który następnie służy do identyfikacji
+użytkownika. Tak więc, złamanie ról wymaga podszycia się pod użytkownika z daną
+rolą, co, jak wyjaśniliśmy powyżej, jest bardzo trudne, nie znając jego hasła.
+
+Role są wykorzystywane do określenia czy dany użytkownik ma dostęp do danej operacji.
+Np. tylko administrator może dodać grupę zajęciową, użytkownik ma dostęp jedynie
+do odczytu.
 
 \end{document}
