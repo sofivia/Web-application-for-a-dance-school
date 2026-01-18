@@ -11,6 +11,8 @@ import type { ReactInputWithLabelProps } from "@/components/forms/InputWithLabel
 import type { ReactSelectWithLabelProps } from "@/components/forms/SelectWithLabel";
 
 import { getClassFilters, getAdminSession, updateAdminSession } from "@/api";
+import { getErrors, handlePost2 } from "@/utils/apiutils";
+import type { Errors } from "@/components/forms/commons";
 
 type FormState = {
   class_type: string;
@@ -34,13 +36,13 @@ function toHHMM(iso: string): string {
   return `${m[1]}:${m[2]}`;
 }
 
-
 export default function ClassEdit() {
   const nav = useNavigate();
   const { id } = useParams<{ id: string }>();
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState<Errors>({});
 
   const [opts, setOpts] = useState<{
     classTypes: Option[];
@@ -170,8 +172,9 @@ export default function ClassEdit() {
     }
 
     setSaving(true);
+    setErrors({});
     try {
-      await updateAdminSession(id, {
+      await handlePost2(() => updateAdminSession(id, {
         class_type: Number(v.class_type),
         instructor: v.instructor,
         location: Number(v.location),
@@ -179,11 +182,10 @@ export default function ClassEdit() {
         start_time: v.start_time,
         end_time: v.end_time,
         notes: v.notes,
-      });
+      }));
       nav("/studSubj");
-    } catch (e) {
-      alert("Nie udało się zapisać zmian.");
-      console.error(e);
+    } catch (err: any) {
+      setErrors(getErrors(err));
     } finally {
       setSaving(false);
     }
@@ -199,19 +201,21 @@ export default function ClassEdit() {
 
   return (
     <div className={global.app_container}>
-        <div className={formstyles.panel} style={{ maxWidth: 980, width: "100%" }}>
-            <h1 className="text-base font-bold mb-4">Edytuj zajęcie</h1>
+      <div className={formstyles.panel} style={{ maxWidth: 980, width: "100%" }}>
+        <h1 className="text-base font-bold mb-4">Edytuj zajęcie</h1>
 
-            <div className="grid gap-6" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
-                <InputList fields={fields.slice(0, 3)} />
-                <InputList fields={fields.slice(3)} />
-            </div>
-
-            <div className="mt-5 flex gap-2 justify-end">
-                <Button onClick={onSubmit} disabled={saving}>Zapisz</Button>
-                <Button onClick={() => nav("/studSubj")} disabled={saving}>Anuluj</Button>
-            </div>
+        <div className="grid gap-6" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
+          <InputList fields={fields.slice(0, 3)} errors={errors} />
+          <InputList fields={fields.slice(3)} errors={errors} />
         </div>
+
+        {errors.global && <div className="mt-3 text-left" style={{ color: "var(--error)" }}>{errors.global}</div>}
+
+        <div className="mt-5 flex gap-2 justify-end">
+          <Button onClick={onSubmit} disabled={saving}>Zapisz</Button>
+          <Button onClick={() => nav("/studSubj")} disabled={saving}>Anuluj</Button>
+        </div>
+      </div>
     </div>
   );
 }

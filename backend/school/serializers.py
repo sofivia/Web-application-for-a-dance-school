@@ -1,5 +1,8 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+import datetime
+from django.utils import timezone
+from django.db.models import Q
 
 from .models import (
     Student,
@@ -321,5 +324,55 @@ class ClassSessionAdminWriteSerializer(serializers.Serializer):
 
     def validate(self, data):
         if data["end_time"] <= data["start_time"]:
-            raise serializers.ValidationError({"end_time": "Godzina zakończenia musi być po rozpoczęciu."})
+            raise serializers.ValidationError({
+                "end_time": ["Godzina zakończenia musi być po rozpoczęciu."]
+            })
+
+        tz = timezone.get_current_timezone()
+        starts_at = timezone.make_aware(
+            datetime.datetime.combine(data["date"], data["start_time"]),
+            tz
+        )
+        ends_at = timezone.make_aware(
+            datetime.datetime.combine(data["date"], data["end_time"]),
+            tz
+        )
+
+        now = timezone.now()
+        if starts_at < now:
+            raise serializers.ValidationError({
+                "date": ["Nie można dodać zajęć w przeszłości."]
+            })
+
+        qs = ClassSession.objects.select_related("group").all()
+
+        session_id = self.context.get("session_id")
+        if session_id:
+            qs = qs.exclude(pk=session_id)
+
+        overlap = Q(starts_at__lt=ends_at) & Q(ends_at__gt=starts_at)
+
+        if qs.filter(
+            overlap,
+            group__class_type_id=data["class_type"],
+            group__primary_instructor_id=data["instructor"],
+            group__location_id=data["location"],
+        ).exists():
+            raise serializers.ValidationError({
+                "date": ["Takie same zajęcia w tym terminie już istnieją."]
+            })
+
+        if qs.filter(overlap, group__location_id=data["location"]).exists():
+            raise serializers.ValidationError({
+                "location": ["Studio jest zajęte w tym terminie."]
+            })
+
+        if qs.filter(overlap).filter(
+            Q(group__primary_instructor_id=data["instructor"]) |
+            Q(substitute_instructor_id=data["instructor"])
+        ).exists():
+            raise serializers.ValidationError({
+                "instructor": ["Instruktor ma już inne zajęcia w tym terminie."]
+            })
+
         return data

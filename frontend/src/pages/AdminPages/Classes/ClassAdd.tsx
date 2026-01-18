@@ -11,6 +11,8 @@ import type { ReactInputWithLabelProps } from "@/components/forms/InputWithLabel
 import type { ReactSelectWithLabelProps } from "@/components/forms/SelectWithLabel";
 
 import { createAdminSession, getClassFilters } from "@/api";
+import { getErrors, handlePost2 } from "@/utils/apiutils";
+import type { Errors } from "@/components/forms/commons";
 
 export default function ClassAdd() {
   const nav = useNavigate();
@@ -32,6 +34,7 @@ export default function ClassAdd() {
   });
 
   const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState<Errors>({});
 
   useEffect(() => {
     (async () => {
@@ -107,17 +110,22 @@ export default function ClassAdd() {
       return;
     }
     setSaving(true);
+    setErrors({});
     try {
-      await createAdminSession({
-        class_type: Number(v.class_type),
-        instructor: v.instructor,
-        location: Number(v.location),
-        date: v.date,
-        start_time: v.start_time,
-        end_time: v.end_time,
-        notes: v.notes,
-      });
+      await handlePost2(() =>
+        createAdminSession({
+          class_type: Number(v.class_type),
+          instructor: v.instructor,
+          location: Number(v.location),
+          date: v.date,
+          start_time: v.start_time,
+          end_time: v.end_time,
+          notes: v.notes,
+        })
+      );
       nav("/studSubj");
+    } catch (err: any) {
+      setErrors(getErrors(err));
     } finally {
       setSaving(false);
     }
@@ -127,10 +135,14 @@ export default function ClassAdd() {
     <div className={global.app_container}>
       <div className={formstyles.panel} style={{ maxWidth: 980, width: "100%" }}>
         <h1 className="text-base font-bold mb-4">Dodaj nowe zajęcie</h1>
-            <div className="grid gap-6" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
-                <InputList fields={fields.slice(0, 3)} />
-                <InputList fields={fields.slice(3)} />
-            </div>
+
+        <div className="grid gap-6" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
+          <InputList fields={fields.slice(0, 3)} errors={errors} />
+          <InputList fields={fields.slice(3)} errors={errors} />
+        </div>
+
+        {errors.global && <div className="mt-3 text-left" style={{ color: "var(--error)" }}>{errors.global}</div>}
+
         <div className="mt-4 flex gap-2">
           <Button onClick={onSubmit} disabled={saving}>Zapisz</Button>
           <Button onClick={() => nav("/studSubj")} disabled={saving}>Anuluj</Button>
