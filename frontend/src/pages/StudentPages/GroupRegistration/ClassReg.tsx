@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import global from "@/global.module.css";
 import Button from "@/components/Button";
 import formstyles from "@/styles/forms.module.css";
-import { getClassFilters, getClassGroups, type ClassGroup } from "@/api";
+import { getClassFilters, getClassGroups, ClassGroupRead, type ClassesParams } from "@/api";
 import { useAuth } from "@/utils/auth/useAuth";
 import { getWeekday, getHour } from "@/utils/dateUtils";
 import { Link } from 'react-router-dom';
@@ -42,51 +42,54 @@ export default function ClassReg() {
     };
   }, [loading, isLoggedIn]);
 
-  const [classTypeId, setClassTypeId] = useState<string>("");
-  const [dateFrom, setDateFrom] = useState<string>("");
-  const [dateTo, setDateTo] = useState<string>("");
-  const [instructorId, setInstructorId] = useState<string>("");
-  const [studio, setStudio] = useState<string>("");
+  const [classTypeId, setClassTypeId] = useState("");
+  const [timeFrom, setTimeFrom] = useState("");
+  const [timeTo, setTimeTo] = useState("");
+  const [instructorId, setInstructorId] = useState("");
+  const [studio, setStudio] = useState("");
 
-  const [applied, setApplied] = useState({
-    class_type: "",
-    date_from: "",
-    date_to: "",
-    instructor: "",
-    studio: "",
+  const pageSize = 10;
+  const [page, setPage] = useState(1);
+
+  const [applied, setApplied] = useState<ClassesParams>({
+    page: page,
+    class_type: classTypeId || undefined,
+    starts_from: timeFrom || undefined,
+    ends_to: timeTo || undefined,
+    primary_instructor: instructorId || undefined,
+    location: studio || undefined,
+    is_active: true
   });
 
   const applyFilters = () => {
     setApplied({
+      page,
       class_type: classTypeId,
-      date_from: dateFrom,
-      date_to: dateTo,
-      instructor: instructorId,
-      studio,
+      starts_from: timeFrom,
+      ends_to: timeTo,
+      primary_instructor: instructorId,
+      location: studio
     });
     setPage(1);
   };
 
   const [tableLoading, setTableLoading] = useState(false);
-  const [rows, setRows] = useState<ClassGroup[]>([]);
+  const [rows, setRows] = useState<ClassGroupRead[]>([]);
   const [count, setCount] = useState(0);
-
-  const pageSize = 10;
-  const [page, setPage] = useState(1);
 
   const pageCount = Math.max(1, Math.ceil(count / pageSize));
 
   useEffect(() => {
-    async function loadTable(p: number, a = applied) {
+    async function loadTable(p: number) {
       setTableLoading(true);
       try {
         const res = await getClassGroups({
           page: p,
-          class_type: a.class_type || undefined,
-          primary_instructor: a.instructor || undefined,
-          location: a.studio || undefined,
-          date_from: a.date_from || undefined,
-          date_to: a.date_to || undefined,
+          class_type: applied.class_type,
+          primary_instructor: applied.primary_instructor,
+          location: applied.location,
+          starts_from: applied.starts_from ? `${applied.starts_from}:00` : undefined,
+          ends_to: applied.ends_to ? `${applied.ends_to}:00` : undefined,
         });
         setRows(res.results);
         setCount(res.count);
@@ -96,13 +99,13 @@ export default function ClassReg() {
     }
 
     if (loading || !isLoggedIn) return;
-    loadTable(page, applied);
+    loadTable(page);
   }, [loading, isLoggedIn, applied, page]);
 
   const optionsTyp: Option[] = classTypes.map(t => ({ key: t.id, value: t.id, label: `${t.name}${t.level ? ` — ${t.level}` : ""}` }));
 
-  const dateFromValues: InputValues = { value: dateFrom, setValue: e => setDateFrom(e.target.value) };
-  const dateToValues: InputValues = { value: dateTo, setValue: e => setDateTo(e.target.value) };
+  const timeFromValues: InputValues = { value: timeFrom, setValue: e => setTimeFrom(e.target.value) };
+  const timeToValues: InputValues = { value: timeTo, setValue: e => setTimeTo(e.target.value) };
 
   const optionsInstructor: Option[] = instructors.map(t => ({ key: t.id, value: t.id, label: `${t.first_name} ${t.last_name}` }));
 
@@ -120,16 +123,16 @@ export default function ClassReg() {
           <div className="text-left">
             <label className="block mb-1"> Czas trwania </label>
             <div className="text-nowrap">
-              <Input name="time_from" kind='input-react' type="time" label="początek od:" values={dateFromValues} fClassName="inline-block mx-2" />
-              <Input name="time_to" kind='input-react' type="time" label="koniec do:" values={dateToValues} fClassName="inline-block mx-2" />
+              <Input name="time_from" kind='input-react' type="time" label="początek od:" values={timeFromValues} fClassName="inline-block mx-2" />
+              <Input name="time_to" kind='input-react' type="time" label="koniec do:" values={timeToValues} fClassName="inline-block mx-2" />
             </div>
           </div>
 
           <Select name="instructor_id" kind='select-react' label="Prowadzący" prompt="Wybierz prowadzącego" options={optionsInstructor}
-            values={{ value: "", setValue: e => setInstructorId(e.target.value) }} />
+            values={{ value: instructorId, setValue: e => setInstructorId(e.target.value) }} />
 
           <Select name="location_id" kind='select-react' label="Studia" prompt="Wybierz studio" options={optionsLocation}
-            values={{ value: "", setValue: e => setStudio(e.target.value) }} />
+            values={{ value: studio, setValue: e => setStudio(e.target.value) }} />
 
           <Button onClick={applyFilters} className={styles.filterBtn} disabled={filtersLoading}>
             Filtruj
@@ -156,7 +159,7 @@ export default function ClassReg() {
                     </td>
                     <td> {g.nr_enrolled} / {g.effective_capacity} </td>
                     <td>
-                      <Link to={`${g.pk}`} className={formstyles.link}>
+                      <Link to={`${g.pk}`} className="link">
                         Szczegóły
                       </Link>
                     </td>

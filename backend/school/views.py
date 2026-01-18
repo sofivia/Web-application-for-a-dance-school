@@ -345,22 +345,22 @@ class UnenrollView(APIView):
         return Response({"ok": True}, status=status.HTTP_200_OK)
 
 
-class ProductFilter2(django_filters.FilterSet):
-    starts_from = django_filters.DateFilter(field_name="starts_at",
+class GroupFilter(django_filters.FilterSet):
+    starts_from = django_filters.TimeFilter(field_name="start_time",
                                             lookup_expr='gte')
-    ends_to = django_filters.DateFilter(field_name="ends_at",
+    ends_to = django_filters.TimeFilter(field_name="end_time",
                                         lookup_expr='lte')
 
     class Meta:
         model = ClassGroup
-        fields = ["location", "primary_instructor"]
+        fields = ["location", "primary_instructor", "is_active"]
 
 
 class ClassGroupView(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrStudentReadOnly]
     queryset = ClassGroup.objects.all().select_related("location")
     pagination_class = utils.StandardPagination
-    filterset_class = ProductFilter2
+    filterset_class = GroupFilter
 
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:

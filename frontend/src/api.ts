@@ -259,13 +259,16 @@ export async function getClassFilters(): Promise<ClassFilters> {
    return res.data as ClassFilters;
 }
 
-type ClassesParams = {
+export type ClassesParams = {
    page: number;
    class_type?: string;
    primary_instructor?: string;
    location?: string;
    date_from?: string;
    date_to?: string;
+   starts_from?: string;
+   ends_to?: string;
+   is_active?: boolean;
 };
 
 export async function getClasses(params: ClassesParams): Promise<{ count: number; results: ClassSessionRow[] }> {
@@ -281,29 +284,48 @@ export async function unenroll(groupId: string | number) {
    return api.post("/api/school/unenroll/", { group_id: groupId });
 }
 
-export type ClassGroup = {
-   pk: string;
-   name: string;
-   primary_instructor: { id: string; first_name: string; last_name: string };
-   weekday: number;
-   start_time: string;
-   end_time: string;
-   location: { pk: string; name: string };
-   nr_enrolled: number;
-   effective_capacity: number;
-   start_date: string;
-   end_date: string;
-   is_enrolled: boolean;
+export class InstructorMini {
+   id!: string;
+   first_name!: string;
+   last_name!: string;
+}
+
+export class Location {
+   pk!: string;
+   name!: string;
+}
+
+export class ClassGroupRead {
+   pk!: string;
+   name!: string;
+   @Type(() => InstructorMini) primary_instructor!: InstructorMini;
+   weekday!: number;
+   start_time!: string;
+   end_time!: string;
+   location!: { pk: string; name: string };
+   nr_enrolled!: number;
+   effective_capacity!: number;
+   @Type(() => Date) start_date!: Date;
+   @Type(() => Date) end_date!: Date;
+   is_active!: boolean;
+   is_enrolled!: boolean;
 };
+
+export class ClassGroupReadPage {
+   count!: number;
+   previous!: string | null;
+   next!: string | null;
+   @Type(() => ClassGroupRead) results!: ClassGroupRead[];
+}
 
 export async function getClassGroups(params: ClassesParams) {
    const resp = await api.get("/api/school/classgroups/", { params });
-   return resp.data as { count: number; results: ClassGroup[] };
+   return plainToInstance(ClassGroupReadPage, resp.data);
 }
 
 export async function getClassGroup(id: string) {
    const resp = await api.get(`/api/school/classgroups/${id}/`);
-   return resp.data as ClassGroup;
+   return plainToInstance(ClassGroupRead, resp.data);
 }
 
 export class AccountView {
@@ -400,22 +422,10 @@ export async function getAttendanceRecords(params: { page: number }) {
 
 // --- Classes / Filters (dla instruktora) ---
 
-export interface Location {
-   id: number;
-   name: string;
-   address?: string;
-}
-
 export interface ClassTypeMini {
    id: number;
    name: string;
    level?: string;
-}
-
-export interface InstructorMini {
-   id: number;
-   first_name: string;
-   last_name: string;
 }
 
 export async function listClassSessions(params?: Record<string, any>): Promise<ClassSessionRow[]> {

@@ -184,6 +184,7 @@ class ClassGroupReadSerializer(serializers.ModelSerializer):
             "nr_enrolled",
             "start_date",
             "end_date",
+            "is_active",
             "is_enrolled",
         )
         read_only_fields = fields

@@ -1,0 +1,18 @@
+.inactive {
+    color: var(--text);
+}
+
+.addItem {
+    border: 3px dashed var(--main);
+    border-radius: 10px;
+}
+
+.itemName {
+    display: block;
+    font-weight: 700;
+    font-size: 36px;
+}
+
+.itemName:hover {
+    text-decoration: underline;
+}

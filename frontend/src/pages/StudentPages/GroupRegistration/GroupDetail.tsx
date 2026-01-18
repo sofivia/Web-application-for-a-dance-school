@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from "react-router"
-import { getClassGroup, type ClassGroup } from "@/api";
+import { getClassGroup, ClassGroupRead } from "@/api";
 import { getWeekday, getHour } from '@/utils/dateUtils';
 import Button from '@/components/Button';
 import { enroll, unenroll } from "@/api";
@@ -12,7 +12,7 @@ import liststyles from "@/styles/list.module.css"
 export default function GroupDetail() {
     const { id } = useParams();
 
-    const [group, setGroup] = useState<ClassGroup>();
+    const [group, setGroup] = useState<ClassGroupRead>();
 
 
     const fetchClassGroup = useCallback(async () => {

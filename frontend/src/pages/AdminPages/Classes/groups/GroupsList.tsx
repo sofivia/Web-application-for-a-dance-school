@@ -1,4 +1,4 @@
-import { passProductAPI, type Page, type PassProduct } from "@/api";
+import { getClassGroups, type Page, ClassGroupRead } from "@/api";
 import Loading from "@/components/Loading";
 import Table from "@/components/Table";
 import type { TableRow } from "@/components/Table";
@@ -8,32 +8,31 @@ import { Link } from "react-router";
 import Pager from "@/components/Pager";
 
 
-export default function AccountsList() {
+export default function Groups() {
     return (
         <Pager>
             {(page, setPrev, setNext, _) => {
                 const load = async () => {
-                    const data = await passProductAPI.getMany(page);
+                    const data = await getClassGroups({ page });
                     setPrev(data.previous != null);
                     setNext(data.next != null);
                     return data;
                 }
                 return (
                     <div className="w-100 px-5 row-2 mb-5">
-                        <Loading<Page<PassProduct>> load={load}>
-                            {(data: Page<PassProduct>) => {
+                        <Loading<Page<ClassGroupRead>> load={load}>
+                            {(data: Page<ClassGroupRead>) => {
                                 const rows: TableRow[][] = data.results.map(p => [
-                                    { key: "pk", fields: ["PK", p.id ?? "-"] },
-                                    { key: "price_cents", fields: ["Cena", `${p.price_cents / 100} zł`] },
-                                    { key: "descripton", fields: ["Opis", p.description ?? "-"] },
+                                    { key: "pk", fields: ["PK", p.pk] },
+
                                 ]);
                                 return <>
                                     {rows.map((r, i) => {
-                                        const passProduct = data.results[i];
+                                        const group = data.results[i];
                                         return (<div key={i} className="text-left mb-5">
-                                            <Link to={`./${passProduct.id}/edit`}
-                                                className={`mb-1 link ${styles.itemName} ${!passProduct.is_active ? styles.inactive : ""}`}>
-                                                {passProduct.name}
+                                            <Link to={`./${group.pk}/edit`}
+                                                className={`mb-1 link ${styles.itemName} ${!group.is_active ? styles.inactive : ""}`}>
+                                                {group.name}
                                             </Link>
                                             <Table rows={r} className={`${tablestyles.simpleTable}`} />
                                         </div >)
