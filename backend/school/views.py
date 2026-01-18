@@ -52,6 +52,7 @@ from .serializers import (
     AttendanceSavePayloadSerializer,
     ClassSessionAdminReadSerializer,
     ClassSessionAdminWriteSerializer,
+    ClassTypeSerializer,
 )
 
 User = get_user_model()
@@ -766,3 +767,15 @@ class AdminClassSessionViewSet(viewsets.ModelViewSet):
         session.save()
 
         return Response(ClassSessionAdminReadSerializer(session).data, status=status.HTTP_200_OK)
+
+
+class ClassTypeView(viewsets.ModelViewSet):
+    serializer_class = ClassTypeSerializer
+    permission_classes = [IsAdmin]
+    queryset = ClassType.objects.all()
+
+
+class LocationViewSet(viewsets.ModelViewSet):
+    serializer_class = LocationSerializer
+    permission_classes = [IsAdmin]
+    queryset = Location.objects.all()

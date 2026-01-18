@@ -87,18 +87,26 @@ export type AccountData = {
 };
 
 export function transformAccount(account: AccountView) {
-   const [instructor, student] = [account.instructorInfo, account.studentInfo];
-   return {
-      pk: account.pk,
-      first_name: instructor?.first_name ?? student?.first_name ?? "",
-      last_name: instructor?.last_name ?? student?.last_name ?? "",
-      phone: instructor?.phone ?? student?.phone ?? "",
-      email: account.email,
-      role: account.role,
-      short_bio: instructor?.short_bio ?? "",
-      is_active: account.is_active,
-      date_of_birth: student?.date_of_birth ?? null,
-      pass_product_id: student?.pass_product?.id ?? null,
-      pass_product_name: student?.pass_product?.name ?? null,
-   } as AccountData;
+  const [instructor, student] = [account.instructorInfo, account.studentInfo];
+  return {
+    pk: account.pk,
+    first_name: instructor?.first_name ?? student?.first_name ?? "",
+    last_name: instructor?.last_name ?? student?.last_name ?? "",
+    phone: instructor?.phone ?? student?.phone ?? "",
+    email: account.email,
+    role: account.role,
+    short_bio: instructor?.short_bio ?? "",
+    is_active: account.is_active,
+    date_of_birth: student?.date_of_birth ?? null
+  } as AccountData;
 }
+
+export const weekdays = [
+  { key: '1', label: "poniedziałek", value: '1' },
+  { key: '2', label: "wtorek", value: '2' },
+  { key: '3', label: "środa", value: '3' },
+  { key: '4', label: "czwartek", value: '4' },
+  { key: '5', label: "piątek", value: '5' },
+  { key: '6', label: "sobota", value: '6' },
+  { key: '7', label: "niedziela", value: '7' },
+];

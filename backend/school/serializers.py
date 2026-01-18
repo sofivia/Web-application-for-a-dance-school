@@ -56,13 +56,15 @@ class StudentInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Student
-        fields = ("first_name", "last_name", "date_of_birth", "phone", "pass_product")
+        fields = ("id", "first_name", "last_name", "date_of_birth", "phone")
+        read_only_fields = ("id",)
 
 
 class InstructorInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Instructor
-        fields = ("first_name", "last_name", "short_bio", "phone")
+        fields = ("id", "first_name", "last_name", "short_bio", "phone")
+        read_only_fields = ("id",)
 
 
 class AccountViewSerializer(serializers.ModelSerializer):
@@ -191,6 +193,10 @@ class ClassGroupReadSerializer(serializers.ModelSerializer):
 
 
 class ClassGroupWriteSerializer(serializers.ModelSerializer):
+    primary_instructor = serializers.PrimaryKeyRelatedField(
+        queryset=Instructor.objects.filter(is_active=True)
+    )
+
     class Meta:
         model = ClassGroup
         fields = (
@@ -386,3 +392,11 @@ class ClassSessionAdminWriteSerializer(serializers.Serializer):
             })
 
         return data
+
+
+class ClassTypeSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = ClassType
+        fields = ("id", "name", "level", "duration_minutes", "default_capacity", "is_active")

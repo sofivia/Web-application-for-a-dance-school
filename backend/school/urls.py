@@ -14,7 +14,9 @@ from .views import (
     AccountViewSet,
     StudentAttendanceListView,
     ClassSessionParticipantsView,
-    AdminClassSessionViewSet
+    AdminClassSessionViewSet,
+    ClassTypeView,
+    LocationViewSet
 )
 
 app_name = "school"
@@ -22,6 +24,8 @@ router = DefaultRouter()
 router.register('classgroups', ClassGroupView, basename='classgroup')
 router.register('accounts', AccountViewSet, basename='account')
 router.register("admin-sessions", AdminClassSessionViewSet, basename="admin-sessions")
+router.register("class-types", ClassTypeView, basename="class-type")
+router.register("locations", LocationViewSet, basename="location")
 
 urlpatterns = [
     path("students/", StudentView.as_view(), name="students"),

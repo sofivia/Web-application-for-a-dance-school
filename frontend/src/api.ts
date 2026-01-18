@@ -27,6 +27,7 @@ export interface AuthUser {
 }
 
 export class Student {
+   id?: string;
    first_name!: string;
    last_name!: string;
 
@@ -38,6 +39,7 @@ export class Student {
 }
 
 export class Instructor {
+   id?: string;
    first_name!: string;
    last_name!: string;
    short_bio!: string;
@@ -299,6 +301,11 @@ export class Location {
    name!: string;
 }
 
+export async function getLocations() {
+   const resp = await api.get("/api/school/locations/");
+   return resp.data as Location[];
+}
+
 export class ClassGroupRead {
    pk!: string;
    name!: string;
@@ -330,6 +337,45 @@ export async function getClassGroups(params: ClassesParams) {
 export async function getClassGroup(id: string) {
    const resp = await api.get(`/api/school/classgroups/${id}/`);
    return plainToInstance(ClassGroupRead, resp.data);
+}
+
+export class ClassGroupWrite {
+   name?: string;
+   class_type?: string;
+   primary_instructor?: string;
+   weekday?: number;
+   start_time?: string;
+   end_time?: string;
+   location?: string;
+   capacity?: string;
+   @Type(() => Date) start_date?: Date;
+   @Type(() => Date) end_date?: Date;
+   is_active?: boolean;
+};
+
+export async function createClassGroup(group: ClassGroupWrite) {
+   const resp = await api.post(`/api/school/classgroups/`, instanceToPlain(group));
+   return resp.data;
+}
+
+export async function editClassGroup(id: string, group: ClassGroupWrite) {
+   const resp = await api.patch(`/api/school/classgroups/${id}`, instanceToPlain(group));
+   return resp.data;
+}
+
+export class ClassTypeRead {
+   id!: string;
+   name!: string;
+   level!: string;
+   description!: string;
+   duration_minutes!: number;
+   default_capacity!: number;
+   is_active!: boolean;
+}
+
+export async function getClassTypes() : Promise<ClassTypeRead[]> {
+   const resp = await api.get(`/api/school/class-types/`);
+   return resp.data.map((t: any) => plainToInstance(ClassTypeRead, t));
 }
 
 export class AccountView {
