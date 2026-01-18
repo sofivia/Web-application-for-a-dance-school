@@ -1,7 +1,7 @@
 import axios, { type AxiosError, type AxiosRequestConfig } from "axios";
 import { Type, plainToInstance, Transform, instanceToPlain } from 'class-transformer';
 
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+const API_URL = import.meta.env.VITE_API_URL ?? "https://localhost";
 
 const ACCESS_TOKEN_KEY = "accessToken";
 const REFRESH_TOKEN_KEY = "refreshToken";
