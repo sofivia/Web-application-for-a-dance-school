@@ -712,7 +712,7 @@ class AdminClassSessionViewSet(viewsets.ModelViewSet):
             return group
 
         return ClassGroup.objects.create(
-            name=f"{class_type.name} {date}",
+            name=f"{class_type.name}",
             class_type=class_type,
             primary_instructor=instructor,
             weekday=weekday,
@@ -749,7 +749,7 @@ class AdminClassSessionViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         session = self.get_object()
-        s = ClassSessionAdminWriteSerializer(data=request.data)
+        s = ClassSessionAdminWriteSerializer(data=request.data, context={"session_id": session.pk})
         s.is_valid(raise_exception=True)
         d = s.validated_data
 
