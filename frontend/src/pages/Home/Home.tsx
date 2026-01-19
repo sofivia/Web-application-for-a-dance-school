@@ -56,19 +56,18 @@ export default function Home() {
 
    if (roles.includes("admin")) {
       return (
-            <div className={global.app_container}>
-               <div className={styles.app_panel}>
-                  <Logo className={`${styles.logo} mb-3`} aria-label="Logo TipTap" />
-               </div>
+         <div className={global.app_container}>
+            <div className={styles.app_panel}>
+               <Logo className={`${styles.logo} mb-3`} aria-label="Logo TipTap" />
             </div>
-         );
-      }
+         </div>
+      );
+   }
 
    return (
       <div className={global.app_container}>
          <div className={styles.app_panel}>
             <Logo className={`${styles.logo} mb-3`} aria-label="Logo TipTap" />
-            <div className="opacity-80">Panel dla tej roli jest jeszcze w przygotowaniu.</div>
          </div>
          <div className={styles.footer}></div>
       </div>

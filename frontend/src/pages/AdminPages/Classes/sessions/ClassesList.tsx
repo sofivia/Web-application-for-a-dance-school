@@ -78,7 +78,7 @@ export default function ClassesList() {
     try {
       await deleteAdminSession(id);
       setFilterTick((v) => !v);
-    } catch (e) {
+    } catch {
       alert("Nie udało się usunąć zajęcia.");
     }
   };
