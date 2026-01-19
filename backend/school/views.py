@@ -362,6 +362,7 @@ class ClassGroupView(viewsets.ModelViewSet):
     queryset = ClassGroup.objects.all().select_related("location")
     pagination_class = utils.StandardPagination
     filterset_class = GroupFilter
+    http_method_names = ["get", "post", "options", "delete", "patch"]
 
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:

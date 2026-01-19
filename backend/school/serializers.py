@@ -5,6 +5,8 @@ from rest_framework import serializers
 import datetime
 from django.utils import timezone
 from django.db.models import Q
+from django.db import transaction
+from .services import weekdays
 
 from .models import (
     Student,
@@ -212,6 +214,28 @@ class ClassGroupWriteSerializer(serializers.ModelSerializer):
             "end_date",
             "is_active",
         )
+
+    @transaction.atomic
+    def create(self, validated_data):
+        group = super().create(validated_data)
+        self._create_sessions(group, group.start_date, group.end_date)
+        return group
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        group = super().update(instance, validated_data)
+        now = datetime.datetime.now()
+        ClassSession.objects.filter(group=group, starts_at__gte=now).delete()
+        self._create_sessions(group, now.date(), group.end_date)
+        return group
+
+    def _create_sessions(self, group, start_date, end_date):
+        dates = weekdays(group.weekday, start_date, end_date)
+        dates_from = [datetime.datetime.combine(d, group.start_time) for d in dates]
+        dates_to = [datetime.datetime.combine(d, group.end_time) for d in dates]
+        for f, t in zip(dates_from, dates_to):
+            ClassSession.objects.create(group=group, starts_at=f, ends_at=t,
+                                        status=ClassSession.Status.PLANNED)
 
 
 class AdminStudentDataSerializer(serializers.Serializer):

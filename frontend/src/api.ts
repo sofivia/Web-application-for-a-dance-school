@@ -354,7 +354,7 @@ export async function createClassGroup(group: ClassGroupWrite) {
 }
 
 export async function editClassGroup(id: string, group: ClassGroupWrite) {
-   const resp = await api.patch(`/api/school/classgroups/${id}`, instanceToPlain(group));
+   const resp = await api.patch(`/api/school/classgroups/${id}/`, instanceToPlain(group));
    return resp.data;
 }
 
@@ -366,7 +366,7 @@ export class Delete {
    }
 
    public async do(id: string) {
-      const resp = await api.delete(`${this.root}/${id}`);
+      const resp = await api.delete(`${this.root}/${id}/`);
       return resp.data;
    }
 }
@@ -414,7 +414,7 @@ export class Patch<T> {
 
 
 export const getClassGroup = new Get<ClassGroupRead>("/api/school/classgroups", ClassGroupRead);
-export const deleteClassGroup = new Delete("/api/schoold/classgroups");
+export const deleteClassGroup = new Delete("/api/school/classgroups");
 
 export class ClassTypeRead {
    id!: string;
