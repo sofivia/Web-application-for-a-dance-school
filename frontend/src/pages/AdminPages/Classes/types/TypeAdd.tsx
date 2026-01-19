@@ -16,7 +16,7 @@ export default function GroupTypeAdd() {
     return (
         <div className={globals.app_container}>
             <div className="flex flex-col gap-3 w-full max-w-150 px-2">
-                <Loading<ClassTypeRead | undefined> load={() => id ? getClassType.do(id) : new Promise(() => undefined)}>
+                <Loading<ClassTypeRead | undefined> load={() => id ? getClassType.do(id) : Promise.resolve(undefined)}>
                     {(ctype?: ClassTypeRead) => {
                         const fields: GeneralInput[] = [
                             { name: "name", label: "Nazwa", defaultValue: ctype?.name, kind: "input-classic" } as ClassicInputProps,

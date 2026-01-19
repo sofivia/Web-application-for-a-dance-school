@@ -24,6 +24,7 @@ export default function AdminClassRoutes() {
       <Route path="types" element={<GroupTypeList />} />
       <Route path="types/:id" element={<GroupTypeDetails />} />
       <Route path="types/:id/edit" element={<GroupTypeAdd />} />
+      <Route path="types/add" element={<GroupTypeAdd />} />
     </Routes>
   );
 }

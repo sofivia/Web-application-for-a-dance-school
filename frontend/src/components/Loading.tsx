@@ -12,12 +12,13 @@ export default function Loading<T>(props: Props<T>) {
 
     async function doLoad() {
         setData(await props.load())
+        console.log("hello")
     }
     useEffect(() => {
         doLoad();
     }, [load])
 
-    if (!data)
+    if (data === null)
         return loadingNode ?? <> Ładowanie </>;
     else
         return children(data, doLoad);
