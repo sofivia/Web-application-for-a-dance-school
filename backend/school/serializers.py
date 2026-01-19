@@ -423,4 +423,4 @@ class ClassTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ClassType
-        fields = ("id", "name", "level", "duration_minutes", "default_capacity", "is_active")
+        fields = ("id", "name", "level", "description", "duration_minutes", "default_capacity", "is_active")
