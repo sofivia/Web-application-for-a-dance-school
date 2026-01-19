@@ -1,154 +1,237 @@
-
 Table account {
   id                 uuid [pk]
-  email              varchar(50)
-  auth_provider      varchar(50)
-  external_id        varchar(50)
+  email              varchar(254) [unique]
+
+  password           varchar(128)
+  last_login         timestamp [null]
+  is_superuser       boolean
+
   is_active          boolean
-  email_verified_at  timestamp
+  is_staff           boolean
+
+  auth_provider      varchar(50)
+  external_id        varchar(255)
+  email_verified_at  timestamp [null]
+
   created_at         timestamp
+  updated_at         timestamp
 
   indexes {
-    (email) [unique]
-    (auth_provider, external_id) [unique]
+    (auth_provider, external_id)
   }
 }
 
 Table role {
-  id   int [pk]
-  name varchar(32)
+  id          bigint [pk, increment]
+  code        varchar(50) [unique]
+  name        varchar(100)
+  description text
+  is_active   boolean
 }
 
 Table account_role {
-  account_id uuid [ref: > account.id]
-  role_id    int  [ref: > role.id]
+  id         bigint [pk, increment]
+  account_id uuid   [ref: > account.id]
+  role_id    bigint [ref: > role.id]
 
   indexes { (account_id, role_id) [unique] }
-}
-
-Table student {
-  id            uuid [pk]
-  account_id    uuid [ref: > account.id]
-  first_name    varchar(50)
-  last_name     varchar(50)
-  contact_email varchar(50)
-  phone         varchar(30)
-  is_active     boolean
-  created_at    timestamp
-}
-
-Table instructor {
-  id         uuid [pk]
-  account_id uuid [ref: > account.id]
-  first_name varchar(50)
-  last_name  varchar(50)
-  created_at timestamp
 }
 
 Table email_verification {
   id          uuid [pk]
   account_id  uuid [ref: > account.id]
-  token       varchar(128)
-  sent_at     timestamp
-  verified_at timestamp
 
-  indexes { (token) [unique] }
+  token       varchar(255) [unique]
+  token_type  varchar(32)
+
+  created_at  timestamp
+  sent_at     timestamp [null]
+  used_at     timestamp [null]
+  expires_at  timestamp [null]
 }
 
 Table deletion_request {
   id           uuid [pk]
-  student_id   uuid [ref: > student.id]
-  requested_at timestamp
-  processed_at timestamp
+  account_id   uuid [ref: > account.id]
+
   status       varchar(20)
+  reason       text
+
+  requested_at timestamp
+  confirmed_at timestamp [null]
+  processed_at timestamp [null]
 }
 
+Table student {
+  id             uuid [pk]
+  account_id     uuid [ref: > account.id, unique, null]
+
+  first_name     varchar(100)
+  last_name      varchar(100)
+
+  date_of_birth  date [null]
+  phone          varchar(50)
+  notes          text
+
+  pass_product_id uuid [ref: > pass_product.id, unique, null]
+
+  is_active      boolean
+  created_at     timestamp
+  updated_at     timestamp
+}
+
+Table instructor {
+  id         uuid [pk]
+  account_id uuid [ref: > account.id, unique]
+
+  first_name varchar(100)
+  last_name  varchar(100)
+
+  phone      varchar(50)
+  short_bio  text
+
+  is_active  boolean
+  created_at timestamp
+  updated_at timestamp
+}
 
 Table class_type {
-  id   uuid [pk]
-  name varchar(50)
+  id               bigint [pk, increment]
+  name             varchar(100) [unique]
+  level            varchar(50)
+  description      text
+  duration_minutes int
+  default_capacity int
+  is_active        boolean
+  created_at       timestamp
+  updated_at       timestamp
+}
+
+Table location {
+  id   bigint [pk, increment]
+  name varchar(100)
 }
 
 Table class_group {
-  id            uuid [pk]
-  class_type_id uuid [ref: > class_type.id]
-  instructor_id uuid [ref: > instructor.id]
-  weekday       int
-  start_time    time
-  end_time      time
-  location      varchar(100)
-  capacity      int
-  is_active     boolean
+  id                     bigint [pk, increment]
+  name                   varchar(100)
+
+  class_type_id          bigint [ref: > class_type.id]
+  primary_instructor_id  uuid   [ref: > instructor.id]
+
+  weekday                int
+  start_time             time
+  end_time               time
+
+  location_id            bigint [ref: > location.id]
+
+  capacity               int [null]
+  start_date             date [null]
+  end_date               date [null]
+
+  is_active              boolean
+  created_at             timestamp
+  updated_at             timestamp
 }
 
 Table class_session {
-  id        uuid [pk]
-  group_id  uuid [ref: > class_group.id]
+  id        bigint [pk, increment]
+  group_id  bigint [ref: > class_group.id]
+
   starts_at timestamp
   ends_at   timestamp
   status    varchar(20)
+
+  substitute_instructor_id uuid [ref: > instructor.id, null]
+  notes      text
+
+  created_at timestamp
+  updated_at timestamp
 }
 
 Table enrollment {
-  id          uuid [pk]
-  student_id  uuid [ref: > student.id]
-  group_id    uuid [ref: > class_group.id]
-  status      varchar(20)
-  enrolled_at timestamp
+  id           bigint [pk, increment]
+  student_id   uuid   [ref: > student.id]
+  group_id     bigint [ref: > class_group.id]
+
+  status       varchar(20)
+
+  enrolled_at  timestamp
+  cancelled_at timestamp [null]
+  notes        text
 
   indexes { (student_id, group_id) [unique] }
 }
 
 Table waitlist_entry {
-  id         uuid [pk]
-  student_id uuid [ref: > student.id]
-  group_id   uuid [ref: > class_group.id]
-  created_at timestamp
-  status     varchar(20)
+  id         bigint [pk, increment]
+  student_id uuid   [ref: > student.id]
+  group_id   bigint [ref: > class_group.id]
 
-  indexes { (student_id, group_id) [unique] }
-  indexes { (group_id, created_at) }
+  status     varchar(20)
+  position   int [null]
+
+  created_at timestamp
+  updated_at timestamp
 }
 
 Table attendance_record {
-  id                  uuid [pk]
-  session_id          uuid [ref: > class_session.id]
-  student_id          uuid [ref: > student.id]
-  status              varchar(20)
-  marked_by_instr_id  uuid [ref: > instructor.id]
-  marked_at           timestamp
+  id           bigint [pk, increment]
+  session_id   bigint [ref: > class_session.id]
+  student_id   uuid   [ref: > student.id]
+
+  status       varchar(20)
+
+  marked_by_id uuid [ref: > account.id, null]
+
+  marked_at    timestamp
+  updated_at   timestamp
+  note         text
 
   indexes { (session_id, student_id) [unique] }
 }
 
+Table group_message {
+  id          uuid [pk]
+  group_id    bigint [ref: > class_group.id]
+
+  sent_by_id  uuid [ref: > account.id, null]
+
+  subject     varchar(200)
+  body        text
+  sent_at     timestamp
+}
+
 Table pass_product {
-  id              uuid [pk]
-  name            varchar(100)      
-  description     text
-  sessions_per_week int              
-  price_cents     int
-  billing_period  varchar(20)       
-  is_active       boolean
+  id          uuid [pk]
+  name        varchar(120)
+  description text
+
+  price_cents int
+
+  is_active   boolean
+  created_at  timestamp
+  updated_at  timestamp
 }
 
-Table pass_instance {
-  id               uuid [pk]
-  student_id       uuid [ref: > student.id]
-  product_id       uuid [ref: > pass_product.id]
-  month_for        date              
-  paid_at          timestamp       
-  payment_due      date              
-  amount_cents     int
-  discount_cents   int              
-  recorded_by_acc  uuid [ref: > account.id]
+Table purchase {
+  id             uuid [pk]
+  student_id     uuid [ref: > student.id]
+  product_id     uuid [ref: > pass_product.id]
+
+  amount_cents   int
+  status         varchar(20)
+
+  paid_at        timestamp [null]
+  method         varchar(20) [null]
+
+  period_start   date
+  period_end     date
+
+  recorded_by_id uuid [ref: > account.id, null]
+
+  created_at     timestamp
+  updated_at     timestamp
+
+  indexes { (student_id, period_start) [unique] }
 }
-
-Table pass_usage {
-  id               uuid [pk]
-  pass_instance_id uuid [ref: > pass_instance.id]
-  session_id       uuid [ref: > class_session.id]
-  used_at          timestamp
-}
-
-
-
