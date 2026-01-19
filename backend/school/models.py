@@ -21,11 +21,12 @@ class Student(models.Model):
     phone = models.CharField(max_length=50, blank=True)
     notes = models.TextField(blank=True)
 
-    pass_product = models.OneToOneField(
+    pass_product = models.ForeignKey(
         "billing.PassProduct",
         null=True,
         blank=True,
         on_delete=models.PROTECT,
+        related_name="students"
     )
 
     is_active = models.BooleanField(default=True)

@@ -1,4 +1,6 @@
+from django.apps import apps
 from django.contrib.auth import get_user_model
+from billing.serializers import PassProductSerializer
 from rest_framework import serializers
 import datetime
 from django.utils import timezone
@@ -50,9 +52,11 @@ class InstructorSerializer(serializers.ModelSerializer):
 
 
 class StudentInfoSerializer(serializers.ModelSerializer):
+    pass_product = PassProductSerializer(read_only=True, allow_null=True)
+
     class Meta:
         model = Student
-        fields = ("first_name", "last_name", "date_of_birth", "phone")
+        fields = ("first_name", "last_name", "date_of_birth", "phone", "pass_product")
 
 
 class InstructorInfoSerializer(serializers.ModelSerializer):
@@ -217,6 +221,9 @@ class AdminStudentCreatePayloadSerializer(serializers.Serializer):
     student = AdminStudentDataSerializer()
 
 
+PassProduct = apps.get_model('billing', 'PassProduct')
+
+
 class AdminStudentUpdateSerializer(serializers.Serializer):
     email = serializers.EmailField(required=False)
     is_active = serializers.BooleanField(required=False)
@@ -224,6 +231,8 @@ class AdminStudentUpdateSerializer(serializers.Serializer):
     last_name = serializers.CharField(required=False, max_length=100)
     date_of_birth = serializers.DateField(required=False, allow_null=True)
     phone = serializers.CharField(required=False, allow_blank=True, max_length=50)
+    pass_product = serializers.PrimaryKeyRelatedField(
+        queryset=PassProduct.objects.all(), required=False)
 
 
 class AdminInstructorDataSerializer(serializers.Serializer):

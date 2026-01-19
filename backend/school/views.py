@@ -448,7 +448,7 @@ class AccountViewSet(
     def get_queryset(self):
         return (
             User.objects.all()
-            .select_related("student", "instructor")
+            .select_related("student", "instructor", "student__pass_product")
             .prefetch_related("roles")
         )
 
@@ -484,7 +484,7 @@ class StudentAdminDetailView(APIView):
             except IntegrityError:
                 raise Conflict({"account": ["Email is already used."]})
 
-        for f in ("first_name", "last_name", "date_of_birth", "phone"):
+        for f in ("first_name", "last_name", "date_of_birth", "phone", "pass_product"):
             if f in data:
                 setattr(student, f, data[f])
         student.save()

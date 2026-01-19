@@ -1,5 +1,5 @@
 import axios, { type AxiosError, type AxiosRequestConfig } from "axios";
-import { Type, plainToInstance, Transform, instanceToPlain } from 'class-transformer';
+import { Type, plainToInstance, Transform, instanceToPlain } from "class-transformer";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "https://localhost";
 
@@ -34,14 +34,15 @@ export class Student {
    date_of_birth!: Date | null;
 
    phone!: string;
-};
+   pass_product!: PassProduct | null;
+}
 
 export class Instructor {
    first_name!: string;
    last_name!: string;
    short_bio!: string;
    phone!: string;
-};
+}
 
 export function getAccessToken(): string | null {
    return localStorage.getItem(ACCESS_TOKEN_KEY);
@@ -317,7 +318,7 @@ export class AccountView {
    email!: string;
    is_active!: boolean;
    role!: Role;
-};
+}
 
 export type AccountParams = {
    page: number;
@@ -383,7 +384,7 @@ export class AttendanceRecord {
 
    @Type(() => Date)
    markedAt!: Date;
-};
+}
 
 export class AttendanceRecords {
    count!: number;
@@ -394,35 +395,36 @@ export class AttendanceRecords {
 
 export async function getAttendanceRecords(params: { page: number }) {
    const { data } = await api.get("/api/school/attendance/", { params });
-   return plainToInstance(AttendanceRecords, data)}
+   return plainToInstance(AttendanceRecords, data);
+}
 
 // --- Classes / Filters (dla instruktora) ---
 
 export interface Location {
-  id: number;
-  name: string;
-  address?: string;
+   id: number;
+   name: string;
+   address?: string;
 }
 
 export interface ClassTypeMini {
-  id: number;
-  name: string;
-  level?: string;
+   id: number;
+   name: string;
+   level?: string;
 }
 
 export interface InstructorMini {
-  id: number;
-  first_name: string;
-  last_name: string;
+   id: number;
+   first_name: string;
+   last_name: string;
 }
 
 export async function listClassSessions(params?: Record<string, any>): Promise<ClassSessionRow[]> {
-  const response = await api.get("/api/school/classes/", { params });
-  const data = response.data;
+   const response = await api.get("/api/school/classes/", { params });
+   const data = response.data;
 
-  if (data && Array.isArray(data.results)) return data.results;
-  if (Array.isArray(data)) return data;
-  return [];
+   if (data && Array.isArray(data.results)) return data.results;
+   if (Array.isArray(data)) return data;
+   return [];
 }
 
 // TODO:
@@ -432,29 +434,29 @@ export async function listClassSessions(params?: Record<string, any>): Promise<C
 export type AttendanceStatus = "present" | "absent" | "excused";
 
 export type ClassParticipantRow = {
-  student_id: string;
-  first_name: string;
-  last_name: string;
-  status?: AttendanceStatus;
+   student_id: string;
+   first_name: string;
+   last_name: string;
+   status?: AttendanceStatus;
 };
 
 export type ClassParticipantsResponse = {
-  session?: any;               // TODO: session meta (date/time/type/studio)
-  can_edit?: boolean;          // TODO: when false -> disable editing
-  participants: ClassParticipantRow[];
+   session?: any; // TODO: session meta (date/time/type/studio)
+   can_edit?: boolean; // TODO: when false -> disable editing
+   participants: ClassParticipantRow[];
 };
 
 export async function getClassParticipants(sessionId: number | string) {
-  const resp = await api.get(`/api/school/classes/${sessionId}/participants/`);
-  return resp.data as ClassParticipantsResponse | ClassParticipantRow[] | { results: ClassParticipantRow[] };
+   const resp = await api.get(`/api/school/classes/${sessionId}/participants/`);
+   return resp.data as ClassParticipantsResponse | ClassParticipantRow[] | { results: ClassParticipantRow[] };
 }
 
 export async function saveClassAttendance(
-  sessionId: number | string,
-  records: Array<{ student_id: string; status: AttendanceStatus }>
+   sessionId: number | string,
+   records: Array<{ student_id: string; status: AttendanceStatus }>
 ) {
-  const resp = await api.post(`/api/school/classes/${sessionId}/participants/`, { records });
-  return resp.data as { ok: boolean };
+   const resp = await api.post(`/api/school/classes/${sessionId}/participants/`, { records });
+   return resp.data as { ok: boolean };
 }
 
 export class PassProduct {
@@ -470,7 +472,7 @@ export type Page<T> = {
    results: T[];
    previous: string | null;
    next: string | null;
-}
+};
 
 export class ViewSetAPI<T, F> {
    root: string;
@@ -490,8 +492,8 @@ export class ViewSetAPI<T, F> {
    }
 
    public async getMany(page: number, filters?: F) {
-      const params = {page, ...instanceToPlain(filters)};
-      const { data } = await api.get(`${this.root}/`, {params});
+      const params = { page, ...instanceToPlain(filters) };
+      const { data } = await api.get(`${this.root}/`, { params });
       return data as Page<T>;
    }
 
@@ -505,8 +507,7 @@ export class ViewSetAPI<T, F> {
    }
 }
 
-
-export const passProductAPI = new ViewSetAPI<PassProduct, {is_active: boolean}>("/api/billing/pass-products");
+export const passProductAPI = new ViewSetAPI<PassProduct, { is_active: boolean }>("/api/billing/pass-products");
 
 export type PaymentStatus = "pending" | "paid" | "void";
 export type PaymentMethod = "cash" | "transfer" | "card";
@@ -525,24 +526,30 @@ export class Payment {
    @Type(() => Date) period_end!: Date;
    @Type(() => Date) created_at!: Date;
    @Type(() => Date) updated_at!: Date;
-};
+}
 
 export function SafeDate() {
-   return Transform(({ value }) => {
-      if (!value || value === '') return undefined;
-      const d = new Date(value);
-      return isNaN(d.getTime()) ? undefined : d;
-   }, {toClassOnly: true});
+   return Transform(
+      ({ value }) => {
+         if (!value || value === "") return undefined;
+         const d = new Date(value);
+         return isNaN(d.getTime()) ? undefined : d;
+      },
+      { toClassOnly: true }
+   );
 }
 
 export function JustDate() {
-   return Transform(({ value }) => {
-      console.log("hello")
-    if (value instanceof Date) {
-      console.log("hello")
-      return value.toISOString().split('T')[0];
-    }
-   }, {toPlainOnly: true});
+   return Transform(
+      ({ value }) => {
+         console.log("hello");
+         if (value instanceof Date) {
+            console.log("hello");
+            return value.toISOString().split("T")[0];
+         }
+      },
+      { toPlainOnly: true }
+   );
 }
 
 export class PaymentPost {
@@ -553,7 +560,7 @@ export class PaymentPost {
    method!: PaymentMethod;
    @JustDate() @SafeDate() period_start!: Date;
    @JustDate() @SafeDate() period_end!: Date;
-};
+}
 
 export async function createPayment(payment: PaymentPost) {
    console.log(payment);
@@ -566,7 +573,7 @@ export class PaymentParams {
    product_name?: string;
    status?: string;
    @JustDate() @SafeDate() period_start?: Date;
-};
+}
 
 export const paymentAPI = new ViewSetAPI<Payment, PaymentParams>("/api/billing/purchases");
 
@@ -581,7 +588,7 @@ export async function voidPayment(id: string) {
 }
 
 export async function generatePayments(month: string) {
-   const resp = await api.post(`/api/billing/purchases/generate-monthly/`, {month});
+   const resp = await api.post(`/api/billing/purchases/generate-monthly/`, { month });
    return resp.data;
 }
 
