@@ -32,7 +32,7 @@ export default function GroupList() {
                                     {rows.map((r, i) => {
                                         const group = data.results[i];
                                         return (<div key={i} className="text-left mb-5">
-                                            <Link to={`./${group.pk}/edit`}
+                                            <Link to={`./${group.pk}`}
                                                 className={`mb-1 link ${styles.itemName} ${!group.is_active ? styles.inactive : ""}`}>
                                                 {group.name}
                                             </Link>

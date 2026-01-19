@@ -1,5 +1,5 @@
 import axios, { type AxiosError, type AxiosRequestConfig } from "axios";
-import { Type, plainToInstance, Transform, instanceToPlain } from "class-transformer";
+import { Type, plainToInstance, Transform, instanceToPlain, type ClassConstructor } from 'class-transformer';
 
 const API_URL = import.meta.env.VITE_API_URL ?? "https://localhost";
 
@@ -334,11 +334,6 @@ export async function getClassGroups(params: ClassesParams) {
    return plainToInstance(ClassGroupReadPage, resp.data);
 }
 
-export async function getClassGroup(id: string) {
-   const resp = await api.get(`/api/school/classgroups/${id}/`);
-   return plainToInstance(ClassGroupRead, resp.data);
-}
-
 export class ClassGroupWrite {
    name?: string;
    class_type?: string;
@@ -363,6 +358,64 @@ export async function editClassGroup(id: string, group: ClassGroupWrite) {
    return resp.data;
 }
 
+export class Delete {
+   root: string;
+
+   public constructor(root: string) {
+      this.root = root;
+   }
+
+   public async do(id: string) {
+      const resp = await api.delete(`${this.root}/${id}`);
+      return resp.data;
+   }
+}
+
+export class Get<T> {
+   root: string;
+   cls: ClassConstructor<T>;
+
+   public constructor(root: string, cls: ClassConstructor<T>) {
+      this.root = root;
+      this.cls = cls;
+   }
+
+   public async do(id: string) {
+      const resp = await api.get(`${this.root}/${id}/`);
+      return plainToInstance(this.cls, resp.data);
+   }
+}
+
+export class Post<T> {
+   root: string;
+
+   public constructor(root: string) {
+      this.root = root;
+   }
+
+   public async do(data: T) {
+      const resp = await api.post(`${this.root}/`, instanceToPlain(data));
+      return resp.data;
+   }
+}
+
+export class Patch<T> {
+   root: string;
+
+   public constructor(root: string) {
+      this.root = root;
+   }
+
+   public async do(id: string, data: T) {
+      const resp = await api.patch(`${this.root}/`, instanceToPlain(data));
+      return resp.data;
+   }
+}
+
+
+export const getClassGroup = new Get<ClassGroupRead>("/api/school/classgroups", ClassGroupRead);
+export const deleteClassGroup = new Delete("/api/schoold/classgroups");
+
 export class ClassTypeRead {
    id!: string;
    name!: string;
@@ -372,6 +425,19 @@ export class ClassTypeRead {
    default_capacity!: number;
    is_active!: boolean;
 }
+
+export class ClassTypeWrite {
+   name?: string;
+   level?: string;
+   description?: string;
+   duration_minutes?: number;
+   default_capacity?: number;
+   is_active?: boolean;
+}
+
+export const getClassType = new Get<ClassTypeRead>("/api/school/class-types", ClassTypeRead);
+export const createClassType = new Post<ClassTypeWrite>("/api/school/class-types");
+export const editClassType = new Patch<ClassTypeWrite>("/api/school/class-types");
 
 export async function getClassTypes() : Promise<ClassTypeRead[]> {
    const resp = await api.get(`/api/school/class-types/`);

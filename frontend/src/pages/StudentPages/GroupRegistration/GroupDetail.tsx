@@ -7,6 +7,7 @@ import { enroll, unenroll } from "@/api";
 
 import global from "@/global.module.css";
 import liststyles from "@/styles/list.module.css"
+import tablestyles from "@/styles/simpleTable.module.css"
 
 
 export default function GroupDetail() {
@@ -16,7 +17,7 @@ export default function GroupDetail() {
 
 
     const fetchClassGroup = useCallback(async () => {
-        setGroup(await getClassGroup(id as string));
+        setGroup(await getClassGroup.do(id as string));
     }, [id])
 
     useEffect(() => {
@@ -34,7 +35,7 @@ export default function GroupDetail() {
     return (
         <div className={global.app_container}>
             <div className={liststyles.listPane}>
-                {group && <table className="mb-3">
+                {group && <table className={`${tablestyles.simpleTable} mb-3`}>
                     <tbody>
                         <tr>
                             <td> Nazwa: </td>
