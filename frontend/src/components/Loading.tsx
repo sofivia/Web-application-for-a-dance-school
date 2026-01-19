@@ -12,7 +12,6 @@ export default function Loading<T>(props: Props<T>) {
 
     async function doLoad() {
         setData(await props.load())
-        console.log("hello")
     }
     useEffect(() => {
         doLoad();

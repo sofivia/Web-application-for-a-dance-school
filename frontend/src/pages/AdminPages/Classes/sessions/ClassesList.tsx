@@ -80,7 +80,6 @@ export default function ClassesList() {
       setFilterTick((v) => !v);
     } catch (e) {
       alert("Nie udało się usunąć zajęcia.");
-      console.error(e);
     }
   };
 

@@ -40,9 +40,9 @@ export default function ClassAdd() {
     (async () => {
       const f = await getClassFilters();
       setOpts({
-        classTypes: [{ key: "", value: "", label: "Wybierz typ" }, ...f.class_types.map(ct => ({ key: ct.id, value: ct.id, label: ct.name }))],
-        instructors: [{ key: "", value: "", label: "Wybierz instruktora" }, ...f.instructors.map(i => ({ key: i.id, value: i.id, label: `${i.first_name} ${i.last_name}` }))],
-        locations: [{ key: "", value: "", label: "Wybierz studio" }, ...f.locations.map(l => ({ key: l.pk, value: l.pk, label: l.name }))],
+        classTypes: [...f.class_types.map(ct => ({ key: ct.id, value: ct.id, label: ct.name }))],
+        instructors: [...f.instructors.map(i => ({ key: i.id, value: i.id, label: `${i.first_name} ${i.last_name}` }))],
+        locations: [...f.locations.map(l => ({ key: l.pk, value: l.pk, label: l.name }))],
       });
     })();
   }, []);

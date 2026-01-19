@@ -78,7 +78,6 @@ export default function GroupAdd() {
                         const optionsL = results.locations.map(l => ({ key: l.pk, label: l.name, value: l.pk }))
                         const optionsT = results.classTypes.map(t => ({ key: t.id, label: t.name, value: t.id }))
                         const dft = results.dft;
-                        console.log(dft?.start_date);
                         return (
                             <form onSubmit={handleSubmit} noValidate className="space-y-3">
                                 <InputWithLabel name="name" label="Nazwa" defaultValue={dft?.name} kind="input-classic" />

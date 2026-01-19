@@ -34,7 +34,6 @@ export default function PaymentsList() {
                     e.preventDefault();
                     const formData = new FormData(e.currentTarget);
                     const params = plainToInstance(PaymentParams, Object.fromEntries(formData.entries()));
-                    console.log(params.period_start?.getDate() ?? 1);
                     if ((params.period_start?.getDate() ?? 1) != 1)
                         return setDateError("Musi być pierwszy dzień miesiąca");
                     setDateError(undefined);

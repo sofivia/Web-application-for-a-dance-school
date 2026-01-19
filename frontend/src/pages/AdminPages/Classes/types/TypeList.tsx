@@ -16,7 +16,7 @@ export default function GroupTypeList() {
                     {(data: ClassTypeRead[]) => {
                         const rows: TableRow[][] = data.map(t => [
                             { key: "pk", fields: ["PK", t.id] },
-                            { key: "name", fields: ["PK", t.name] }
+                            { key: "name", fields: ["Nazwa", t.name] }
                         ]);
                         return <>
                             {rows.map((r, i) => {

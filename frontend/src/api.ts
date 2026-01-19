@@ -666,16 +666,11 @@ export function SafeDate() {
 }
 
 export function JustDate() {
-   return Transform(
-      ({ value }) => {
-         console.log("hello");
-         if (value instanceof Date) {
-            console.log("hello");
-            return value.toISOString().split("T")[0];
-         }
-      },
-      { toPlainOnly: true }
-   );
+   return Transform(({ value }) => {
+    if (value instanceof Date) {
+      return value.toISOString().split('T')[0];
+    }
+   }, {toPlainOnly: true});
 }
 
 export class PaymentPost {
@@ -689,7 +684,6 @@ export class PaymentPost {
 }
 
 export async function createPayment(payment: PaymentPost) {
-   console.log(payment);
    const resp = await api.post("/api/billing/purchases/", instanceToPlain(payment));
    return resp.data;
 }
