@@ -5,8 +5,7 @@ import { Navigate, useNavigate, useParams } from "react-router";
 import Loading from "@/components/Loading";
 import liststyles from "@/styles/list.module.css"
 import tablestyles from "@/styles/simpleTable.module.css"
-import { deleteClassGroup, getClassGroup, ClassGroupRead, ClassTypeRead, getClassType } from "@/api";
-import { getWeekday, formatDate } from "@/utils/dateUtils";
+import { deleteClassGroup, ClassTypeRead, getClassType } from "@/api";
 
 
 export default function GroupTypeDetails() {

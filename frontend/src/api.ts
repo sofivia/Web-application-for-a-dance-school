@@ -407,7 +407,7 @@ export class Patch<T> {
    }
 
    public async do(id: string, data: T) {
-      const resp = await api.patch(`${this.root}/`, instanceToPlain(data));
+      const resp = await api.patch(`${this.root}/${id}/`, instanceToPlain(data));
       return resp.data;
    }
 }

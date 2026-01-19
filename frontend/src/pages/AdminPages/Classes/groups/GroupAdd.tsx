@@ -1,5 +1,5 @@
 import Loading from "@/components/Loading";
-import { useId, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router";
 import { getAccounts, ClassTypeRead, getClassTypes, getLocations, createClassGroup, getClassGroup, editClassGroup } from "@/api";
 import type { ClassGroupRead, ClassGroupWrite, Location } from "@/api.ts";
@@ -11,7 +11,7 @@ import toast from 'react-hot-toast';
 import formstyle from '@/styles/forms.module.css'
 import SelectWithLabel from "@/components/forms/SelectWithLabel";
 import { weekdays } from "@/utils/apiutils";
-import { getWeekday, formatDate, dateToISOday } from "@/utils/dateUtils";
+import { getWeekday, dateToISOday } from "@/utils/dateUtils";
 import ClassicCheckbox from "@/components/forms/classic/ClassicCheckbox";
 
 
